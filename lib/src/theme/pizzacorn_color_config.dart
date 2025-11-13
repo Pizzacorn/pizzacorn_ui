@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Config central de colores y tokens de diseño Pizzacorn.
-///
-/// La idea es:
-/// - Tener valores por defecto (los tuyos).
-/// - Poder sobreescribirlos al inicio de cada app con [ConfigurePizzacornColors].
-
-class PizzacornColorConfig {
+class PizzacornThemeConfig {
   // COLORES  /////////////////////////////////////////////////////////////////
 
   /// Background
@@ -16,22 +10,12 @@ class PizzacornColorConfig {
 
   /// Accent
   static Color accent = const Color(0xFF00E89C);
-  static Color accent2 = const Color(0xFF00BC7F);
-  static Color accentOpacity = const Color(0x3C00E89C);
   static Color accentPressed = const Color(0x9300E89C);
   static Color accentHover = const Color(0xF200E89C);
-  static Color accentObscure = const Color(0xFF009364);
-
-  static Color alerts = const Color(0xFFDF8146);
 
   static Color accentSecondary = const Color(0xFF1B1E2A);
   static Color accentSecondaryPressed = const Color(0x9D1B1E2A);
   static Color accentSecondaryHover = const Color(0xD31B1E2A);
-
-  /// Blocked
-  static Color textDisable = const Color(0x33001014);
-  static Color backgroundDisable = const Color(0x4DF1F1F1);
-  static Color subtextPast = const Color(0xFFADACB6);
 
   /// Text
   static Color text = const Color(0xFF1B1E2A);
@@ -40,18 +24,13 @@ class PizzacornColorConfig {
 
   /// Blocked
   static Color textBlocked = const Color(0x33001014);
+  static Color accentBlocked = const Color(0x33001014);
   static Color backgroundBlocked = const Color(0x4DF1F1F1);
-
-  /// Textfields
-  static Color textfields = backgroundSecondary;
 
   /// Border
   static Color border = const Color(0xFFD8D8D8);
   static Color borderFocus = accent;
   static Color borderNoFocus = accent;
-
-  /// Filter
-  static Color filter = accent;
 
   /// Shadow
   static Color shadow = accent;
@@ -66,16 +45,16 @@ class PizzacornColorConfig {
   static Color divider = border;
 
   // DOUBLES /////////////////////////////////////////////////////////////////
-
   /// Valores dimensionales
   static double radius = 0;
+  static double marginSize = 10;
+  static double paddingSize = 20;
+  static double paddingSmallSize = 10;
 
   /// Textfields
-  static double sizeBorder = 1;
-  static double sizeBorderFocus = 1;
+  static double borderSize = 1;
+  static double borderSizeFocus = 1;
 
-  /// Margin
-  static double marginDouble = 8;
 }
 
 /// Getters públicos con tus nombres de siempre ///////////////////////////////
@@ -83,55 +62,46 @@ class PizzacornColorConfig {
 /// pueden cambiar en runtime llamando a [ConfigurePizzacornColors].
 
 // COLORES
-Color get COLOR_BACKGROUND => PizzacornColorConfig.background;
-Color get COLOR_BACKGROUND_SECONDARY => PizzacornColorConfig.backgroundSecondary;
-Color get COLOR_BACKGROUND_TERCIARY => PizzacornColorConfig.backgroundTerciary;
+Color get COLOR_BACKGROUND => PizzacornThemeConfig.background;
+Color get COLOR_BACKGROUND_SECONDARY => PizzacornThemeConfig.backgroundSecondary;
+Color get COLOR_BACKGROUND_TERCIARY => PizzacornThemeConfig.backgroundTerciary;
 
-Color get COLOR_ACCENT => PizzacornColorConfig.accent;
-Color get COLOR_ACCENT_OPACITY => PizzacornColorConfig.accentOpacity;
-Color get COLOR_ACCENT_PRESSED => PizzacornColorConfig.accentPressed;
-Color get COLOR_ACCENT_HOVER => PizzacornColorConfig.accentHover;
-Color get COLOR_ACCENT_OBSCURE => PizzacornColorConfig.accentObscure;
+Color get COLOR_ACCENT => PizzacornThemeConfig.accent;
+Color get COLOR_ACCENT_PRESSED => PizzacornThemeConfig.accentPressed;
+Color get COLOR_ACCENT_HOVER => PizzacornThemeConfig.accentHover;
 
-Color get COLOR_ALERTS => PizzacornColorConfig.alerts;
+Color get COLOR_ACCENT_SECONDARY => PizzacornThemeConfig.accentSecondary;
+Color get COLOR_ACCENT_SECONDARY_PRESSED => PizzacornThemeConfig.accentSecondaryPressed;
+Color get COLOR_ACCENT_SECONDARY_HOVER => PizzacornThemeConfig.accentSecondaryHover;
 
-Color get COLOR_ACCENT_SECONDARY => PizzacornColorConfig.accentSecondary;
-Color get COLOR_ACCENT_SECONDARY_PRESSED => PizzacornColorConfig.accentSecondaryPressed;
-Color get COLOR_ACCENT_SECONDARY_HOVER => PizzacornColorConfig.accentSecondaryHover;
+Color get COLOR_TEXT => PizzacornThemeConfig.text;
+Color get COLOR_SUBTEXT => PizzacornThemeConfig.subtext;
+Color get COLOR_TEXT_BUTTONS => PizzacornThemeConfig.textButtons;
 
-Color get COLOR_TEXT_DISABLE => PizzacornColorConfig.textDisable;
-Color get COLOR_BACKGROUND_DISABLE => PizzacornColorConfig.backgroundDisable;
-Color get COLOR_SUBTEXT_PAST => PizzacornColorConfig.subtextPast;
+Color get COLOR_TEXT_BLOCKED => PizzacornThemeConfig.textBlocked;
+Color get COLOR_BACKGROUND_BLOCKED => PizzacornThemeConfig.backgroundBlocked;
+Color get COLOR_ACCENT_BLOCKED => PizzacornThemeConfig.accentBlocked;
 
-Color get COLOR_TEXT => PizzacornColorConfig.text;
-Color get COLOR_SUBTEXT => PizzacornColorConfig.subtext;
-Color get COLOR_TEXT_BUTTONS => PizzacornColorConfig.textButtons;
+Color get COLOR_BORDER => PizzacornThemeConfig.border;
+Color get COLOR_BORDER_FOCUS => PizzacornThemeConfig.borderFocus;
+Color get COLOR_BORDER_NOFOCUS => PizzacornThemeConfig.borderNoFocus;
 
-Color get COLOR_TEXT_BLOCKED => PizzacornColorConfig.textBlocked;
-Color get COLOR_BACKGROUND_BLOCKED => PizzacornColorConfig.backgroundBlocked;
+Color get COLOR_SHADOW => PizzacornThemeConfig.shadow;
 
-Color get COLOR_TEXTFIELDS => PizzacornColorConfig.textfields;
+Color get COLOR_ERROR => PizzacornThemeConfig.error;
+Color get COLOR_ALERT => PizzacornThemeConfig.alert;
+Color get COLOR_DONE => PizzacornThemeConfig.done;
+Color get COLOR_INFO => PizzacornThemeConfig.info;
 
-Color get COLOR_BORDER => PizzacornColorConfig.border;
-Color get COLOR_BORDER_FOCUS => PizzacornColorConfig.borderFocus;
-Color get COLOR_BORDER_NOFOCUS => PizzacornColorConfig.borderNoFocus;
-
-Color get COLOR_FILTER => PizzacornColorConfig.filter;
-
-Color get COLOR_SHADOW => PizzacornColorConfig.shadow;
-
-Color get COLOR_ERROR => PizzacornColorConfig.error;
-Color get COLOR_ALERT => PizzacornColorConfig.alert;
-Color get COLOR_DONE => PizzacornColorConfig.done;
-Color get COLOR_INFO => PizzacornColorConfig.info;
-
-Color get COLOR_DIVIDER => PizzacornColorConfig.divider;
+Color get COLOR_DIVIDER => PizzacornThemeConfig.divider;
 
 // DOUBLES
-double get RADIUS => PizzacornColorConfig.radius;
-double get SIZE_BORDE => PizzacornColorConfig.sizeBorder;
-double get SIZE_BORDER_FOCUS => PizzacornColorConfig.sizeBorderFocus;
-double get MARGIN_DOUBLE => PizzacornColorConfig.marginDouble;
+double get RADIUS => PizzacornThemeConfig.radius;
+double get BORDER_SIZE => PizzacornThemeConfig.borderSize;
+double get BORDER_SIZE_FOCUS => PizzacornThemeConfig.borderSizeFocus;
+double get MARGIN_SIZE => PizzacornThemeConfig.marginSize;
+double get PADDING_SIZE => PizzacornThemeConfig.paddingSize;
+double get PADDING_SMALL_SIZE => PizzacornThemeConfig.paddingSmallSize;
 
 /// Función para configurar los colores/tokens al inicio de la app.
 ///
@@ -146,36 +116,27 @@ void ConfigurePizzacornColors({
 
   // Accent
   Color? accent,
-  Color? accent2,
-  Color? accentOpacity,
   Color? accentPressed,
   Color? accentHover,
-  Color? accentObscure,
-  Color? alerts,
   Color? accentSecondary,
   Color? accentSecondaryPressed,
   Color? accentSecondaryHover,
 
   // Blocked / text
-  Color? textDisable,
-  Color? backgroundDisable,
-  Color? subtextPast,
-
   Color? text,
   Color? subtext,
   Color? textButtons,
 
   Color? textBlocked,
   Color? backgroundBlocked,
+  Color? accentBlocked,
 
-  // Textfields / borders
-  Color? textfields,
+  // borders
   Color? border,
   Color? borderFocus,
   Color? borderNoFocus,
 
   // Misc
-  Color? filter,
   Color? shadow,
   Color? error,
   Color? alert,
@@ -185,129 +146,113 @@ void ConfigurePizzacornColors({
 
   // Doubles
   double? radius,
-  double? sizeBorder,
-  double? sizeBorderFocus,
-  double? marginDouble,
+  double? borderSize,
+  double? borderSizeFocus,
+  double? marginSize,
+  double? paddingSize,
+  double? paddingSmallSize,
+
 }) {
   // Background
   if (background != null) {
-    PizzacornColorConfig.background = background;
+    PizzacornThemeConfig.background = background;
   }
   if (backgroundSecondary != null) {
-    PizzacornColorConfig.backgroundSecondary = backgroundSecondary;
+    PizzacornThemeConfig.backgroundSecondary = backgroundSecondary;
   }
   if (backgroundTerciary != null) {
-    PizzacornColorConfig.backgroundTerciary = backgroundTerciary;
+    PizzacornThemeConfig.backgroundTerciary = backgroundTerciary;
   }
 
   // Accent
   if (accent != null) {
-    PizzacornColorConfig.accent = accent;
-  }
-  if (accent2 != null) {
-    PizzacornColorConfig.accent2 = accent2;
-  }
-  if (accentOpacity != null) {
-    PizzacornColorConfig.accentOpacity = accentOpacity;
+    PizzacornThemeConfig.accent = accent;
   }
   if (accentPressed != null) {
-    PizzacornColorConfig.accentPressed = accentPressed;
+    PizzacornThemeConfig.accentPressed = accentPressed;
   }
   if (accentHover != null) {
-    PizzacornColorConfig.accentHover = accentHover;
-  }
-  if (accentObscure != null) {
-    PizzacornColorConfig.accentObscure = accentObscure;
-  }
-  if (alerts != null) {
-    PizzacornColorConfig.alerts = alerts;
+    PizzacornThemeConfig.accentHover = accentHover;
   }
   if (accentSecondary != null) {
-    PizzacornColorConfig.accentSecondary = accentSecondary;
+    PizzacornThemeConfig.accentSecondary = accentSecondary;
   }
   if (accentSecondaryPressed != null) {
-    PizzacornColorConfig.accentSecondaryPressed = accentSecondaryPressed;
+    PizzacornThemeConfig.accentSecondaryPressed = accentSecondaryPressed;
   }
   if (accentSecondaryHover != null) {
-    PizzacornColorConfig.accentSecondaryHover = accentSecondaryHover;
+    PizzacornThemeConfig.accentSecondaryHover = accentSecondaryHover;
   }
 
   // Blocked / text
-  if (textDisable != null) {
-    PizzacornColorConfig.textDisable = textDisable;
-  }
-  if (backgroundDisable != null) {
-    PizzacornColorConfig.backgroundDisable = backgroundDisable;
-  }
-  if (subtextPast != null) {
-    PizzacornColorConfig.subtextPast = subtextPast;
-  }
-
   if (text != null) {
-    PizzacornColorConfig.text = text;
+    PizzacornThemeConfig.text = text;
   }
   if (subtext != null) {
-    PizzacornColorConfig.subtext = subtext;
+    PizzacornThemeConfig.subtext = subtext;
   }
   if (textButtons != null) {
-    PizzacornColorConfig.textButtons = textButtons;
+    PizzacornThemeConfig.textButtons = textButtons;
   }
 
   if (textBlocked != null) {
-    PizzacornColorConfig.textBlocked = textBlocked;
+    PizzacornThemeConfig.textBlocked = textBlocked;
   }
   if (backgroundBlocked != null) {
-    PizzacornColorConfig.backgroundBlocked = backgroundBlocked;
+    PizzacornThemeConfig.backgroundBlocked = backgroundBlocked;
+  }
+  if (accentBlocked != null) {
+    PizzacornThemeConfig.accentBlocked = accentBlocked;
   }
 
   // Textfields / borders
-  if (textfields != null) {
-    PizzacornColorConfig.textfields = textfields;
-  }
   if (border != null) {
-    PizzacornColorConfig.border = border;
+    PizzacornThemeConfig.border = border;
   }
   if (borderFocus != null) {
-    PizzacornColorConfig.borderFocus = borderFocus;
+    PizzacornThemeConfig.borderFocus = borderFocus;
   }
   if (borderNoFocus != null) {
-    PizzacornColorConfig.borderNoFocus = borderNoFocus;
+    PizzacornThemeConfig.borderNoFocus = borderNoFocus;
   }
 
   // Misc
-  if (filter != null) {
-    PizzacornColorConfig.filter = filter;
-  }
   if (shadow != null) {
-    PizzacornColorConfig.shadow = shadow;
+    PizzacornThemeConfig.shadow = shadow;
   }
   if (error != null) {
-    PizzacornColorConfig.error = error;
+    PizzacornThemeConfig.error = error;
   }
   if (alert != null) {
-    PizzacornColorConfig.alert = alert;
+    PizzacornThemeConfig.alert = alert;
   }
   if (done != null) {
-    PizzacornColorConfig.done = done;
+    PizzacornThemeConfig.done = done;
   }
   if (info != null) {
-    PizzacornColorConfig.info = info;
+    PizzacornThemeConfig.info = info;
   }
   if (divider != null) {
-    PizzacornColorConfig.divider = divider;
+    PizzacornThemeConfig.divider = divider;
   }
 
   // Doubles
   if (radius != null) {
-    PizzacornColorConfig.radius = radius;
+    PizzacornThemeConfig.radius = radius;
   }
-  if (sizeBorder != null) {
-    PizzacornColorConfig.sizeBorder = sizeBorder;
+  if (borderSize != null) {
+    PizzacornThemeConfig.borderSize = borderSize;
   }
-  if (sizeBorderFocus != null) {
-    PizzacornColorConfig.sizeBorderFocus = sizeBorderFocus;
+  if (borderSizeFocus != null) {
+    PizzacornThemeConfig.borderSizeFocus = borderSizeFocus;
   }
-  if (marginDouble != null) {
-    PizzacornColorConfig.marginDouble = marginDouble;
+  if (marginSize != null) {
+    PizzacornThemeConfig.marginSize = marginSize;
+  }
+  if (paddingSize != null) {
+    PizzacornThemeConfig.paddingSize = paddingSize;
+  }
+  if (paddingSmallSize != null) {
+    PizzacornThemeConfig.paddingSmallSize = paddingSmallSize;
   }
 }

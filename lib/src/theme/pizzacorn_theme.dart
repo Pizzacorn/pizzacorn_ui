@@ -41,35 +41,35 @@ ThemeData PizzacornTheme() {
       /// Estilo Inicio
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(RADIUS)),
-        borderSide: BorderSide(color: COLOR_BORDER, width: SIZE_BORDE),
+        borderSide: BorderSide(color: COLOR_BORDER, width: BORDER_SIZE),
       ),
 
       /// Estilo Focus
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(RADIUS)),
-        borderSide: BorderSide(color: COLOR_BORDER_FOCUS, width: SIZE_BORDER_FOCUS),
+        borderSide: BorderSide(color: COLOR_BORDER_FOCUS, width: BORDER_SIZE_FOCUS),
       ),
 
       /// Estilo error
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(RADIUS)),
-        borderSide: BorderSide(color: COLOR_ERROR, width: SIZE_BORDER_FOCUS),
+        borderSide: BorderSide(color: COLOR_ERROR, width: BORDER_SIZE_FOCUS),
       ),
 
       /// Estilo foco en error
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(RADIUS)),
-        borderSide: BorderSide(color: COLOR_ERROR, width: SIZE_BORDER_FOCUS),
+        borderSide: BorderSide(color: COLOR_ERROR, width: BORDER_SIZE_FOCUS),
       ),
 
       disabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(RADIUS)),
-        borderSide: BorderSide(color: COLOR_BORDER_NOFOCUS, width: SIZE_BORDER_FOCUS),
+        borderSide: BorderSide(color: COLOR_BORDER_NOFOCUS, width: BORDER_SIZE_FOCUS),
       ),
 
       border: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(RADIUS)),
-        borderSide: BorderSide(color: COLOR_BORDER, width: SIZE_BORDER_FOCUS),
+        borderSide: BorderSide(color: COLOR_BORDER, width: BORDER_SIZE_FOCUS),
       ),
 
       /// Estilo textos
@@ -206,12 +206,12 @@ ThemeData PizzacornTheme() {
       inputDecorationTheme: InputDecorationTheme(
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(RADIUS)),
-          borderSide: BorderSide(color: COLOR_SUBTEXT, width: SIZE_BORDE),
+          borderSide: BorderSide(color: COLOR_SUBTEXT, width: BORDER_SIZE),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(RADIUS)),
           borderSide:
-          BorderSide(color: COLOR_ACCENT, width: SIZE_BORDER_FOCUS),
+          BorderSide(color: COLOR_ACCENT, width: BORDER_SIZE_FOCUS),
         ),
         filled: true,
         prefixIconColor: COLOR_SUBTEXT,
