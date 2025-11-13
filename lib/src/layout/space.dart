@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter/material.dart';
-
 /// ESPACIOS PIZZACORN ////////////////////////////////////////////////////////
 const double SPACE_BIGGER = 60;
 const double SPACE_BIG = 40;

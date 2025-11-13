@@ -1,5 +1,3 @@
-library pizzacorn_ui;
-
 // theme
 export 'src/theme/pizzacorn_theme.dart';
 export 'src/theme/pizzacorn_color_config.dart';

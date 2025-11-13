@@ -136,21 +136,21 @@ class _TextFieldCustomState extends State<TextFieldCustom> {
 
     // Label y hint: TextBody atenuado
     final labelStyle = widget.labelStyle
-        ?? styleBody(color: scheme.onSurface.withOpacity(0.70));
+        ?? styleBody(color: scheme.onSurface.withValues(alpha: 0.70));
 
     final hintStyle = widget.hintStyle
-        ?? styleBody(color: scheme.onSurface.withOpacity(0.60));
+        ?? styleBody(color: scheme.onSurface.withValues(alpha: 0.60));
 
     // Helper y error: TextCaption (error coloreado)
     final helperStyle = widget.helperStyle
-        ?? styleCaption(color: scheme.onSurface.withOpacity(0.60));
+        ?? styleCaption(color: scheme.onSurface.withValues(alpha: 0.60));
 
     final errorStyle = widget.errorStyle
         ?? styleCaption(color: scheme.error);
 
     final outline = OutlineInputBorder(
       borderRadius: BorderRadius.all(Radius.circular(widget.borderRadius)),
-      borderSide: BorderSide(color: scheme.outline.withOpacity(0.3)),
+      borderSide: BorderSide(color: scheme.outline.withValues(alpha: 0.3)),
     );
 
     // ✅ Prioridades de alias
@@ -231,7 +231,7 @@ class _TextFieldCustomState extends State<TextFieldCustom> {
 
         isDense: true,
         filled: widget.filled,
-        fillColor: widget.fillColor ?? scheme.surfaceVariant.withOpacity(widget.filled ? 1 : 0),
+        fillColor: widget.fillColor ?? scheme.surfaceVariant.withValues(alpha: widget.filled ? 1 : 0),
         contentPadding: widget.contentPadding ?? const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
 
         border: outline,
