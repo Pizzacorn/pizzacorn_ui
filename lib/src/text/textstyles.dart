@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../theme/pizzacorn_color_config.dart';
+import '../theme/color_config.dart';
 
 /// =================== CONFIG GLOBAL (Fonts, Sizes, Weights) ===================
 /// Úsalo en tu app antes de runApp(), por ejemplo:

@@ -1,7 +1,7 @@
 name: pizzacorn_ui
 description: "Pizzacorn UI: a Flutter design system with configurable theme, typography, colors and reusable UI widgets."
 
-version: 0.0.1
+version: 0.0.2
 
 homepage: https://github.com/Pizzacorn/pizzacorn_ui
 repository: https://github.com/Pizzacorn/pizzacorn_ui
@@ -20,6 +20,7 @@ dependencies:
     sdk: flutter
 
   google_fonts: ^6.3.2
+  flutter_svg: ^2.2.3
   intl: ^0.20.2
 
 dev_dependencies:

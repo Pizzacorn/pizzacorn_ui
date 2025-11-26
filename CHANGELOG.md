@@ -1,3 +1,5 @@
-## 0.0.1
+## 0.0.2
 
-- Primera versión de pizzacorn_ui.
+- Añadido de botones
+- Añadido de estilo de botones
+- Añadido de dependencia SVG

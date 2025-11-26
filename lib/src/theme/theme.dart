@@ -1,7 +1,7 @@
-// lib/src/theme/pizzacorn_theme.dart
+// lib/src/theme/theme.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'pizzacorn_color_config.dart';
+import 'color_config.dart';
 import '../layout/space.dart';
 import '../text/textstyles.dart';
 
