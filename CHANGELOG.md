@@ -1,5 +1,3 @@
-## 0.0.2
+## 0.0.5
 
-- Añadido de botones
-- Añadido de estilo de botones
-- Añadido de dependencia SVG
+- Mejoras y corrección de errores.

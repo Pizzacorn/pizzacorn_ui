@@ -1,63 +1,92 @@
 import 'package:flutter/material.dart';
 
-class NavigationService {
-  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-}
-
 /// Navega a una nueva página manteniendo la pantalla anterior en el stack.
-/// [page] es el widget de destino.
-/// [onBack] se ejecuta cuando se hace pop y se vuelve a la pantalla anterior.
-void GoTo(Widget page, {Function()? onBack}) {
-  NavigationService.navigatorKey.currentState
-      ?.push(
+///
+/// Uso:
+/// ```dart
+/// goTo(context, const HomePage());
+/// ```
+Future<T?> goTo<T>(
+    BuildContext context,
+    Widget page, {
+      VoidCallback? onBack,
+    }) {
+  return Navigator.of(context)
+      .push<T>(
     MaterialPageRoute(
       builder: (_) => page,
     ),
   )
-      .then((_) {
+      .then((value) {
     if (onBack != null) {
       onBack();
     }
+    return value;
   });
 }
 
 /// Navega a una nueva página reemplazando la actual (no se puede volver atrás).
-/// [page] es el widget de destino.
-/// [onBack] se ejecuta cuando esa página se cierra (por ejemplo, con otro GoBack()).
-void GoToNoBack(Widget page, {Function()? onBack}) {
-  NavigationService.navigatorKey.currentState
-      ?.pushReplacement(
+///
+/// Uso:
+/// ```dart
+/// goToNoBack(context, const LoginPage());
+/// ```
+Future<T?> goToNoBack<T>(
+    BuildContext context,
+    Widget page, {
+      VoidCallback? onBack,
+    }) {
+  return Navigator.of(context)
+      .pushReplacement<T, T?>(
     MaterialPageRoute(
       builder: (_) => page,
     ),
   )
-      .then((_) {
+      .then((value) {
     if (onBack != null) {
       onBack();
     }
+    return value;
   });
 }
 
 /// Navega a una nueva página y limpia por completo el histórico de navegación.
+///
 /// Ideal para flujos de login → home.
-/// [page] es el widget de destino.
-/// [onBack] se ejecuta cuando esa página se cierre (si se llega a cerrar).
-void GoToClear(Widget page, {Function()? onBack}) {
-  NavigationService.navigatorKey.currentState
-      ?.pushAndRemoveUntil(
+///
+/// Uso:
+/// ```dart
+/// goToClear(context, const HomePage());
+/// ```
+Future<T?> goToClear<T>(
+    BuildContext context,
+    Widget page, {
+      VoidCallback? onBack,
+    }) {
+  return Navigator.of(context)
+      .pushAndRemoveUntil<T>(
     MaterialPageRoute(
       builder: (_) => page,
     ),
         (_) => false,
   )
-      .then((_) {
+      .then((value) {
     if (onBack != null) {
       onBack();
     }
+    return value;
   });
 }
 
 /// Hace pop de la ruta actual si es posible (equivalente a Navigator.pop()).
-void GoBack() {
-  NavigationService.navigatorKey.currentState?.pop();
+///
+/// Uso:
+/// ```dart
+/// goBack(context);
+/// ```
+void goBack(BuildContext context, {Object? result}) {
+  final navigator = Navigator.of(context);
+  if (navigator.canPop()) {
+    navigator.pop(result);
+  }
 }

@@ -1,252 +1,322 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../text/textstyles.dart';
+import '../../pizzacorn_ui.dart';
+
 
 class TextFieldCustom extends StatefulWidget {
-  // Control
+  const TextFieldCustom({
+    Key? key,
+    this.controller,
+    this.onChanged,
+    this.onSuffixPressed,
+    this.onPrefixPressed,
+    this.onEditingComplete,
+    this.validator,
+    this.errorText = "",
+    this.autovalidateMode = AutovalidateMode.onUserInteraction,
+    this.helperText = "",
+    this.labelText = "",
+    this.hintText = "",
+    this.shadow = false,
+    this.height = 60,
+    this.onTap,
+    this.readOnly = false,
+    this.width = double.infinity,
+
+    // ⬇ Antes llevaban default con TEXT_BODY_SIZE (no-const)
+    this.hintSize,
+    this.textSize,
+
+    this.filled = true,
+
+    // ⬇ Antes: this.radius = RADIUS
+    this.radius,
+
+    // ⬇ Antes: this.colorFill = COLOR_BACKGROUND_SECONDARY
+    this.colorFill,
+
+    // ⬇ Antes: this.colorHint = COLOR_SUBTEXT
+    this.colorHint,
+
+    this.minLines = 1,
+    this.maxLines = 1,
+    this.maxLength = 0,
+    this.elevation = 5,
+    this.noPadding = false,
+    this.textCapitalization = TextCapitalization.none,
+    this.textInputType = TextInputType.text,
+    this.password = false,
+    this.textAlignVertical = TextAlignVertical.center,
+    this.prefixIcon = "",
+    this.prefixIconSize = 18,
+    this.sufixIcon = "",
+    this.prefixText = "",
+    this.sufixText = "",
+    this.focusNode,
+    this.inputFormatters,
+    this.textStyleCustom,
+    this.autofocus = false,
+  }) : super(key: key);
+
+  // CONTROL
   final TextEditingController? controller;
   final FocusNode? focusNode;
   final bool autofocus;
-  final bool enabled;
   final bool readOnly;
+  final Function()? onTap;
 
-  // Texto y validación
-  final String? labelText;
-  final String? hintText;
-  final String? helperText;
-  final String? errorText; // Permite forzar error externo
-  final FormFieldValidator<String>? validator;
-
-  // Callbacks
-  final ValueChanged<String>? onChanged;
-  final VoidCallback? onEditingComplete;
-  final ValueChanged<PointerDownEvent>? onTapOutside;
-
-  // Teclado (API existente)
-  final TextInputType keyboardType;
-  final TextCapitalization textCapitalization;
-  final TextInputAction? textInputAction;
-  final List<TextInputFormatter>? inputFormatters;
-  final Iterable<String>? autofillHints;
-
-  // ✅ ALIAS (prioridad si se pasan)
-  final TextInputType? textInputType;
-  final List<TextInputFormatter>? inputFormatter;
-
-  // Apariencia / layout
-  final bool obscureText; // Para password
-  final bool showPasswordToggle; // Botón mostrar/ocultar
-  final int minLines;
-  final int maxLines;
-  final int? maxLength;
-  final TextAlign textAlign;
-  final TextAlignVertical? textAlignVertical;
-
-  // Decoración InputDecoration
+  // TAMAÑOS / LAYOUT
+  final double height;
+  final double width;
+  final double? radius;       // ⬅ ahora nullable
+  final double? textSize;     // ⬅ ahora nullable
+  final double? hintSize;     // ⬅ ahora nullable
+  final double elevation;
+  final bool shadow;
   final bool filled;
-  final Color? fillColor;
-  final double borderRadius;
-  final EdgeInsetsGeometry? contentPadding;
+  final bool noPadding;
+  final int maxLines;
+  final int maxLength;
+  final int minLines;
+  final TextAlignVertical textAlignVertical;
 
-  // Prefix / Suffix
-  final String? prefixText;
-  final String? suffixText;
-  final Widget? prefixIcon;
-  final Widget? suffixIcon;
+  // TEXTO / ESTILOS
+  final String labelText;
+  final String hintText;
+  final String helperText;
+  final String errorText;
+  final String sufixIcon;
+  final String prefixIcon;
+  final String prefixText;
+  final String sufixText;
+  final TextStyle? textStyleCustom;
+  final Color? colorFill;     // ⬅ ahora nullable
+  final Color? colorHint;     // ⬅ ahora nullable
 
-  // Overrides de estilos (opcionales)
-  final TextStyle? textStyle;   // base (TextBody)
-  final TextStyle? hintStyle;   // TextBody atenuado
-  final TextStyle? labelStyle;  // TextBody atenuado
-  final TextStyle? helperStyle; // TextCaption
-  final TextStyle? errorStyle;  // TextCaption (rojo)
+  // TECLADO
+  final TextInputType textInputType;
+  final TextCapitalization textCapitalization;
+  final List<TextInputFormatter>? inputFormatters;
+  final AutovalidateMode autovalidateMode;
 
-  const TextFieldCustom({
-    super.key,
-    this.controller,
-    this.focusNode,
-    this.autofocus = false,
-    this.enabled = true,
-    this.readOnly = false,
-    this.labelText,
-    this.hintText,
-    this.helperText,
-    this.errorText,
-    this.validator,
-    this.onChanged,
-    this.onEditingComplete,
-    this.onTapOutside,
+  // PASSWORD
+  final bool password;
 
-    // API existente
-    this.keyboardType = TextInputType.text,
-    this.textCapitalization = TextCapitalization.none,
-    this.textInputAction,
-    this.inputFormatters,
-    this.autofillHints,
+  // ICONOS
+  final double prefixIconSize;
 
-    // ✅ Alias nuevos
-    this.textInputType,
-    this.inputFormatter,
+  // CALLBACKS
+  final void Function(String)? onChanged;
+  final void Function()? onSuffixPressed;
+  final void Function()? onPrefixPressed;
+  final void Function()? onEditingComplete;
 
-    this.obscureText = false,
-    this.showPasswordToggle = false,
-    this.minLines = 1,
-    this.maxLines = 1,
-    this.maxLength,
-    this.textAlign = TextAlign.start,
-    this.textAlignVertical = TextAlignVertical.center,
-
-    this.filled = true,
-    this.fillColor,
-    this.borderRadius = 12,
-    this.contentPadding,
-
-    this.prefixText,
-    this.suffixText,
-    this.prefixIcon,
-    this.suffixIcon,
-
-    this.textStyle,
-    this.hintStyle,
-    this.labelStyle,
-    this.helperStyle,
-    this.errorStyle,
-  });
+  // VALIDACIÓN EXTRA
+  final FormFieldValidator<String>? validator;
 
   @override
   State<TextFieldCustom> createState() => _TextFieldCustomState();
 }
 
 class _TextFieldCustomState extends State<TextFieldCustom> {
-  late bool _obscure;
+  late FocusNode _focusNode;
+  bool _obscureVisible = false;
 
   @override
   void initState() {
     super.initState();
-    _obscure = widget.obscureText;
+    _focusNode = widget.focusNode ?? FocusNode();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    setState(() {
+      // reconstruye para que aparezca/desaparezca el icono de ocultar teclado
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    if (widget.focusNode == null) {
+      _focusNode.dispose();
+    }
+    super.dispose();
+  }
+
+  bool get _isNumericKeyboard {
+    final type = widget.textInputType;
+    return type == TextInputType.number ||
+        type == TextInputType.phone ||
+        type == const TextInputType.numberWithOptions() ||
+        type == const TextInputType.numberWithOptions(decimal: true);
   }
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    // 🔥 Aquí resolvemos los "defaults dinámicos" usando tu config
+    final double effectiveTextSize = widget.textSize ?? TEXT_BODY_SIZE;
+    final double effectiveHintSize = widget.hintSize ?? TEXT_BODY_SIZE;
+    final double effectiveRadius   = widget.radius ?? RADIUS;
+    final Color effectiveFill      = widget.colorFill ?? COLOR_BACKGROUND_SECONDARY;
+    final Color effectiveHintColor = widget.colorHint ?? COLOR_SUBTEXT;
 
-    // ===== Estilos Pizzacorn =====
-    // Todo TextBody por defecto
-    final baseTextStyle = widget.textStyle ?? styleBody();
+    return Container(
+      width: widget.width,
+      decoration: BoxDecoration(
+        boxShadow: widget.shadow ? [BoxShadowCustom()] : null,
+      ),
+      child: TextFormField(
+        focusNode: _focusNode,
+        onTap: widget.onTap,
+        readOnly: widget.readOnly,
+        controller: widget.controller,
+        keyboardType: widget.textInputType,
+        obscureText: widget.password ? !_obscureVisible : false,
+        textCapitalization: widget.textCapitalization,
+        textAlignVertical: widget.textAlignVertical,
+        style: widget.textStyleCustom ??
+            styleBody(
+              color: COLOR_TEXT,
+              size: effectiveTextSize,
+            ),
+        inputFormatters: widget.inputFormatters ?? [],
+        maxLines: widget.maxLines,
+        minLines: widget.minLines,
+        maxLength: widget.maxLength == 0 ? null : widget.maxLength,
+        autofocus: widget.autofocus,
+        onChanged: (value) {
+          if (widget.onChanged != null) widget.onChanged!(value);
+        },
+        onEditingComplete: widget.onEditingComplete,
+        autovalidateMode: widget.errorText.isNotEmpty
+            ? AutovalidateMode.onUserInteraction
+            : widget.autovalidateMode,
+        validator: (value) {
+          if (widget.validator != null) {
+            return widget.validator!(value);
+          }
+          if (widget.errorText.isNotEmpty &&
+              (value == null || value.isEmpty)) {
+            return widget.errorText;
+          }
+          return null;
+        },
+        decoration: InputDecoration(
+          filled: widget.filled,
+          fillColor: effectiveFill,
 
-    // Label y hint: TextBody atenuado
-    final labelStyle = widget.labelStyle
-        ?? styleBody(color: scheme.onSurface.withValues(alpha: 0.70));
+          // HINT / LABEL / HELPER
+          hintText: widget.hintText.isNotEmpty ? widget.hintText : null,
+          hintStyle: styleBody(
+            color: effectiveHintColor,
+            size: effectiveHintSize,
+          ),
+          labelText: widget.labelText.isNotEmpty ? widget.labelText : null,
+          labelStyle: styleBody(
+            color: effectiveHintColor,
+            size: effectiveHintSize,
+          ),
+          helperText: widget.helperText.isNotEmpty ? widget.helperText : null,
+          helperStyle: styleBody(
+            color: effectiveHintColor,
+            size: effectiveHintSize,
+          ),
+          errorStyle: styleCaption(color: COLOR_ERROR),
 
-    final hintStyle = widget.hintStyle
-        ?? styleBody(color: scheme.onSurface.withValues(alpha: 0.60));
+          // BORDE
+          border: widget.filled
+              ? OutlineInputBorder(
+            borderRadius: BorderRadius.circular(effectiveRadius),
+            borderSide: BorderSide.none,
+          )
+              : null,
 
-    // Helper y error: TextCaption (error coloreado)
-    final helperStyle = widget.helperStyle
-        ?? styleCaption(color: scheme.onSurface.withValues(alpha: 0.60));
+          contentPadding:
+          widget.noPadding ? EdgeInsets.zero : null,
 
-    final errorStyle = widget.errorStyle
-        ?? styleCaption(color: scheme.error);
+          // SUFFIX
+          suffixText:
+          widget.sufixText.isNotEmpty ? widget.sufixText : null,
+          suffixIcon: _buildSuffixIcon(context),
 
-    final outline = OutlineInputBorder(
-      borderRadius: BorderRadius.all(Radius.circular(widget.borderRadius)),
-      borderSide: BorderSide(color: scheme.outline.withValues(alpha: 0.3)),
+          // PREFIX
+          prefixText:
+          widget.prefixText.isNotEmpty ? widget.prefixText : null,
+          prefixStyle: styleBody(color: COLOR_ACCENT),
+          prefixIconConstraints:
+          const BoxConstraints(minWidth: 0, minHeight: 0),
+          prefixIcon: widget.prefixIcon.isNotEmpty
+              ? TextButton(
+            style: styleTransparent(),
+            onPressed: () {
+              if (widget.onPrefixPressed != null) {
+                widget.onPrefixPressed!();
+              }
+            },
+            child: Padding(
+              padding:
+              const EdgeInsets.only(left: 15, right: 15),
+              child: SvgCustom(
+                icon: widget.prefixIcon,
+                size: widget.prefixIconSize,
+              ),
+            ),
+          )
+              : null,
+        ),
+      ),
     );
+  }
 
-    // ✅ Prioridades de alias
-    final effectiveKeyboardType = widget.textInputType ?? widget.keyboardType;
-    final effectiveFormatters   = widget.inputFormatter ?? widget.inputFormatters;
-
-    Widget? effectiveSuffixIcon = widget.suffixIcon;
-    if (widget.showPasswordToggle) {
-      effectiveSuffixIcon = IconButton(
-        icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility),
-        onPressed: () => setState(() => _obscure = !_obscure),
-        tooltip: _obscure ? 'Mostrar' : 'Ocultar',
+  Widget? _buildSuffixIcon(BuildContext context) {
+    // Password: icono de candado
+    if (widget.password) {
+      return IconButton(
+        icon: Icon(
+          _obscureVisible ? Icons.lock_open_outlined : Icons.lock_outline,
+          color: COLOR_ACCENT,
+        ),
+        onPressed: () {
+          setState(() {
+            _obscureVisible = !_obscureVisible;
+          });
+        },
       );
     }
 
-    return TextFormField(
-      enableInteractiveSelection: true,
-      controller: widget.controller,
-      focusNode: widget.focusNode,
-      autofocus: widget.autofocus,
-      enabled: widget.enabled,
-      readOnly: widget.readOnly,
-
-      // Teclado y formato
-      keyboardType: effectiveKeyboardType,
-      textCapitalization: widget.textCapitalization,
-      textInputAction: widget.textInputAction,
-      inputFormatters: effectiveFormatters,
-      autofillHints: widget.autofillHints,
-
-      // Layout
-      obscureText: _obscure,
-      minLines: widget.minLines,
-      maxLines: widget.maxLines,
-      maxLength: widget.maxLength,
-      textAlign: widget.textAlign,
-      textAlignVertical: widget.textAlignVertical,
-
-      // ✅ Estilo principal: TextBody (Pizzacorn)
-      style: baseTextStyle,
-
-      // Callbacks
-      onChanged: widget.onChanged,
-      onEditingComplete: widget.onEditingComplete,
-      onTapOutside: widget.onTapOutside,
-
-      autovalidateMode:
-      (widget.errorText != null) ? AutovalidateMode.always : AutovalidateMode.disabled,
-
-      validator: (value) {
-        if (widget.validator != null) return widget.validator!(value);
-        if (widget.errorText != null && widget.errorText!.isNotEmpty) {
-          return widget.errorText;
-        }
-        return null;
-      },
-
-      decoration: InputDecoration(
-        alignLabelWithHint: true,
-
-        // ====== TextBody para label/hint ======
-        labelText: widget.labelText,
-        labelStyle: labelStyle,
-        floatingLabelStyle: labelStyle.copyWith(fontWeight: FontWeight.w600),
-        hintText: widget.hintText,
-        hintStyle: hintStyle,
-
-        // ====== TextCaption para helper y error ======
-        helperText: widget.helperText,
-        helperStyle: helperStyle,
-        errorStyle: errorStyle,
-
-        // Prefijos/sufijos
-        prefixText: widget.prefixText,
-        suffixText: widget.suffixText,
-        prefixIcon: widget.prefixIcon,
-        suffixIcon: effectiveSuffixIcon,
-
-        isDense: true,
-        filled: widget.filled,
-        fillColor: widget.fillColor ?? scheme.surfaceVariant.withValues(alpha: widget.filled ? 1 : 0),
-        contentPadding: widget.contentPadding ?? const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-
-        border: outline,
-        enabledBorder: outline,
-        focusedBorder: outline.copyWith(
-          borderSide: BorderSide(color: scheme.primary),
+    // Suffix SVG con callback
+    if (widget.sufixIcon.isNotEmpty) {
+      return TextButton(
+        style: styleTransparent(),
+        onPressed: () {
+          if (widget.onSuffixPressed != null) {
+            widget.onSuffixPressed!();
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.only(left: 15, right: 15),
+          child: SvgCustom(
+            icon: widget.sufixIcon,
+            size: 16,
+          ),
         ),
-        errorBorder: outline.copyWith(
-          borderSide: BorderSide(color: scheme.error),
+      );
+    }
+
+    // Teclado numérico: botón para ocultar si está en foco
+    if (_isNumericKeyboard && _focusNode.hasFocus) {
+      return IconButton(
+        icon: Icon(
+          Icons.keyboard_hide_outlined,
+          color: COLOR_BORDER,
         ),
-        focusedErrorBorder: outline.copyWith(
-          borderSide: BorderSide(color: scheme.error),
-        ),
-        disabledBorder: outline,
-      ),
-    );
+        onPressed: () {
+          FocusScope.of(context).unfocus();
+        },
+      );
+    }
+
+    return null;
   }
 }

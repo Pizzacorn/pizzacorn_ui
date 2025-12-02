@@ -1,26 +1,34 @@
 import 'package:flutter/material.dart';
+
 import '../layout/space.dart';
-import '../navigation/navigation_helpers.dart';
 import '../text/textstyles.dart';
 import '../utils/color_utils.dart';
 
-Future<void> OpenBottomSheet(
+/// Abre un BottomSheet estándar.
+///
+/// Uso:
+/// ```dart
+/// openBottomSheet(
+///   context,
+///   MiWidgetBottomSheet(),
+/// );
+/// ```
+Future<void> openBottomSheet(
+    BuildContext context,
     Widget widget, {
       bool noBarrierColor = false,
       bool disableDrag = false,
       Function()? onBack,
     }) async {
-  final context = NavigationService.navigatorKey.currentContext!;
   final scheme = Theme.of(context).colorScheme;
 
   await showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-    // Usamos el surface del theme con alpha 0 para integrarlo con la app
+    // Fondo basado en el surface del theme
     backgroundColor: scheme.surface.withValues(alpha: 0),
-    barrierColor: noBarrierColor
-        ? Colors.transparent
-        : Colors.black.withValues(alpha: 0.1),
+    barrierColor:
+    noBarrierColor ? Colors.transparent : Colors.black.withValues(alpha: 0.1),
     useSafeArea: true,
     elevation: 0,
     enableDrag: !disableDrag,
@@ -38,27 +46,32 @@ Future<void> OpenBottomSheet(
 /// botón de atrás del sistema.
 ///
 /// Ideal para procesos críticos (pagos, cargando algo importante, etc.).
-/// [widget] → contenido del bottomsheet.
-/// [onBack] → callback que se ejecuta cuando se cierre de forma manual
-/// (por código).
-Future<void> OpenBottomNoBack(
-    Widget widget,
-    Function()? onBack,
-    ) async {
-  final context = NavigationService.navigatorKey.currentContext!;
-
+///
+/// Uso:
+/// ```dart
+/// openBottomNoBack(
+///   context,
+///   MiWidgetBottomSheetBloqueado(),
+///   onBack: () { ... },
+/// );
+/// ```
+Future<void> openBottomNoBack(
+    BuildContext context,
+    Widget widget, {
+      Function()? onBack,
+    }) async {
   await showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     isDismissible: false,
     barrierColor: Colors.black.withValues(alpha: 0.1),
-    // Aquí dejamos transparente para que el propio widget defina el fondo
+    // Dejado transparente para que el widget defina su propio fondo
     backgroundColor: Colors.transparent,
     elevation: 50,
-    builder: (BuildContext context) {
+    builder: (BuildContext ctx) {
       return PopScope(
         // Impide que se haga pop con el botón de atrás del sistema
-        onPopInvoked: (value) async {
+        onPopInvoked: (didPop) async {
           return;
         },
         child: Builder(
@@ -77,19 +90,23 @@ Future<void> OpenBottomNoBack(
 
 /// Abre un diálogo estándar usando el [widget] que le pases.
 ///
-/// [widget] → contenido del diálogo.
-/// [onBack] → callback al cerrarse el diálogo.
-Future<void> OpenDialog(
+/// Uso:
+/// ```dart
+/// openDialog(
+///   context,
+///   MiDialogCustom(),
+/// );
+/// ```
+Future<void> openDialog(
+    BuildContext context,
     Widget widget, {
       Function()? onBack,
     }) async {
-  final context = NavigationService.navigatorKey.currentContext!;
-
   await showDialog(
     context: context,
     barrierDismissible: true,
     barrierColor: Colors.black.withValues(alpha: 0.2),
-    builder: (BuildContext context) {
+    builder: (BuildContext ctx) {
       return widget;
     },
   ).then((value) {
@@ -101,22 +118,27 @@ Future<void> OpenDialog(
 
 /// Muestra un Snackbar Pizzacorn™ con ícono automático.
 ///
+/// Uso:
+/// ```dart
+/// openSnackbar(
+///   context,
+///   text: 'Guardado correctamente',
+/// );
+/// ```
+///
 /// [text] → mensaje a mostrar.
 /// [color] → color de fondo del snackbar. Si es null, se usa [ColorScheme.error].
-void OpenSnackbar({
-  String text = "",
-  Color? color,
-}) {
-  final context = NavigationService.navigatorKey.currentContext;
-  if (context == null) return;
-
+void openSnackbar(
+    BuildContext context, {
+      String text = "",
+      Color? color,
+    }) {
   final scheme = Theme.of(context).colorScheme;
 
   // Si no se pasa color, usamos por defecto el color de error del theme
   final Color effectiveColor = color ?? scheme.error;
 
   // Elegimos un icono base según el tipo de color.
-  // Si quieres algo más fino, se puede evolucionar a un enum (error/info/done).
   IconData iconData = Icons.done;
 
   if (effectiveColor == scheme.error) {
@@ -132,7 +154,7 @@ void OpenSnackbar({
         children: [
           Icon(
             iconData,
-            color: BestOnColor(effectiveColor),
+            color: BestOnColor(effectiveColor, context),
             size: 18,
           ),
           Space(SPACE_SMALL),
@@ -140,7 +162,7 @@ void OpenSnackbar({
             child: TextBody(
               text,
               maxlines: 5,
-              color: BestOnColor(effectiveColor),
+              color: BestOnColor(effectiveColor, context),
             ),
           ),
         ],

@@ -47,6 +47,8 @@ class PizzacornThemeConfig {
   // DOUBLES /////////////////////////////////////////////////////////////////
   /// Valores dimensionales
   static double radius = 0;
+
+  /// Margin & padding
   static double marginSize = 10;
   static double paddingSize = 20;
   static double paddingSmallSize = 10;
@@ -54,7 +56,6 @@ class PizzacornThemeConfig {
   /// Textfields
   static double borderSize = 1;
   static double borderSizeFocus = 1;
-
 }
 
 /// Getters públicos con tus nombres de siempre ///////////////////////////////
@@ -63,23 +64,28 @@ class PizzacornThemeConfig {
 
 // COLORES
 Color get COLOR_BACKGROUND => PizzacornThemeConfig.background;
-Color get COLOR_BACKGROUND_SECONDARY => PizzacornThemeConfig.backgroundSecondary;
-Color get COLOR_BACKGROUND_TERCIARY => PizzacornThemeConfig.backgroundTerciary;
+Color get COLOR_BACKGROUND_SECONDARY =>
+    PizzacornThemeConfig.backgroundSecondary;
+Color get COLOR_BACKGROUND_TERCIARY =>
+    PizzacornThemeConfig.backgroundTerciary;
 
 Color get COLOR_ACCENT => PizzacornThemeConfig.accent;
 Color get COLOR_ACCENT_PRESSED => PizzacornThemeConfig.accentPressed;
 Color get COLOR_ACCENT_HOVER => PizzacornThemeConfig.accentHover;
 
 Color get COLOR_ACCENT_SECONDARY => PizzacornThemeConfig.accentSecondary;
-Color get COLOR_ACCENT_SECONDARY_PRESSED => PizzacornThemeConfig.accentSecondaryPressed;
-Color get COLOR_ACCENT_SECONDARY_HOVER => PizzacornThemeConfig.accentSecondaryHover;
+Color get COLOR_ACCENT_SECONDARY_PRESSED =>
+    PizzacornThemeConfig.accentSecondaryPressed;
+Color get COLOR_ACCENT_SECONDARY_HOVER =>
+    PizzacornThemeConfig.accentSecondaryHover;
 
 Color get COLOR_TEXT => PizzacornThemeConfig.text;
 Color get COLOR_SUBTEXT => PizzacornThemeConfig.subtext;
 Color get COLOR_TEXT_BUTTONS => PizzacornThemeConfig.textButtons;
 
 Color get COLOR_TEXT_BLOCKED => PizzacornThemeConfig.textBlocked;
-Color get COLOR_BACKGROUND_BLOCKED => PizzacornThemeConfig.backgroundBlocked;
+Color get COLOR_BACKGROUND_BLOCKED =>
+    PizzacornThemeConfig.backgroundBlocked;
 Color get COLOR_ACCENT_BLOCKED => PizzacornThemeConfig.accentBlocked;
 
 Color get COLOR_BORDER => PizzacornThemeConfig.border;
@@ -95,13 +101,39 @@ Color get COLOR_INFO => PizzacornThemeConfig.info;
 
 Color get COLOR_DIVIDER => PizzacornThemeConfig.divider;
 
-// DOUBLES
+// DOUBLES (ya existentes)
 double get RADIUS => PizzacornThemeConfig.radius;
 double get BORDER_SIZE => PizzacornThemeConfig.borderSize;
 double get BORDER_SIZE_FOCUS => PizzacornThemeConfig.borderSizeFocus;
 double get MARGIN_SIZE => PizzacornThemeConfig.marginSize;
 double get PADDING_SIZE => PizzacornThemeConfig.paddingSize;
 double get PADDING_SMALL_SIZE => PizzacornThemeConfig.paddingSmallSize;
+
+/// NUEVOS TOKENS DE PADDING //////////////////////////////////////////////////
+/// Estos sustituyen a tus antiguos const:
+///
+/// const double DOUBLE_PADDING_SMALL = 10;
+/// const double DOUBLE_PADDING = 20;
+///
+/// const EdgeInsets PADDING = EdgeInsets.only(left: DOUBLE_PADDING, right: DOUBLE_PADDING);
+/// const EdgeInsets PADDING_SMALL = EdgeInsets.only(left: DOUBLE_PADDING_SMALL, right: DOUBLE_PADDING_SMALL);
+/// const EdgeInsets PADDING_ALL = EdgeInsets.all(DOUBLE_PADDING);
+/// const EdgeInsets PADDING_ALL_SMALL = EdgeInsets.all(DOUBLE_PADDING_SMALL);
+
+double get DOUBLE_PADDING => PADDING_SIZE;
+double get DOUBLE_PADDING_SMALL => PADDING_SMALL_SIZE;
+
+EdgeInsets get PADDING =>
+    EdgeInsets.only(left: DOUBLE_PADDING, right: DOUBLE_PADDING);
+
+EdgeInsets get PADDING_SMALL => EdgeInsets.only(
+  left: DOUBLE_PADDING_SMALL,
+  right: DOUBLE_PADDING_SMALL,
+);
+
+EdgeInsets get PADDING_ALL => EdgeInsets.all(DOUBLE_PADDING);
+
+EdgeInsets get PADDING_ALL_SMALL => EdgeInsets.all(DOUBLE_PADDING_SMALL);
 
 /// Función para configurar los colores/tokens al inicio de la app.
 ///
@@ -126,7 +158,6 @@ void ConfigurePizzacornColors({
   Color? text,
   Color? subtext,
   Color? textButtons,
-
   Color? textBlocked,
   Color? backgroundBlocked,
   Color? accentBlocked,
@@ -151,7 +182,6 @@ void ConfigurePizzacornColors({
   double? marginSize,
   double? paddingSize,
   double? paddingSmallSize,
-
 }) {
   // Background
   if (background != null) {
@@ -194,7 +224,6 @@ void ConfigurePizzacornColors({
   if (textButtons != null) {
     PizzacornThemeConfig.textButtons = textButtons;
   }
-
   if (textBlocked != null) {
     PizzacornThemeConfig.textBlocked = textBlocked;
   }

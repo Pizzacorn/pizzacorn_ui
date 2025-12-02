@@ -1,31 +1,31 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import '../navigation/navigation_helpers.dart';
 
-
-Color BestOnColor(Color bg) {
-
-  final context = NavigationService.navigatorKey.currentContext;
-
-  // Si por lo que sea no tenemos contexto, usamos negro/blanco clásico.
-  if (context == null) {
-    final double contrastWithBlack = ContrastRatio(bg, Colors.black);
-    final double contrastWithWhite = ContrastRatio(bg, Colors.white);
-    return (contrastWithWhite >= contrastWithBlack) ? Colors.white : Colors.black;
-  }
-
+/// Devuelve el color de texto del theme que mejor contrasta sobre [bg].
+///
+/// Usa:
+/// - [ColorScheme.onSurface] como candidato oscuro
+/// - [ColorScheme.onPrimary] como candidato claro
+///
+/// Uso:
+/// ```dart
+/// final textColor = BestOnColor(miColorDeFondo, context);
+/// ```
+Color BestOnColor(Color bg, BuildContext context) {
   final scheme = Theme.of(context).colorScheme;
 
-  // Colores candidatos sacados del theme:
-  // - uno "oscuro" (texto habitual)
-  // - uno "claro" (suele ser el onPrimary, normalmente blanco)
+  // Candidatos:
+  // - Uno "oscuro" (típico color de texto)
+  // - Uno "claro" (suele ser blanco o similar)
   final Color darkCandidate = scheme.onSurface;
   final Color lightCandidate = scheme.onPrimary;
 
   final double contrastWithDark = ContrastRatio(bg, darkCandidate);
   final double contrastWithLight = ContrastRatio(bg, lightCandidate);
 
-  return (contrastWithLight >= contrastWithDark) ? lightCandidate : darkCandidate;
+  return (contrastWithLight >= contrastWithDark)
+      ? lightCandidate
+      : darkCandidate;
 }
 
 /// Contraste WCAG 2.1: (L1 + 0.05) / (L2 + 0.05)

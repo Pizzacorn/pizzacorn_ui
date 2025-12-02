@@ -1,7 +1,7 @@
 // lib/src/theme/theme.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'color_config.dart';
+import 'config.dart';
 import '../layout/space.dart';
 import '../text/textstyles.dart';
 
