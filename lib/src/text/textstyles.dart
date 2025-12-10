@@ -294,7 +294,7 @@ Widget TextBig(
       int maxlines = MAXLINES,
       TextOverflow textOverflow = TextOverflow.ellipsis,
       double espacioLetras = 0,
-      bool isUppercase = true,
+      bool isUppercase = false,
     }) {
   final Color effectiveColor = color ?? COLOR_TEXT;
 
@@ -322,7 +322,7 @@ Widget TextTitle(
       int maxlines = MAXLINES,
       TextOverflow textOverflow = TextOverflow.ellipsis,
       double espacioLetras = 0,
-      bool isUppercase = true,
+      bool isUppercase = false,
       double height = 1.2,
     }) {
   final Color effectiveColor = color ?? COLOR_TEXT;
@@ -351,7 +351,7 @@ Widget TextSubtitle(
       int maxlines = MAXLINES,
       TextOverflow textOverflow = TextOverflow.ellipsis,
       double espacioLetras = 0,
-      bool isUppercase = true,
+      bool isUppercase = false,
       double height = 1.2,
     }) {
   final Color effectiveColor = color ?? COLOR_TEXT;
