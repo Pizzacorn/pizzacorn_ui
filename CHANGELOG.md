@@ -1,4 +1,2 @@
-## 0.0.6
-- Añadido TextFieldCustom con soporte completo de tema Pizzacorn.
-- Mejorado sistema de colores configurables.
-- Arreglados pequeños warnings de análisis.
+## 0.0.7 - 2025-12-18
+- Added: PopupMenuOptions widget to render a reusable popup menu with optional icons, enabled states, danger items, dividers and minWidth.

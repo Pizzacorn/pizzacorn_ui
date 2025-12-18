@@ -4,6 +4,7 @@ export 'src/appbars/appbars.dart';
 // buttons
 export 'src/buttons/buttons.dart';
 export 'src/buttons/styles.dart';
+export 'src/buttons/pop_up.dart';
 
 // cropper
 export 'src/cropper/crop_page.dart';
