@@ -28,6 +28,10 @@ export 'src/images/images.dart';
 // layout
 export 'src/layout/space.dart';
 
+// pickers
+export 'src/pickers/icon_picker.dart';
+
+
 // navigation
 export 'src/navigation/navigation_helpers.dart';
 export 'src/navigation/overlays_helpers.dart';
