@@ -79,5 +79,5 @@ Para mantener la consistencia en el ecosistema Pizzacorn:
 
 ## 👨‍💻 Desarrollado por
 **Señor Sputo** & **Don Sputknif** (Pizzacorn Team).
-
+-
 "Porque una app sin estilo es como una pizza sin queso." 🍕✨
