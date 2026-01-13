@@ -1,21 +1,20 @@
-##0.0.9
+## 0.0.10
 
 ### 🚀 NEW FEATURES
-- **Firebase Engine**: Se añade `FirebasePagination` para gestionar cargas de datos asíncronas desde Firestore de forma genérica `<T>`.
-- **Infinite Scroll**: Incorporación de `InfiniteListView`, un widget inteligente que detecta el final del scroll y dispara cargas automáticas.
-- **Advanced Dropdown**: Nuevo `DropdownCustom<T>` basado en PopupMenu para una selección de elementos más fluida y elegante.
-- **Icon Actions**: Adición de `ButtonIcon`, un botón ultra-configurable que soporta tanto Material Icons como SVGs (con y sin color dinámico).
+- **Web Responsive Adapters**: Incorporación de `WebPopUpAdapter` para la gestión de diálogos estandarizados en versiones de escritorio y `WebColumnRowAdapter` para layouts dinámicos basados en el ancho de pantalla.
+- **Interactive UI**: Añadido `HoverWidget` para proporcionar feedback visual (elevación y cambio de color) al interactuar con el puntero en aplicaciones Web/Desktop.
+- **Contextual Menus**: Implementación de `BottomSheetPopUps`, la barra de acciones inferior estandarizada para flujos de guardado y eliminación.
+
+### 🎨 THEME & DECORATIONS
+- **Dynamic Decorations**: Adición de `BoxDecorationCustom` y `BorderRadiusCustomAll` que consumen directamente los tokens de `config.dart` (RADIUS, COLOR_BACKGROUND, etc.).
+- **Enhanced Configuration**: Se añade el token `WEBSIZE` (1100px por defecto) al `PizzacornThemeConfig` para centralizar el punto de ruptura del diseño responsive.
+- **Shadow Tokens**: Integración de `COLOR_SHADOW` en las decoraciones globales para una profundidad consistente.
 
 ### 🛠️ ARCHITECTURAL CHANGES
-- **Firebase Integration**: Se añaden las dependencias `cloud_firestore` y `firebase_core` al core de la librería.
-- **Pubspec Organization**: Limpieza y categorización del archivo `pubspec.yaml` por módulos (Core, UI, Utils, Assets).
-- **Global Exports**: Centralización de todas las nuevas funcionalidades en `pizzacorn_ui.dart` para acceso global.
-
-### 🎨 THEME & UI CONSISTENCY
-- **Reactive Colors**: Todos los nuevos widgets eliminan el uso de `const` para reaccionar inmediatamente a los cambios en `PizzacornThemeConfig`.
-- **Token Alignment**: Implementación de `PADDING_MEDIUM`, `RADIUS_SMALL` y `RADIUS_MEDIUM` en los nuevos componentes para mantener la armonía visual.
+- **Pubspec Optimization**: Corrección de restricciones de versiones (carets `^`) en todas las dependencias para garantizar la compatibilidad con otros paquetes del ecosistema Flutter.
+- **Reactive Tokens**: Refactorización de paddings y márgenes para usar getters reactivos en lugar de constantes, permitiendo cambios de tema en caliente sin reiniciar la app.
 
 ### 🧹 CODE QUALITY (Don Sputknif Rules)
-- **Zero Underscores**: Eliminación de guiones bajos en todos los States y métodos internos.
-- **Loop Optimization**: Sustitución de `.map().toList()` por bucles `for` con índice para mejorar el rendimiento.
-- **Positional Texts**: Los widgets de texto ahora cumplen estrictamente con el parámetro posicional.
+- **Zero Underscores**: Limpieza total de guiones bajos en los estados internos de los nuevos widgets (`HoverWidgetState`, `DropdownCustomState`, etc.).
+- **Positional Consistency**: Todos los nuevos widgets de texto y espaciado cumplen estrictamente con el uso de parámetros posicionales.
+- **No-Const Policy**: Eliminación de `const` en los componentes de la librería para asegurar la reactividad completa ante cambios en `ConfigurePizzacornColors`.

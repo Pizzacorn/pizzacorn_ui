@@ -48,6 +48,9 @@ class PizzacornThemeConfig {
   /// Valores dimensionales
   static double radius = 6;
 
+  /// Punto de ruptura para el diseño Web/Escritorio
+  static double webSize = 1100;
+
   /// Margin & padding
   static double marginSize = 10;
   static double paddingSize = 20;
@@ -103,6 +106,7 @@ Color get COLOR_DIVIDER => PizzacornThemeConfig.divider;
 
 // DOUBLES (ya existentes)
 double get RADIUS => PizzacornThemeConfig.radius;
+double get WEBSIZE => PizzacornThemeConfig.webSize;
 double get BORDER_SIZE => PizzacornThemeConfig.borderSize;
 double get BORDER_SIZE_FOCUS => PizzacornThemeConfig.borderSizeFocus;
 double get MARGIN_SIZE => PizzacornThemeConfig.marginSize;
@@ -177,6 +181,7 @@ void ConfigurePizzacornColors({
 
   // Doubles
   double? radius,
+  double? webSize,
   double? borderSize,
   double? borderSizeFocus,
   double? marginSize,
@@ -268,6 +273,9 @@ void ConfigurePizzacornColors({
   // Doubles
   if (radius != null) {
     PizzacornThemeConfig.radius = radius;
+  }
+  if (webSize != null) {
+    PizzacornThemeConfig.webSize = webSize;
   }
   if (borderSize != null) {
     PizzacornThemeConfig.borderSize = borderSize;
