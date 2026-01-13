@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 
 class FirebasePagination {
   /// Función MAESTRA GENÉRICA para Firestore
