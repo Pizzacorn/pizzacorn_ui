@@ -48,7 +48,7 @@ class ButtonCustom extends StatelessWidget {
     this.onPressed,
     this.onLongPressed,
     this.width = double.infinity,
-    this.height = 60,
+    this.height = 40,
     this.mainAxisAlignment = MainAxisAlignment.spaceBetween,
     this.border = false,
     this.borderColor,
@@ -80,10 +80,8 @@ class ButtonCustom extends StatelessWidget {
     final double effectiveBorderRadius = borderRadius ?? RADIUS;
     final Color effectiveColor = color ?? COLOR_ACCENT;
     final Color effectiveColorSplash = colorSplash ?? COLOR_ACCENT_PRESSED;
-    final Color effectiveGradientPrimary =
-        colorGradientPrimary ?? COLOR_ACCENT;
-    final Color effectiveGradientSecondary =
-        colorGradientSecondary ?? COLOR_ACCENT_SECONDARY;
+    final Color effectiveGradientPrimary = colorGradientPrimary ?? COLOR_ACCENT;
+    final Color effectiveGradientSecondary = colorGradientSecondary ?? COLOR_ACCENT_SECONDARY;
 
     return SizedBox(
       height: richTexts.isNotEmpty || onlyText ? 35 : height,

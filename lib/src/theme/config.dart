@@ -4,22 +4,22 @@ class PizzacornThemeConfig {
   // COLORES  /////////////////////////////////////////////////////////////////
 
   /// Background
-  static Color background = const Color(0xFFF5F5F5);
-  static Color backgroundSecondary = const Color(0xFFFFFFFF);
-  static Color backgroundTerciary = const Color(0xFFE8E8E8);
+  static Color background = const Color(0xFFFFFFFF);
+  static Color backgroundSecondary = const Color(0xFFF4F4F6);
+  static Color backgroundTerciary = const Color(0xFFE6E7EB);
 
   /// Accent
-  static Color accent = const Color(0xFF00E89C);
-  static Color accentPressed = const Color(0x9300E89C);
-  static Color accentHover = const Color(0xF200E89C);
+  static Color accent = const Color(0xFF5256D6);
+  static Color accentPressed = const Color(0xFF2A3A5E);
+  static Color accentHover = const Color(0xFF2A3A5E);
 
-  static Color accentSecondary = const Color(0xFF1B1E2A);
-  static Color accentSecondaryPressed = const Color(0x9D1B1E2A);
+  static Color accentSecondary = const Color(0xFF232837);
+  static Color accentSecondaryPressed = const Color(0xFF3B4050);
   static Color accentSecondaryHover = const Color(0xD31B1E2A);
 
   /// Text
-  static Color text = const Color(0xFF1B1E2A);
-  static Color subtext = const Color(0xFF777581);
+  static Color text = const Color(0xFF151727);
+  static Color subtext = const Color(0xFF8E929E);
   static Color textButtons = const Color(0xFFFFFFFF);
 
   /// Blocked
@@ -28,7 +28,7 @@ class PizzacornThemeConfig {
   static Color backgroundBlocked = const Color(0x4DF1F1F1);
 
   /// Border
-  static Color border = const Color(0xFFD8D8D8);
+  static Color border = const Color(0xFFD2D4DB);
   static Color borderFocus = accent;
   static Color borderNoFocus = accent;
 
@@ -36,9 +36,9 @@ class PizzacornThemeConfig {
   static Color shadow = accent;
 
   /// Alerts
-  static Color error = const Color.fromRGBO(243, 26, 26, 1.0);
+  static Color error = const Color(0xFFDD6A56);
   static Color alert = const Color.fromRGBO(253, 221, 59, 1.0);
-  static Color done = const Color.fromRGBO(3, 218, 198, 1);
+  static Color done = const Color(0xFF53B471);
   static Color info = Colors.blue;
 
   /// Utils
@@ -46,7 +46,7 @@ class PizzacornThemeConfig {
 
   // DOUBLES /////////////////////////////////////////////////////////////////
   /// Valores dimensionales
-  static double radius = 0;
+  static double radius = 6;
 
   /// Margin & padding
   static double marginSize = 10;

@@ -24,8 +24,8 @@ import '../theme/config.dart';
 ///   ),
 /// );
 class PizzacornTextConfig {
-  static String primaryFontFamily = 'League Gothic';
-  static String secondaryFontFamily = 'Raleway';
+  static String primaryFontFamily = 'Montserrat';
+  static String secondaryFontFamily = 'Montserrat';
 
   static PizzacornTextSizes sizes = const PizzacornTextSizes();
   static PizzacornTextWeights weights = const PizzacornTextWeights();
@@ -57,9 +57,9 @@ class PizzacornTextSizes {
   final double small;
 
   const PizzacornTextSizes({
-    this.big = 38,
-    this.title = 24,
-    this.subtitle = 20,
+    this.big = 26,
+    this.title = 18,
+    this.subtitle = 16,
     this.body = 12,
     this.button = 12,
     this.caption = 10,
@@ -72,7 +72,7 @@ class PizzacornTextWeights {
   final FontWeight bold;
 
   const PizzacornTextWeights({
-    this.normal = FontWeight.w500,
+    this.normal = FontWeight.w400,
     this.bold = FontWeight.w600,
   });
 }

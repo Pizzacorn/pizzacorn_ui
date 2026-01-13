@@ -3,6 +3,7 @@ export 'src/appbars/appbars.dart';
 
 // buttons
 export 'src/buttons/buttons.dart';
+export 'src/buttons/button_icon.dart';
 export 'src/buttons/styles.dart';
 export 'src/buttons/pop_up.dart';
 
@@ -31,6 +32,14 @@ export 'src/layout/space.dart';
 // pickers
 export 'src/pickers/icon_picker.dart';
 
+//dropdown
+export 'src/dropdown/dropdown.dart';
+
+//list
+export 'src/list/inifinite_scroll.dart';
+
+//services
+export 'src/services/firebase_pagination.dart';
 
 // navigation
 export 'src/navigation/navigation_helpers.dart';
