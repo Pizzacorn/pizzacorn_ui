@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 import '../icons/svg.dart';
 
-
-
 /// Botón custom Pizzacorn
 class ButtonCustom extends StatelessWidget {
   final void Function()? onPressed;
@@ -43,12 +41,12 @@ class ButtonCustom extends StatelessWidget {
   final Color? colorGradientPrimary;
   final Color? colorGradientSecondary;
 
-  const ButtonCustom({
+  ButtonCustom({
     super.key,
     this.onPressed,
     this.onLongPressed,
     this.width = double.infinity,
-    this.height = 40,
+    this.height, // Lo dejamos nulo aquí para resolverlo en el build
     this.mainAxisAlignment = MainAxisAlignment.spaceBetween,
     this.border = false,
     this.borderColor,
@@ -74,7 +72,7 @@ class ButtonCustom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Defaults basados en el sistema Pizzacorn (configurables en main())
+    // RESOLUCIÓN DE TOKENS REACTIVOS (REGLA DE ORO: Sin const)
     final Color effectiveTextColor = textColor ?? COLOR_TEXT;
     final Color effectiveBorderColor = borderColor ?? COLOR_BORDER;
     final double effectiveBorderRadius = borderRadius ?? RADIUS;
@@ -83,8 +81,12 @@ class ButtonCustom extends StatelessWidget {
     final Color effectiveGradientPrimary = colorGradientPrimary ?? COLOR_ACCENT;
     final Color effectiveGradientSecondary = colorGradientSecondary ?? COLOR_ACCENT_SECONDARY;
 
+    // Altura reactiva basada en config.dart
+    final double finalHeight = height ?? BUTTON_HEIGHT;
+
     return SizedBox(
-      height: richTexts.isNotEmpty || onlyText ? 35 : height,
+      // Si tiene richText u onlyText, mantenemos un tamaño compacto, si no, el token
+      height: richTexts.isNotEmpty || onlyText ? 35 : finalHeight,
       width: width,
       child: Material(
         type: MaterialType.transparency,
@@ -103,19 +105,16 @@ class ButtonCustom extends StatelessWidget {
         ),
         child: InkWell(
           splashColor: richTexts.isNotEmpty || onlyText || border
-              ? effectiveColorSplash.withValues(alpha: 0.02)
+              ? effectiveColorSplash.withOpacity(0.02)
               : effectiveColorSplash,
           highlightColor: richTexts.isNotEmpty || onlyText || border
-              ? effectiveColorSplash.withValues(alpha: 0.02)
-              : effectiveColorSplash.withValues(alpha: 0.5),
+              ? effectiveColorSplash.withOpacity(0.02)
+              : effectiveColorSplash.withOpacity(0.5),
           onTap: onPressed,
           onLongPress: onLongPressed,
           child: Ink(
             decoration: BoxDecoration(
-              gradient: !hasGradient ||
-                  richTexts.isNotEmpty ||
-                  onlyText ||
-                  border
+              gradient: !hasGradient || richTexts.isNotEmpty || onlyText || border
                   ? null
                   : LinearGradient(
                 colors: [
@@ -125,10 +124,7 @@ class ButtonCustom extends StatelessWidget {
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
               ),
-              color: hasGradient ||
-                  richTexts.isNotEmpty ||
-                  onlyText ||
-                  border
+              color: hasGradient || richTexts.isNotEmpty || onlyText || border
                   ? null
                   : effectiveColor,
             ),
@@ -138,58 +134,48 @@ class ButtonCustom extends StatelessWidget {
                 mainAxisAlignment: mainAxisAlignment,
                 children: [
                   // ICONO INICIAL
-                  iconBegin.isNotEmpty
-                      ? iconNoColor
-                      ? SvgCustomNoColor(
-                    icon: iconBegin,
-                    size: iconSize,
-                  )
-                      : SvgCustom(
-                    icon: iconBegin,
-                    size: iconSize,
-                    color: iconColor,
-                  )
-                      : iconFinal.isNotEmpty && text.isNotEmpty
-                      ? Space(iconSize)
-                      : const SizedBox.shrink(),
+                  if (iconBegin.isNotEmpty)
+                    iconNoColor
+                        ? SvgCustomNoColor(
+                      icon: iconBegin,
+                      size: iconSize,
+                    )
+                        : SvgCustom(
+                      icon: iconBegin,
+                      size: iconSize,
+                      color: iconColor,
+                    )
+                  else if (iconFinal.isNotEmpty && text.isNotEmpty)
+                    Space(iconSize),
 
                   // TEXTO O RICHTEXT
-                  text.isNotEmpty
-                      ? TextButtonCustom(
-                    text,
-                    color: effectiveTextColor,
-                    fontSize: customSizeText != 0
-                        ? customSizeText
-                        : TEXT_BUTTON_SIZE,
-                  )
-                      : richTexts.isNotEmpty
-                      ? RichText(
-                    text: TextSpan(
-                      children: richTexts
-                          .map(
-                            (textData) =>
-                            generateRichText(textData),
-                      )
-                          .toList(),
+                  if (text.isNotEmpty)
+                    TextButtonCustom(
+                      text,
+                      color: effectiveTextColor,
+                      fontSize: customSizeText != 0 ? customSizeText : TEXT_BUTTON_SIZE,
+                    )
+                  else if (richTexts.isNotEmpty)
+                    RichText(
+                      text: TextSpan(
+                        children: buildRichTextChildren(),
+                      ),
                     ),
-                  )
-                      : const SizedBox.shrink(),
 
                   // ICONO FINAL
-                  iconFinal.isNotEmpty
-                      ? iconNoColor
-                      ? SvgCustomNoColor(
-                    icon: iconFinal,
-                    size: iconSize,
-                  )
-                      : SvgCustom(
-                    icon: iconFinal,
-                    size: iconSize,
-                    color: iconColor,
-                  )
-                      : iconBegin.isNotEmpty && text.isNotEmpty
-                      ? Space(iconSize)
-                      : const SizedBox.shrink(),
+                  if (iconFinal.isNotEmpty)
+                    iconNoColor
+                        ? SvgCustomNoColor(
+                      icon: iconFinal,
+                      size: iconSize,
+                    )
+                        : SvgCustom(
+                      icon: iconFinal,
+                      size: iconSize,
+                      color: iconColor,
+                    )
+                  else if (iconBegin.isNotEmpty && text.isNotEmpty)
+                    Space(iconSize),
                 ],
               ),
             ),
@@ -199,24 +185,29 @@ class ButtonCustom extends StatelessWidget {
     );
   }
 
-  TextSpan generateRichText(Map<String, String> textData) {
-    final String key = textData.keys.first;
-    final String value = textData.values.first;
+  /// REGLA: Bucle con índice para construir el RichText
+  List<TextSpan> buildRichTextChildren() {
+    final List<TextSpan> children = <TextSpan>[];
+    for (int i = 0; i < richTexts.length; i++) {
+      final Map<String, String> textData = richTexts[i];
+      final String key = textData.keys.first;
+      final String value = textData.values.first;
 
-    switch (key) {
-      case "destacado":
-        return TextSpan(
+      if (key == "destacado") {
+        children.add(TextSpan(
           text: value,
           style: styleBody(
             fontWeight: FontWeight.bold,
             color: COLOR_ACCENT,
           ),
-        );
-      default:
-        return TextSpan(
+        ));
+      } else {
+        children.add(TextSpan(
           text: value,
-          style: styleBody(), // Estilo por defecto
-        );
+          style: styleBody(),
+        ));
+      }
     }
+    return children;
   }
 }

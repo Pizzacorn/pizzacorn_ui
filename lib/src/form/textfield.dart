@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../pizzacorn_ui.dart';
 
-
 class TextFieldCustom extends StatefulWidget {
   const TextFieldCustom({
-    Key? key,
+    super.key, // Usando el super.key moderno
     this.controller,
     this.onChanged,
     this.onSuffixPressed,
@@ -18,24 +17,17 @@ class TextFieldCustom extends StatefulWidget {
     this.labelText = "",
     this.hintText = "",
     this.shadow = false,
-    this.height = 60,
+    this.height, // ⬅ Ahora es nullable para usar el token global
     this.onTap,
     this.readOnly = false,
     this.width = double.infinity,
 
-    // ⬇ Antes llevaban default con TEXT_BODY_SIZE (no-const)
     this.hintSize,
     this.textSize,
 
     this.filled = true,
-
-    // ⬇ Antes: this.radius = RADIUS
     this.radius,
-
-    // ⬇ Antes: this.colorFill = COLOR_BACKGROUND_SECONDARY
     this.colorFill,
-
-    // ⬇ Antes: this.colorHint = COLOR_SUBTEXT
     this.colorHint,
 
     this.minLines = 1,
@@ -56,7 +48,7 @@ class TextFieldCustom extends StatefulWidget {
     this.inputFormatters,
     this.textStyleCustom,
     this.autofocus = false,
-  }) : super(key: key);
+  });
 
   // CONTROL
   final TextEditingController? controller;
@@ -66,11 +58,11 @@ class TextFieldCustom extends StatefulWidget {
   final Function()? onTap;
 
   // TAMAÑOS / LAYOUT
-  final double height;
+  final double? height; // ⬅ Cambiado a nullable
   final double width;
-  final double? radius;       // ⬅ ahora nullable
-  final double? textSize;     // ⬅ ahora nullable
-  final double? hintSize;     // ⬅ ahora nullable
+  final double? radius;
+  final double? textSize;
+  final double? hintSize;
   final double elevation;
   final bool shadow;
   final bool filled;
@@ -90,8 +82,8 @@ class TextFieldCustom extends StatefulWidget {
   final String prefixText;
   final String sufixText;
   final TextStyle? textStyleCustom;
-  final Color? colorFill;     // ⬅ ahora nullable
-  final Color? colorHint;     // ⬅ ahora nullable
+  final Color? colorFill;
+  final Color? colorHint;
 
   // TECLADO
   final TextInputType textInputType;
@@ -115,36 +107,34 @@ class TextFieldCustom extends StatefulWidget {
   final FormFieldValidator<String>? validator;
 
   @override
-  State<TextFieldCustom> createState() => _TextFieldCustomState();
+  State<TextFieldCustom> createState() => TextFieldCustomState();
 }
 
-class _TextFieldCustomState extends State<TextFieldCustom> {
-  late FocusNode _focusNode;
-  bool _obscureVisible = false;
+class TextFieldCustomState extends State<TextFieldCustom> {
+  late FocusNode focusNode; // ⬅ Sin guion bajo
+  bool obscureVisible = false; // ⬅ Sin guion bajo
 
   @override
   void initState() {
     super.initState();
-    _focusNode = widget.focusNode ?? FocusNode();
-    _focusNode.addListener(_onFocusChange);
+    focusNode = widget.focusNode ?? FocusNode();
+    focusNode.addListener(onFocusChange);
   }
 
-  void _onFocusChange() {
-    setState(() {
-      // reconstruye para que aparezca/desaparezca el icono de ocultar teclado
-    });
+  void onFocusChange() {
+    setState(() {});
   }
 
   @override
   void dispose() {
-    _focusNode.removeListener(_onFocusChange);
+    focusNode.removeListener(onFocusChange);
     if (widget.focusNode == null) {
-      _focusNode.dispose();
+      focusNode.dispose();
     }
     super.dispose();
   }
 
-  bool get _isNumericKeyboard {
+  bool isNumericKeyboard() { // ⬅ Sin guion bajo
     final type = widget.textInputType;
     return type == TextInputType.number ||
         type == TextInputType.phone ||
@@ -154,25 +144,29 @@ class _TextFieldCustomState extends State<TextFieldCustom> {
 
   @override
   Widget build(BuildContext context) {
-    // 🔥 Aquí resolvemos los "defaults dinámicos" usando tu config
+    // 🔥 RESOLUCIÓN DE DEFAULTS REACTIVOS (Reglas de Oro: Sin const)
     final double effectiveTextSize = widget.textSize ?? TEXT_BODY_SIZE;
     final double effectiveHintSize = widget.hintSize ?? TEXT_BODY_SIZE;
     final double effectiveRadius   = widget.radius ?? RADIUS;
     final Color effectiveFill      = widget.colorFill ?? COLOR_BACKGROUND_SECONDARY;
     final Color effectiveHintColor = widget.colorHint ?? COLOR_SUBTEXT;
 
+    // 📏 ALTURA REACTIVA BASADA EN CONFIG
+    final double finalHeight = widget.height ?? FIELD_HEIGHT;
+
     return Container(
       width: widget.width,
+      height: widget.maxLines > 1 ? null : finalHeight, // Si es multilínea, dejamos que crezca
       decoration: BoxDecoration(
         boxShadow: widget.shadow ? [BoxShadowCustom()] : null,
       ),
       child: TextFormField(
-        focusNode: _focusNode,
+        focusNode: focusNode,
         onTap: widget.onTap,
         readOnly: widget.readOnly,
         controller: widget.controller,
         keyboardType: widget.textInputType,
-        obscureText: widget.password ? !_obscureVisible : false,
+        obscureText: widget.password ? !obscureVisible : false,
         textCapitalization: widget.textCapitalization,
         textAlignVertical: widget.textAlignVertical,
         style: widget.textStyleCustom ??
@@ -232,20 +226,18 @@ class _TextFieldCustomState extends State<TextFieldCustom> {
           )
               : null,
 
-          contentPadding:
-          widget.noPadding ? EdgeInsets.zero : null,
+          contentPadding: widget.noPadding
+              ? EdgeInsets.zero
+              : EdgeInsets.symmetric(horizontal: 15, vertical: (finalHeight - effectiveTextSize) / 2),
 
           // SUFFIX
-          suffixText:
-          widget.sufixText.isNotEmpty ? widget.sufixText : null,
-          suffixIcon: _buildSuffixIcon(context),
+          suffixText: widget.sufixText.isNotEmpty ? widget.sufixText : null,
+          suffixIcon: buildSuffixIcon(context),
 
           // PREFIX
-          prefixText:
-          widget.prefixText.isNotEmpty ? widget.prefixText : null,
+          prefixText: widget.prefixText.isNotEmpty ? widget.prefixText : null,
           prefixStyle: styleBody(color: COLOR_ACCENT),
-          prefixIconConstraints:
-          const BoxConstraints(minWidth: 0, minHeight: 0),
+          prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
           prefixIcon: widget.prefixIcon.isNotEmpty
               ? TextButton(
             style: styleTransparent(),
@@ -255,8 +247,7 @@ class _TextFieldCustomState extends State<TextFieldCustom> {
               }
             },
             child: Padding(
-              padding:
-              const EdgeInsets.only(left: 15, right: 15),
+              padding: const EdgeInsets.only(left: 15, right: 15),
               child: SvgCustom(
                 icon: widget.prefixIcon,
                 size: widget.prefixIconSize,
@@ -269,17 +260,17 @@ class _TextFieldCustomState extends State<TextFieldCustom> {
     );
   }
 
-  Widget? _buildSuffixIcon(BuildContext context) {
+  Widget? buildSuffixIcon(BuildContext context) {
     // Password: icono de candado
     if (widget.password) {
       return IconButton(
         icon: Icon(
-          _obscureVisible ? Icons.lock_open_outlined : Icons.lock_outline,
+          obscureVisible ? Icons.lock_open_outlined : Icons.lock_outline,
           color: COLOR_ACCENT,
         ),
         onPressed: () {
           setState(() {
-            _obscureVisible = !_obscureVisible;
+            obscureVisible = !obscureVisible;
           });
         },
       );
@@ -305,7 +296,7 @@ class _TextFieldCustomState extends State<TextFieldCustom> {
     }
 
     // Teclado numérico: botón para ocultar si está en foco
-    if (_isNumericKeyboard && _focusNode.hasFocus) {
+    if (isNumericKeyboard() && focusNode.hasFocus) {
       return IconButton(
         icon: Icon(
           Icons.keyboard_hide_outlined,
