@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 import '../icons/svg.dart';
 
-/// Botón custom Pizzacorn
+/// Botón custom Pizzacorn - Versión Equilibrada y Centrada
 class ButtonCustom extends StatelessWidget {
   final void Function()? onPressed;
   final void Function()? onLongPressed;
@@ -46,8 +46,8 @@ class ButtonCustom extends StatelessWidget {
     this.onPressed,
     this.onLongPressed,
     this.width = double.infinity,
-    this.height, // Lo dejamos nulo aquí para resolverlo en el build
-    this.mainAxisAlignment = MainAxisAlignment.spaceBetween,
+    this.height,
+    this.mainAxisAlignment = MainAxisAlignment.center, // REGLA: Por defecto al centro
     this.border = false,
     this.borderColor,
     this.borderWidth = 1,
@@ -57,7 +57,7 @@ class ButtonCustom extends StatelessWidget {
     this.richTexts = const [],
     this.textColor,
     this.color,
-    this.padding = 0,
+    this.padding = 15, // REGLA: Padding por defecto para que no se pegue
     this.colorSplash,
     this.hasGradient = false,
     this.colorGradientPrimary,
@@ -66,13 +66,13 @@ class ButtonCustom extends StatelessWidget {
     this.iconFinal = "",
     this.iconColor = Colors.white,
     this.iconNoColor = false,
-    this.iconSize = 22,
+    this.iconSize = 18,
     this.onlyText = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    // RESOLUCIÓN DE TOKENS REACTIVOS (REGLA DE ORO: Sin const)
+    // RESOLUCIÓN DE TOKENS (Regla: Sin const para reactividad)
     final Color effectiveTextColor = textColor ?? COLOR_TEXT;
     final Color effectiveBorderColor = borderColor ?? COLOR_BORDER;
     final double effectiveBorderRadius = borderRadius ?? RADIUS;
@@ -81,11 +81,9 @@ class ButtonCustom extends StatelessWidget {
     final Color effectiveGradientPrimary = colorGradientPrimary ?? COLOR_ACCENT;
     final Color effectiveGradientSecondary = colorGradientSecondary ?? COLOR_ACCENT_SECONDARY;
 
-    // Altura reactiva basada en config.dart
     final double finalHeight = height ?? BUTTON_HEIGHT;
 
     return SizedBox(
-      // Si tiene richText u onlyText, mantenemos un tamaño compacto, si no, el token
       height: richTexts.isNotEmpty || onlyText ? 35 : finalHeight,
       width: width,
       child: Material(
@@ -104,12 +102,7 @@ class ButtonCustom extends StatelessWidget {
           borderRadius: BorderRadius.circular(effectiveBorderRadius),
         ),
         child: InkWell(
-          splashColor: richTexts.isNotEmpty || onlyText || border
-              ? effectiveColorSplash.withOpacity(0.02)
-              : effectiveColorSplash,
-          highlightColor: richTexts.isNotEmpty || onlyText || border
-              ? effectiveColorSplash.withOpacity(0.02)
-              : effectiveColorSplash.withOpacity(0.5),
+          splashColor: effectiveColorSplash,
           onTap: onPressed,
           onLongPress: onLongPressed,
           child: Ink(
@@ -124,36 +117,32 @@ class ButtonCustom extends StatelessWidget {
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
               ),
-              color: hasGradient || richTexts.isNotEmpty || onlyText || border
-                  ? null
-                  : effectiveColor,
+              color: hasGradient || richTexts.isNotEmpty || onlyText || border ? null : effectiveColor,
             ),
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: padding),
               child: Row(
                 mainAxisAlignment: mainAxisAlignment,
                 children: [
-                  // ICONO INICIAL
+                  // Lógica de Icono Inicial con equilibrado
                   if (iconBegin.isNotEmpty)
-                    iconNoColor
-                        ? SvgCustomNoColor(
-                      icon: iconBegin,
-                      size: iconSize,
+                    Padding(
+                      padding: EdgeInsets.only(right: text.isNotEmpty ? 10 : 0),
+                      child: iconNoColor
+                          ? SvgCustomNoColor(icon: iconBegin, size: iconSize)
+                          : SvgCustom(icon: iconBegin, size: iconSize, color: iconColor),
                     )
-                        : SvgCustom(
-                      icon: iconBegin,
-                      size: iconSize,
-                      color: iconColor,
-                    )
-                  else if (iconFinal.isNotEmpty && text.isNotEmpty)
-                    Space(iconSize),
+                  else if (iconFinal.isNotEmpty && text.isNotEmpty && mainAxisAlignment == MainAxisAlignment.center)
+                    SizedBox(width: iconSize + 10), // Equilibrador invisible izquierdo
 
-                  // TEXTO O RICHTEXT
+                  // TEXTO (Centrado si no hay iconos o equilibrado)
                   if (text.isNotEmpty)
-                    TextButtonCustom(
-                      text,
-                      color: effectiveTextColor,
-                      fontSize: customSizeText != 0 ? customSizeText : TEXT_BUTTON_SIZE,
+                    Flexible(
+                      child: TextButtonCustom(
+                        text,
+                        color: effectiveTextColor,
+                        fontSize: customSizeText != 0 ? customSizeText : TEXT_BUTTON_SIZE,
+                      ),
                     )
                   else if (richTexts.isNotEmpty)
                     RichText(
@@ -162,20 +151,16 @@ class ButtonCustom extends StatelessWidget {
                       ),
                     ),
 
-                  // ICONO FINAL
+                  // Lógica de Icono Final con equilibrado
                   if (iconFinal.isNotEmpty)
-                    iconNoColor
-                        ? SvgCustomNoColor(
-                      icon: iconFinal,
-                      size: iconSize,
+                    Padding(
+                      padding: EdgeInsets.only(left: text.isNotEmpty ? 10 : 0),
+                      child: iconNoColor
+                          ? SvgCustomNoColor(icon: iconFinal, size: iconSize)
+                          : SvgCustom(icon: iconFinal, size: iconSize, color: iconColor),
                     )
-                        : SvgCustom(
-                      icon: iconFinal,
-                      size: iconSize,
-                      color: iconColor,
-                    )
-                  else if (iconBegin.isNotEmpty && text.isNotEmpty)
-                    Space(iconSize),
+                  else if (iconBegin.isNotEmpty && text.isNotEmpty && mainAxisAlignment == MainAxisAlignment.center)
+                    SizedBox(width: iconSize + 10), // Equilibrador invisible derecho
                 ],
               ),
             ),
@@ -185,7 +170,6 @@ class ButtonCustom extends StatelessWidget {
     );
   }
 
-  /// REGLA: Bucle con índice para construir el RichText
   List<TextSpan> buildRichTextChildren() {
     final List<TextSpan> children = <TextSpan>[];
     for (int i = 0; i < richTexts.length; i++) {
