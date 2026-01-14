@@ -23,6 +23,7 @@ export 'src/decorations/decorations.dart';
 
 //dropdown
 export 'src/dropdown/dropdown.dart';
+export 'src/dropdown/dropdown_search.dart';
 
 // effects
 export 'src/effects/shimmer.dart';

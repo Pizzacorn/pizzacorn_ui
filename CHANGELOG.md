@@ -1,22 +1,26 @@
-## 0.0.11
+## 0.0.12
 
-### 🚀 NEW FEATURES (The Form Revolution)
-- **`ChoiceField`**: Nuevo selector de opciones en cuadrícula (Grid) totalmente personalizable para formularios rápidos.
-- **`RelationField`**: Integración nativa con Firestore para crear selectores que cargan datos de otras colecciones automáticamente.
-- **`SubtitleField`**: Separador visual de secciones con línea decorativa para organizar flujos de usuario complejos.
-- **`StringField`**: Input de texto estandarizado que incluye etiqueta y gestión de errores reactiva.
+### 🚀 NEW FEATURES (The Power Suite)
+- **`DropdownSearch`**: Incorporación de un selector avanzado con buscador reactivo integrado en un diálogo modal para gestionar listas extensas.
+- **`ChoiceField`**: Nuevo widget de selección tipo cuadrícula (Grid) agnóstico y altamente configurable.
+- **`RelationField`**: Selector dinámico conectado a Firestore para gestionar relaciones entre colecciones con carga asíncrona.
+- **`SubtitleField`**: Separador visual de secciones con línea decorativa para organizar formularios complejos.
+- **`StringField`**: Input de texto estandarizado con etiqueta integrada y gestión de errores.
 
-### 🎨 UI & THEME CONSISTENCY
-- **Standardized Heights**: Implementación de los tokens `BUTTON_HEIGHT` y `FIELD_HEIGHT` (seteo inicial a 40px) en `ButtonCustom` y `TextFieldCustom`.
-- **Global Text Color**: El color de texto por defecto en los botones ahora es `COLOR_TEXT`, mejorando la sobriedad y legibilidad.
-- **Dynamic Paddings**: Ajuste de los paddings internos de los inputs para garantizar el centrado vertical perfecto con cualquier altura.
+### 🎨 UI & THEME ENGINE
+- **Standardized Heights**: Implementación de los tokens `BUTTON_HEIGHT` y `FIELD_HEIGHT` (seteados a 40px por defecto) para consistencia total.
+- **Adaptive Design**: Nuevo token `WEBSIZE` en `PizzacornThemeConfig` para controlar el punto de ruptura del layout responsive.
+- **Global Text Color**: Actualización de `ButtonCustom` para usar `COLOR_TEXT` por defecto, mejorando la sobriedad visual.
+- **Dynamic Decorations**: Adición de `BoxDecorationCustom` y `BorderRadiusCustomAll` para unificar el estilo de los contenedores.
 
 ### 💻 WEB & ADAPTERS
-- **Responsive Logic**: Refactorización de `WebPopUpAdapter` y `WebColumnRowAdapter` para usar el nuevo token global `WEBSIZE`.
-- **Interaction Feedback**: Mejora en `HoverWidget` para soportar opacidades dinámicas y transformaciones en el eje Y.
+- **`WebPopUpAdapter`**: Contenedor de popups para escritorio con dimensiones inteligentes.
+- **`WebColumnRowAdapter`**: Layout dinámico que alterna entre Row y Column según el ancho de pantalla.
+- **`BottomSheetPopUps`**: Barra de acciones inferior estandarizada para modales.
+- **`HoverWidget`**: Feedback visual de elevación y color para interacciones Web/Desktop.
 
 ### 🧹 CODE QUALITY (Don Sputknif Rules)
-- **Agnostic Architecture**: Todos los nuevos widgets han sido desacoplados de Riverpod, convirtiéndose en componentes de UI puros y reutilizables.
-- **Zero Underscores**: Limpieza total de guiones bajos en los estados internos (`TextFieldCustomState`, `HoverWidgetState`, etc.).
-- **Loop Optimization**: Sustitución de `.map()` por bucles `for` con índice en la generación de RichText y menús dinámicos.
-- **No-Const Enforcement**: Eliminación de `const` en widgets de la librería para asegurar la reactividad completa ante cambios en `ConfigurePizzacornColors`.
+- **Zero Underscores**: Eliminación total de guiones bajos en todos los estados y métodos de la librería.
+- **Index Loops**: Sustitución de `.map()` y `.forEach()` por bucles `for (int i = 0; i < ...; i++)`.
+- **Full Reactivity**: Eliminación de `const` en widgets de UI para garantizar que los cambios de tema en runtime se apliquen al instante.
+- **Positional Texts**: Los widgets de tipografía ahora cumplen estrictamente con el parámetro posicional.
