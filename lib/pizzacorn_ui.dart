@@ -59,6 +59,8 @@ export 'src/overlays/bottom_popups.dart';
 
 // pickers
 export 'src/pickers/icon_picker.dart';
+export 'src/pickers/date_picker.dart';
+export 'src/pickers/time_picker.dart';
 
 //services
 export 'src/services/firebase_pagination.dart';
