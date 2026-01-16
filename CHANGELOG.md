@@ -1,4 +1,4 @@
-## 0.0.13
+## 0.0.14
 
 ### 🛠️ BUG FIXES & IMPROVEMENTS
 - **`ButtonCustom` Visual Fix**: Se corrige el alineamiento del texto. Ahora el contenido se mantiene perfectamente centrado por defecto mediante un sistema de contrapesos dinámicos.

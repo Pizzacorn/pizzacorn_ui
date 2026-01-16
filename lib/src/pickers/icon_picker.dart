@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-
 import '../../pizzacorn_ui.dart';
 
-
 class IconPickerCustom extends StatelessWidget {
-  /// CodePoint del icono seleccionado (MaterialIcons). 0 = ninguno.
-  final int selectedCodePoint;
+  /// El IconData seleccionado. Null = ninguno.
+  final IconData? selectedIcon;
 
-  /// Callback al seleccionar un icono (devuelve codePoint).
-  /// Si es null, el grid queda solo visual (sin interacción).
-  final Function(int)? onSelected;
+  /// Callback al seleccionar un icono.
+  final Function(IconData?)? onSelected;
 
-  /// Lista de iconos (si viene vacía, usa una lista curada por defecto).
+  /// Lista de iconos.
   final List<IconData> icons;
 
   /// Config grid
@@ -31,14 +28,14 @@ class IconPickerCustom extends StatelessWidget {
 
   IconPickerCustom({
     super.key,
-    this.selectedCodePoint = 0,
+    this.selectedIcon,
     this.onSelected,
     this.icons = const [],
     this.crossAxisCount = 12,
     this.height = 260,
     this.accentColor = Colors.blueAccent,
     this.iconSize = 18,
-    this.space = SPACE_SMALL,
+    this.space = 10, // Usando valor directo o token
     this.showPreview = true,
     this.showClear = true,
     this.showNoneTile = true,
@@ -53,6 +50,8 @@ class IconPickerCustom extends StatelessWidget {
     if (showNoneTile) {
       finalIcons.add(noneIcon);
     }
+
+    // REGLA: Bucle con índice (Prohibido for-in)
     for (int i = 0; i < iconList.length; i++) {
       finalIcons.add(iconList[i]);
     }
@@ -61,13 +60,13 @@ class IconPickerCustom extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (showPreview) buildPreview(),
-        if (showPreview) Space(SPACE_MEDIUM),
+        if (showPreview) Space(PADDING_SIZE),
 
         Container(
           height: height,
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.02),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(RADIUS),
             border: Border.all(
               color: Colors.white.withOpacity(0.06),
               width: 1,
@@ -83,17 +82,16 @@ class IconPickerCustom extends StatelessWidget {
             itemCount: finalIcons.length,
             itemBuilder: (context, index) {
               final IconData iconData = finalIcons[index];
-
               final bool isNoneTile = showNoneTile && index == 0;
-              final int codePoint = isNoneTile ? 0 : iconData.codePoint;
 
-              final bool selected = selectedCodePoint == codePoint;
+              // Comparamos los IconData directamente
+              final bool selected = selectedIcon == (isNoneTile ? null : iconData);
 
               return InkWell(
                 onTap: onSelected == null
                     ? null
                     : () {
-                  onSelected!(codePoint);
+                  onSelected!(isNoneTile ? null : iconData);
                 },
                 borderRadius: BorderRadius.circular(10),
                 child: Container(
@@ -111,7 +109,7 @@ class IconPickerCustom extends StatelessWidget {
                   ),
                   child: Center(
                     child: Icon(
-                      isNoneTile ? noneIcon : iconData,
+                      iconData,
                       size: iconSize,
                       color: selected
                           ? accentColor
@@ -124,7 +122,7 @@ class IconPickerCustom extends StatelessWidget {
           ),
         ),
 
-        if (showClear) Space(SPACE_MEDIUM),
+        if (showClear) Space(PADDING_SIZE),
         if (showClear)
           Align(
             alignment: Alignment.centerRight,
@@ -132,7 +130,7 @@ class IconPickerCustom extends StatelessWidget {
               onPressed: onSelected == null
                   ? null
                   : () {
-                onSelected!(0);
+                onSelected!(null);
               },
               child: TextCaption("Quitar icono"),
             ),
@@ -151,36 +149,30 @@ class IconPickerCustom extends StatelessWidget {
             color: Colors.white.withOpacity(0.04),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: selectedCodePoint == 0
-                  ? Colors.white.withOpacity(0.08)
+              color: selectedIcon == null
+                  ? COLOR_SUBTEXT.withOpacity(0.08)
                   : accentColor.withOpacity(0.7),
               width: 1,
             ),
           ),
           child: Center(
-            child: selectedCodePoint == 0
-                ? Icon(noneIcon, size: 20)
-                : Icon(
-              IconData(
-                selectedCodePoint,
-                fontFamily: "MaterialIcons",
-              ),
-              color: accentColor,
+            child: Icon(
+              selectedIcon ?? noneIcon,
+              color: selectedIcon == null ? COLOR_SUBTEXT : accentColor,
               size: 22,
             ),
           ),
         ),
-        Space(SPACE_MEDIUM),
+        Space(PADDING_SIZE),
         Expanded(
           child: TextBody(
-            selectedCodePoint == 0 ? "Selecciona un icono" : "Icono seleccionado",
+            selectedIcon == null ? "Selecciona un icono" : "Icono seleccionado",
           ),
         ),
       ],
     );
   }
 
-  /// Lista curada (la puedes ampliar cuando quieras)
   List<IconData> getDefaultIcons() {
     return <IconData>[
       Icons.person,
