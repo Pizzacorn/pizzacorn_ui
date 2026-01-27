@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 import '../icons/svg.dart';
 
-/// Botón custom Pizzacorn - Versión Equilibrada y Centrada
+/// Botón custom Pizzacorn - Versión Equilibrada y Centrada con Soporte de Accesibilidad
 class ButtonCustom extends StatelessWidget {
   final void Function()? onPressed;
   final void Function()? onLongPressed;
@@ -41,13 +41,16 @@ class ButtonCustom extends StatelessWidget {
   final Color? colorGradientPrimary;
   final Color? colorGradientSecondary;
 
+  // ACCESSIBILITY
+  final String? semanticLabel;
+
   ButtonCustom({
     super.key,
     this.onPressed,
     this.onLongPressed,
     this.width = double.infinity,
     this.height,
-    this.mainAxisAlignment = MainAxisAlignment.center, // REGLA: Por defecto al centro
+    this.mainAxisAlignment = MainAxisAlignment.center,
     this.border = false,
     this.borderColor,
     this.borderWidth = 1,
@@ -57,7 +60,7 @@ class ButtonCustom extends StatelessWidget {
     this.richTexts = const [],
     this.textColor,
     this.color,
-    this.padding = 15, // REGLA: Padding por defecto para que no se pegue
+    this.padding = 15,
     this.colorSplash,
     this.hasGradient = false,
     this.colorGradientPrimary,
@@ -68,12 +71,13 @@ class ButtonCustom extends StatelessWidget {
     this.iconNoColor = false,
     this.iconSize = 18,
     this.onlyText = false,
+    this.semanticLabel,
   });
 
   @override
   Widget build(BuildContext context) {
-    // RESOLUCIÓN DE TOKENS (Regla: Sin const para reactividad)
-    final Color effectiveTextColor = textColor ?? COLOR_TEXT;
+    // FIX: Ahora el color por defecto es COLOR_TEXT_BUTTONS si no se especifica
+    final Color effectiveTextColor = textColor ?? (border ? COLOR_TEXT : COLOR_TEXT_BUTTONS);
     final Color effectiveBorderColor = borderColor ?? COLOR_BORDER;
     final double effectiveBorderRadius = borderRadius ?? RADIUS;
     final Color effectiveColor = color ?? COLOR_ACCENT;
@@ -83,85 +87,98 @@ class ButtonCustom extends StatelessWidget {
 
     final double finalHeight = height ?? BUTTON_HEIGHT;
 
-    return SizedBox(
-      height: richTexts.isNotEmpty || onlyText ? 35 : finalHeight,
-      width: width,
-      child: Material(
-        type: MaterialType.transparency,
-        clipBehavior: Clip.antiAlias,
-        shape: border
-            ? RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(effectiveBorderRadius),
-          side: BorderSide(
-            color: effectiveBorderColor,
-            width: borderWidth,
-            strokeAlign: BorderSide.strokeAlignInside,
-          ),
-        )
-            : RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(effectiveBorderRadius),
-        ),
-        child: InkWell(
-          splashColor: effectiveColorSplash,
-          onTap: onPressed,
-          onLongPress: onLongPressed,
-          child: Ink(
-            decoration: BoxDecoration(
-              gradient: !hasGradient || richTexts.isNotEmpty || onlyText || border
-                  ? null
-                  : LinearGradient(
-                colors: [
-                  effectiveGradientPrimary,
-                  effectiveGradientSecondary,
-                ],
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-              ),
-              color: hasGradient || richTexts.isNotEmpty || onlyText || border ? null : effectiveColor,
+    // Lógica para el label de accesibilidad
+    String label = semanticLabel ?? text;
+    if (label.isEmpty && richTexts.isNotEmpty) {
+      for (int i = 0; i < richTexts.length; i++) {
+        label += "${richTexts[i].values.first} ";
+      }
+    }
+
+    return Semantics(
+      label: label.trim(),
+      button: true,
+      enabled: onPressed != null,
+      onTap: onPressed,
+      onLongPress: onLongPressed,
+      child: SizedBox(
+        height: richTexts.isNotEmpty || onlyText ? 35 : finalHeight,
+        width: width,
+        child: Material(
+          type: MaterialType.transparency,
+          clipBehavior: Clip.antiAlias,
+          shape: border
+              ? RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(effectiveBorderRadius),
+            side: BorderSide(
+              color: effectiveBorderColor,
+              width: borderWidth,
+              strokeAlign: BorderSide.strokeAlignInside,
             ),
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: padding),
-              child: Row(
-                mainAxisAlignment: mainAxisAlignment,
-                children: [
-                  // Lógica de Icono Inicial con equilibrado
-                  if (iconBegin.isNotEmpty)
-                    Padding(
-                      padding: EdgeInsets.only(right: text.isNotEmpty ? 10 : 0),
-                      child: iconNoColor
-                          ? SvgCustomNoColor(icon: iconBegin, size: iconSize)
-                          : SvgCustom(icon: iconBegin, size: iconSize, color: iconColor),
-                    )
-                  else if (iconFinal.isNotEmpty && text.isNotEmpty && mainAxisAlignment == MainAxisAlignment.center)
-                    SizedBox(width: iconSize + 10), // Equilibrador invisible izquierdo
+          )
+              : RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(effectiveBorderRadius),
+          ),
+          child: InkWell(
+            splashColor: effectiveColorSplash,
+            onTap: onPressed,
+            onLongPress: onLongPressed,
+            excludeFromSemantics: true, // Importante: Ya lo maneja el padre Semantics
+            child: Ink(
+              decoration: BoxDecoration(
+                gradient: !hasGradient || richTexts.isNotEmpty || onlyText || border
+                    ? null
+                    : LinearGradient(
+                  colors: [
+                    effectiveGradientPrimary,
+                    effectiveGradientSecondary,
+                  ],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                ),
+                color: hasGradient || richTexts.isNotEmpty || onlyText || border ? null : effectiveColor,
+              ),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: padding),
+                child: Row(
+                  mainAxisAlignment: mainAxisAlignment,
+                  children: [
+                    if (iconBegin.isNotEmpty)
+                      Padding(
+                        padding: EdgeInsets.only(right: text.isNotEmpty ? 10 : 0),
+                        child: iconNoColor
+                            ? SvgCustomNoColor(icon: iconBegin, size: iconSize)
+                            : SvgCustom(icon: iconBegin, size: iconSize, color: iconColor),
+                      )
+                    else if (iconFinal.isNotEmpty && text.isNotEmpty && mainAxisAlignment == MainAxisAlignment.center)
+                      SizedBox(width: iconSize + 10),
 
-                  // TEXTO (Centrado si no hay iconos o equilibrado)
-                  if (text.isNotEmpty)
-                    Flexible(
-                      child: TextButtonCustom(
-                        text,
-                        color: effectiveTextColor,
-                        fontSize: customSizeText != 0 ? customSizeText : TEXT_BUTTON_SIZE,
+                    if (text.isNotEmpty)
+                      Flexible(
+                        child: TextButtonCustom(
+                          text,
+                          color: effectiveTextColor,
+                          fontSize: customSizeText != 0 ? customSizeText : TEXT_BUTTON_SIZE,
+                        ),
+                      )
+                    else if (richTexts.isNotEmpty)
+                      RichText(
+                        text: TextSpan(
+                          children: buildRichTextChildren(),
+                        ),
                       ),
-                    )
-                  else if (richTexts.isNotEmpty)
-                    RichText(
-                      text: TextSpan(
-                        children: buildRichTextChildren(),
-                      ),
-                    ),
 
-                  // Lógica de Icono Final con equilibrado
-                  if (iconFinal.isNotEmpty)
-                    Padding(
-                      padding: EdgeInsets.only(left: text.isNotEmpty ? 10 : 0),
-                      child: iconNoColor
-                          ? SvgCustomNoColor(icon: iconFinal, size: iconSize)
-                          : SvgCustom(icon: iconFinal, size: iconSize, color: iconColor),
-                    )
-                  else if (iconBegin.isNotEmpty && text.isNotEmpty && mainAxisAlignment == MainAxisAlignment.center)
-                    SizedBox(width: iconSize + 10), // Equilibrador invisible derecho
-                ],
+                    if (iconFinal.isNotEmpty)
+                      Padding(
+                        padding: EdgeInsets.only(left: text.isNotEmpty ? 10 : 0),
+                        child: iconNoColor
+                            ? SvgCustomNoColor(icon: iconFinal, size: iconSize)
+                            : SvgCustom(icon: iconFinal, size: iconSize, color: iconColor),
+                      )
+                    else if (iconBegin.isNotEmpty && text.isNotEmpty && mainAxisAlignment == MainAxisAlignment.center)
+                      SizedBox(width: iconSize + 10),
+                  ],
+                ),
               ),
             ),
           ),

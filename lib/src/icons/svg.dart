@@ -14,23 +14,29 @@ Widget SvgCustom({
   String icon = "",
   Color? color,
   bool noColor = false,
+  String? semanticLabel,
   BlendMode blendMode = BlendMode.srcIn,
   double size = 24,
   String fullIcon = "",
 }) {
   final Color effectiveColor = color ?? COLOR_ACCENT;
 
-  return SvgPicture.asset(
-    fullIcon.isNotEmpty ? fullIcon : "assets/icons/$icon.svg",
-    height: size,
-    width: size,
-    colorFilter: noColor
-        ? null
-        : ColorFilter.mode(
-      effectiveColor,
-      blendMode,
-    ),
+  return Semantics(
+    label: semanticLabel,
+      excludeSemantics: semanticLabel == null, // Si no hay label, que lo ignore
+    child: SvgPicture.asset(
+      fullIcon.isNotEmpty ? fullIcon : "assets/icons/$icon.svg",
+      height: size,
+      width: size,
+      colorFilter: noColor
+          ? null
+          : ColorFilter.mode(
+        effectiveColor,
+        blendMode,
+      ),
+    )
   );
+
 }
 
 /// Icono SVG sin aplicar ningún color (usa los colores del propio asset).

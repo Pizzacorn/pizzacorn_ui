@@ -286,8 +286,7 @@ TextStyle styleSmall({
 
 Widget TextBig(
     String text, {
-      double? fontSize,
-      Color? color,
+      double? fontSize,Color? color,
       bool shadow = false,
       FontWeight? fontWeight,
       TextAlign textAlign = TextAlign.start,
@@ -298,16 +297,20 @@ Widget TextBig(
     }) {
   final Color effectiveColor = color ?? COLOR_TEXT;
 
-  return Text(
-    isUppercase ? text.toUpperCase() : text,
-    overflow: textOverflow,
-    textAlign: textAlign,
-    maxLines: maxlines,
-    style: styleBig(
-      fontSize: fontSize,
-      fontWeight: fontWeight,
-      color: effectiveColor,
-      shadow: shadow,
+  return Semantics(
+    label: text,
+    header: true,
+    child: Text(
+      isUppercase ? text.toUpperCase() : text,
+      overflow: textOverflow,
+      textAlign: textAlign,
+      maxLines: maxlines,
+      style: styleBig(
+        fontSize: fontSize,
+        fontWeight: fontWeight,
+        color: effectiveColor,
+        shadow: shadow,
+      ),
     ),
   );
 }
@@ -327,16 +330,20 @@ Widget TextTitle(
     }) {
   final Color effectiveColor = color ?? COLOR_TEXT;
 
-  return Text(
-    isUppercase ? text.toUpperCase() : text,
-    overflow: textOverflow,
-    textAlign: textAlign,
-    maxLines: maxlines,
-    style: styleTitle(
-      size: fontSize,
-      fontWeight: fontWeight,
-      color: effectiveColor,
-      height: height,
+  return Semantics(
+    label: text,
+    header: true,
+    child: Text(
+      isUppercase ? text.toUpperCase() : text,
+      overflow: textOverflow,
+      textAlign: textAlign,
+      maxLines: maxlines,
+      style: styleTitle(
+        size: fontSize,
+        fontWeight: fontWeight,
+        color: effectiveColor,
+        height: height,
+      ),
     ),
   );
 }
@@ -356,16 +363,20 @@ Widget TextSubtitle(
     }) {
   final Color effectiveColor = color ?? COLOR_TEXT;
 
-  return Text(
-    isUppercase ? text.toUpperCase() : text,
-    overflow: textOverflow,
-    textAlign: textAlign,
-    maxLines: maxlines,
-    style: styleSubtitle(
-      size: fontSize,
-      fontWeight: fontWeight,
-      color: effectiveColor,
-      height: height,
+  return Semantics(
+    label: text,
+    header: true,
+    child: Text(
+      isUppercase ? text.toUpperCase() : text,
+      overflow: textOverflow,
+      textAlign: textAlign,
+      maxLines: maxlines,
+      style: styleSubtitle(
+        size: fontSize,
+        fontWeight: fontWeight,
+        color: effectiveColor,
+        height: height,
+      ),
     ),
   );
 }
@@ -385,17 +396,20 @@ Widget TextBody(
     }) {
   final Color effectiveColor = color ?? COLOR_TEXT;
 
-  return Text(
-    isUppercase ? texto.toUpperCase() : texto,
-    overflow: textOverflow,
-    textAlign: textAlign,
-    maxLines: maxlines == 0 ? null : maxlines,
-    style: styleBody(
-      size: fontSize,
-      fontWeight: fontWeight,
-      color: effectiveColor,
-      shadow: shadow,
-      height: height,
+  return Semantics(
+    label: texto,
+    child: Text(
+      isUppercase ? texto.toUpperCase() : texto,
+      overflow: textOverflow,
+      textAlign: textAlign,
+      maxLines: maxlines == 0 ? null : maxlines,
+      style: styleBody(
+        size: fontSize,
+        fontWeight: fontWeight,
+        color: effectiveColor,
+        shadow: shadow,
+        height: height,
+      ),
     ),
   );
 }
@@ -414,15 +428,19 @@ Widget TextButtonCustom(
     }) {
   final Color effectiveColor = color ?? COLOR_TEXT_BUTTONS;
 
-  return Text(
-    isUppercase ? texto.toUpperCase() : texto,
-    overflow: textOverflow,
-    textAlign: textAlign,
-    maxLines: maxlines,
-    style: styleButton(
-      size: fontSize,
-      fontWeight: fontWeight,
-      color: effectiveColor,
+  return Semantics(
+    label: texto,
+    button: true,
+    child: Text(
+      isUppercase ? texto.toUpperCase() : texto,
+      overflow: textOverflow,
+      textAlign: textAlign,
+      maxLines: maxlines,
+      style: styleButton(
+        size: fontSize,
+        fontWeight: fontWeight,
+        color: effectiveColor,
+      ),
     ),
   );
 }
@@ -441,15 +459,18 @@ Widget TextCaption(
     }) {
   final Color effectiveColor = color ?? COLOR_SUBTEXT;
 
-  return Text(
-    isUppercase ? texto.toUpperCase() : texto,
-    overflow: textOverflow,
-    textAlign: textAlign,
-    maxLines: maxlines,
-    style: styleCaption(
-      size: fontSize,
-      fontWeight: fontWeight,
-      color: effectiveColor,
+  return Semantics(
+    label: texto,
+    child: Text(
+      isUppercase ? texto.toUpperCase() : texto,
+      overflow: textOverflow,
+      textAlign: textAlign,
+      maxLines: maxlines,
+      style: styleCaption(
+        size: fontSize,
+        fontWeight: fontWeight,
+        color: effectiveColor,
+      ),
     ),
   );
 }
@@ -468,15 +489,18 @@ Widget TextSmall(
     }) {
   final Color effectiveColor = color ?? COLOR_TEXT;
 
-  return Text(
-    isUppercase ? texto.toUpperCase() : texto,
-    overflow: textOverflow,
-    textAlign: textAlign,
-    maxLines: maxlines,
-    style: styleSmall(
-      size: fontSize,
-      fontWeight: fontWeight,
-      color: effectiveColor,
+  return Semantics(
+    label: texto,
+    child: Text(
+      isUppercase ? texto.toUpperCase() : texto,
+      overflow: textOverflow,
+      textAlign: textAlign,
+      maxLines: maxlines,
+      style: styleSmall(
+        size: fontSize,
+        fontWeight: fontWeight,
+        color: effectiveColor,
+      ),
     ),
   );
 }
@@ -496,18 +520,21 @@ Widget TextCustom(
     }) {
   final Color effectiveColor = color ?? COLOR_TEXT;
 
-  return Text(
-    isUppercase ? texto.toUpperCase() : texto,
-    overflow: textOverflow,
-    textAlign: textAlign,
-    maxLines: maxlines,
-    style: getStyleCustom(
-      fontSize ?? TEXT_BUTTON_SIZE,
-      fontWeight ?? WEIGHT_BOLD,
-      effectiveColor,
-      letterspacing: espacioLetras,
-      shadow: shadow,
-      height: height,
+  return Semantics(
+    label: texto,
+    child: Text(
+      isUppercase ? texto.toUpperCase() : texto,
+      overflow: textOverflow,
+      textAlign: textAlign,
+      maxLines: maxlines,
+      style: getStyleCustom(
+        fontSize ?? TEXT_BUTTON_SIZE,
+        fontWeight ?? WEIGHT_BOLD,
+        effectiveColor,
+        letterspacing: espacioLetras,
+        shadow: shadow,
+        height: height,
+      ),
     ),
   );
 }
