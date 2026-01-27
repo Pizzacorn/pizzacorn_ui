@@ -31,9 +31,6 @@ export 'src/effects/show_up.dart';
 export 'src/effects/hover.dart';
 
 // form
-export 'src/form/choice_field.dart';
-export 'src/form/relation_field.dart';
-export 'src/form/subtitle_field.dart';
 export 'src/form/textfield.dart';
 
 // icons
