@@ -120,10 +120,7 @@ class BottomItem extends StatelessWidget {
           height: double.infinity,
           alignment: Alignment.topCenter,
           child: TextButton(
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.zero,
-              backgroundColor: Colors.transparent,
-            ),
+            style: styleTransparent(),
             onPressed: onTap,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
