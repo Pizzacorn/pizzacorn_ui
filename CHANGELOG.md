@@ -1,4 +1,4 @@
-## 0.0.17
+## 0.0.18
 
 ### ♿ ACCESSIBILITY (SEMANTICS)
 - **Universal Semantics Support**: Implementación de `Semantics` en toda la librería de textos (`TextBig`, `TextTitle`, `TextBody`, etc.).
