@@ -29,6 +29,7 @@ export 'src/dropdown/dropdown_search.dart';
 export 'src/effects/shimmer.dart';
 export 'src/effects/show_up.dart';
 export 'src/effects/hover.dart';
+export 'src/effects/blur.dart';
 
 // form
 export 'src/form/textfield.dart';
@@ -39,6 +40,9 @@ export 'src/icons/svg.dart';
 // images
 export 'src/images/images.dart';
 
+//inputs
+export 'src/inputs/checkbox_politics.dart';
+
 // layout
 export 'src/layout/space.dart';
 
@@ -48,6 +52,7 @@ export 'src/list/inifinite_scroll.dart';
 // navigation
 export 'src/navigation/navigation_helpers.dart';
 export 'src/navigation/overlays_helpers.dart';
+export 'src/navigation/bottombar.dart';
 
 // overlays
 export 'src/overlays/bottom_sheet.dart';
