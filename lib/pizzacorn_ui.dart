@@ -39,6 +39,7 @@ export 'src/icons/svg.dart';
 
 // images
 export 'src/images/images.dart';
+export 'src/images/fullscreen_image.dart';
 
 //inputs
 export 'src/inputs/checkbox_politics.dart';
@@ -57,6 +58,7 @@ export 'src/navigation/bottombar.dart';
 // overlays
 export 'src/overlays/bottom_sheet.dart';
 export 'src/overlays/loading.dart';
+export 'src/overlays/loading_widget.dart';
 export 'src/overlays/bottom_popups.dart';
 
 // pickers
