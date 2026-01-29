@@ -37,6 +37,15 @@ class _ShowcasePageState extends State<ShowcasePage> {
   int currentIndex = 0;
   bool politicsAccepted = false;
 
+  // NUEVO: Estado para el SelectorList
+  int selectedGenderIndex = 0;
+  final List<String> genderOptions = [
+    "Hombre",
+    "Mujer",
+    "No binario",
+    "Prefiero no decirlo"
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -109,6 +118,18 @@ class _ShowcasePageState extends State<ShowcasePage> {
             ),
 
             Space(SPACE_MEDIUM),
+
+            // NUEVO: SelectorList (PIZZACORN_UI CANDIDATE)
+            TextSubtitle("¿Cuál es tu género?"),
+            TextCaption("Selecciona una opción de la lista:"),
+            Space(SPACE_SMALL),
+            SelectorList(
+              genderOptions,
+              selectedIndex: selectedGenderIndex,
+              onChanged: (index) => setState(() => selectedGenderIndex = index),
+            ),
+
+            Space(SPACE_BIG),
 
             // Efecto Blur
             TextBody("Efecto Blur debajo:"),

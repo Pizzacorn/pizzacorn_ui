@@ -1,13 +1,12 @@
-// C:/Users/hola/StudioProjects/pizzacorn_ui/lib/src/pickers/date_picker_field.dart
+// C:/Users/hola/StudioProjects/pizzacorn_ui/lib/src/form/datefield.dart
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Para formatear fechas
-import '../../pizzacorn_ui.dart'; // Importa DatePickerCustom, colores, estilos, etc.
+import 'package:intl/intl.dart';
+import '../../pizzacorn_ui.dart';
 
 /// PIZZACORN_UI CANDIDATE
 /// Widget: DatePickerField
-/// Motivo: Campo de texto para seleccionar fecha (ej. de nacimiento) usando DatePickerCustom.
-/// API: DatePickerField(controller: myController, labelText: "Fecha de Nacimiento", onDateSelected: (date) => ...)
-
+/// Motivo: Campo de texto que abre el selector de fecha Pizzacorn usando el helper de navegación global.
+/// API: DatePickerField(controller: myController, labelText: "Nacimiento")
 class DatePickerField extends StatefulWidget {
   final TextEditingController controller;
   final DateTime? initialDate;
@@ -19,7 +18,7 @@ class DatePickerField extends StatefulWidget {
   final FormFieldValidator<String>? validator;
   final bool enabled;
 
-  DatePickerField({
+  const DatePickerField({
     super.key,
     required this.controller,
     this.initialDate,
@@ -33,62 +32,51 @@ class DatePickerField extends StatefulWidget {
   });
 
   @override
-  _DatePickerFieldState createState() => _DatePickerFieldState();
+  State<DatePickerField> createState() => DatePickerFieldState();
 }
 
-class _DatePickerFieldState extends State<DatePickerField> {
-  late DateTime _currentSelectedDate;
+class DatePickerFieldState extends State<DatePickerField> {
+  late DateTime currentSelectedDate;
 
   @override
   void initState() {
     super.initState();
-    // Usa la fecha inicial proporcionada o una por defecto (ej. hoy o hace 20 años)
-    _currentSelectedDate =
-        widget.initialDate ??
+    currentSelectedDate = widget.initialDate ??
         DateTime(
           DateTime.now().year - 20,
           DateTime.now().month,
           DateTime.now().day,
         );
 
-    // Inicializa el texto del controlador si no tiene texto y hay una fecha inicial
     if (widget.controller.text.isEmpty && widget.initialDate != null) {
-      widget.controller.text = DateFormat(
-        'dd/MM/yyyy',
-      ).format(_currentSelectedDate);
+      widget.controller.text = DateFormat('dd/MM/yyyy').format(currentSelectedDate);
     }
   }
 
-  Future<void> _selectDate(BuildContext context) async {
+  Future<void> selectDate(BuildContext context) async {
     if (!widget.enabled) return;
 
-    final DateTime? picked = await showModalBottomSheet<DateTime>(
-      context: context,
-      isScrollControlled:
-          true, // Importante para que el picker no se corte en pantallas pequeñas
-      builder: (BuildContext builderContext) {
-        return DatePickerCustom(
-          initialDateTime: _currentSelectedDate,
-          minimumDate: widget.minimumDate,
-          maximumDate: widget.maximumDate,
-          onDateTimeChanged: (DateTime newDate) {
-            // Este callback se mantiene por si el DatePickerCustom es usado en otro contexto
-            // que necesita updates intermedios. Para este campo, usaremos el valor de pop.
-          },
-        );
-      },
-    );
+    // USANDO LA LEY: openBottomSheet de overlays_helpers.dart
+    await openBottomSheet(
+      context,
+      DatePickerCustom(
+        initialDateTime: currentSelectedDate,
+        minimumDate: widget.minimumDate,
+        maximumDate: widget.maximumDate,
+        onDateTimeChanged: (DateTime newDate) {
+          // Actualizamos el estado interno y el controlador
+          setState(() {
+            currentSelectedDate = newDate;
+            widget.controller.text = DateFormat('dd/MM/yyyy').format(newDate);
+          });
 
-    // Si se seleccionó una fecha y es diferente a la actual
-    if (picked != null && picked != _currentSelectedDate) {
-      setState(() {
-        _currentSelectedDate = picked;
-        widget.controller.text = DateFormat(
-          'dd/MM/yyyy',
-        ).format(_currentSelectedDate);
-      });
-      widget.onDateSelected?.call(picked); // Notifica al widget padre
-    }
+          // Notificamos al padre si existe el callback
+          if (widget.onDateSelected != null) {
+            widget.onDateSelected!(newDate);
+          }
+        },
+      ),
+    );
   }
 
   @override
@@ -96,24 +84,15 @@ class _DatePickerFieldState extends State<DatePickerField> {
     return Semantics(
       label: widget.labelText,
       hint: "Toca para abrir el selector de fecha",
-      button: true, // Se comporta como un botón para la accesibilidad
+      button: true,
       enabled: widget.enabled,
-      child: TextFormField(
+      child: TextFieldCustom( // Usamos nuestro TextFieldCustom para mantener la estética
         controller: widget.controller,
-        readOnly: true, // Impide que se escriba directamente
-        enabled: widget.enabled,
-        onTap: () => _selectDate(context), // Abre el picker al tocar
-        decoration: InputDecoration(
-          labelText: widget.labelText,
-          hintText: widget.hintText,
-          suffixIcon: Icon(Icons.calendar_today, color: COLOR_SUBTEXT),
-          // El resto de la decoración se hereda de InputDecorationTheme
-          // definido en PizzacornTheme() (theme.dart)
-        ),
+        readOnly: true,
+        onTap: () => selectDate(context),
+        labelText: widget.labelText,
+        hintText: widget.hintText,
         validator: widget.validator,
-        style: styleBody(
-          color: widget.enabled ? COLOR_TEXT : COLOR_TEXT_BLOCKED,
-        ),
       ),
     );
   }
