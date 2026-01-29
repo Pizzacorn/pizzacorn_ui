@@ -4,6 +4,8 @@ export 'src/adapters/web_popup.dart';
 
 // appbar
 export 'src/appbars/appbar_back.dart';
+export 'src/appbars/appbar_close.dart';
+export 'src/appbars/appbar_home.dart';
 
 // buttons
 export 'src/buttons/button_icon.dart';
