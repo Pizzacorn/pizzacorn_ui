@@ -40,10 +40,16 @@ class HoverCustomState extends State<HoverCustom> {
         duration: widget.duration,
         curve: widget.curve,
         // Aplicamos una pequeña transformación o cambio de color reactivo
-        transform: Matrix4.translationValues(0, isHovered ? widget.hoverTranslationY : 0, 0),
+        transform: Matrix4.translationValues(
+          0,
+          isHovered ? widget.hoverTranslationY : 0,
+          0,
+        ),
         decoration: BoxDecoration(
           // Si quieres un ligero cambio de color al hacer hover:
-          color: isHovered ? COLOR_ACCENT.withOpacity(0.05) : Colors.transparent,
+          color: isHovered
+              ? COLOR_ACCENT.withOpacity(0.05)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(RADIUS),
         ),
         child: widget.child,

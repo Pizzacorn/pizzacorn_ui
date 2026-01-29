@@ -7,10 +7,7 @@ class HighlightedCircleBorderStyle {
   final Color color;
   final double width;
 
-  HighlightedCircleBorderStyle({
-    this.color = Colors.white,
-    this.width = 1.0,
-  });
+  HighlightedCircleBorderStyle({this.color = Colors.white, this.width = 1.0});
 }
 
 class HighlightedCircleStyle {
@@ -99,25 +96,27 @@ class CalendarStyle {
 
     this.showHighlightedCircle = true,
     HighlightedCircleStyle? highlightedCircle,
-  })  : backgroundSelected = backgroundSelected ?? COLOR_ACCENT,
-        backgroundRange = backgroundRange ?? COLOR_ACCENT.withOpacity(0.2),
-        backgroundUnselected = backgroundUnselected ?? COLOR_BACKGROUND,
-        backgroundBlocked = backgroundBlocked ?? COLOR_BACKGROUND_TERCIARY,
-        backgroundHighlighted = backgroundHighlighted ?? COLOR_BACKGROUND,
-        backgroundPast = backgroundPast ?? COLOR_BACKGROUND,
-        textSelected = textSelected ?? COLOR_BACKGROUND,
-        textRange = textRange ?? COLOR_TEXT,
-        textUnselected = textUnselected ?? COLOR_TEXT,
-        textBlocked = textBlocked ?? COLOR_SUBTEXT,
-        textHighlighted = textHighlighted ?? COLOR_ACCENT,
-        textPast = textPast ?? COLOR_SUBTEXT,
-        borderSelected = borderSelected ?? COLOR_ACCENT,
-        borderRange = borderRange ?? Colors.transparent,
-        borderUnselected = borderUnselected ?? COLOR_BACKGROUND,
-        borderHighlighted = borderHighlighted ?? COLOR_BACKGROUND,
-        borderPast = borderPast ?? COLOR_BACKGROUND,
-        highlightedCircle = highlightedCircle ?? HighlightedCircleStyle(
-          background: COLOR_ACCENT,
-          textColor: COLOR_BACKGROUND,
-        );
+  }) : backgroundSelected = backgroundSelected ?? COLOR_ACCENT,
+       backgroundRange = backgroundRange ?? COLOR_ACCENT.withOpacity(0.2),
+       backgroundUnselected = backgroundUnselected ?? COLOR_BACKGROUND,
+       backgroundBlocked = backgroundBlocked ?? COLOR_BACKGROUND_TERCIARY,
+       backgroundHighlighted = backgroundHighlighted ?? COLOR_BACKGROUND,
+       backgroundPast = backgroundPast ?? COLOR_BACKGROUND,
+       textSelected = textSelected ?? COLOR_BACKGROUND,
+       textRange = textRange ?? COLOR_TEXT,
+       textUnselected = textUnselected ?? COLOR_TEXT,
+       textBlocked = textBlocked ?? COLOR_SUBTEXT,
+       textHighlighted = textHighlighted ?? COLOR_ACCENT,
+       textPast = textPast ?? COLOR_SUBTEXT,
+       borderSelected = borderSelected ?? COLOR_ACCENT,
+       borderRange = borderRange ?? Colors.transparent,
+       borderUnselected = borderUnselected ?? COLOR_BACKGROUND,
+       borderHighlighted = borderHighlighted ?? COLOR_BACKGROUND,
+       borderPast = borderPast ?? COLOR_BACKGROUND,
+       highlightedCircle =
+           highlightedCircle ??
+           HighlightedCircleStyle(
+             background: COLOR_ACCENT,
+             textColor: COLOR_BACKGROUND,
+           );
 }

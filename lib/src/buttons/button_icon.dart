@@ -34,7 +34,8 @@ class ButtonCustomIconState extends State<ButtonCustomIcon> {
     // Resolvemos los colores dinámicos usando los tokens de la librería
     // REGLA: Sin guiones bajos en variables locales
     final Color finalColor = widget.color ?? COLOR_TEXT;
-    final Color finalColorBackground = widget.colorBackground ?? Colors.transparent;
+    final Color finalColorBackground =
+        widget.colorBackground ?? Colors.transparent;
 
     return IconButton(
       // Usamos el token de fondo si no se especifica
@@ -64,17 +65,9 @@ class ButtonCustomIconState extends State<ButtonCustomIcon> {
     }
 
     if (widget.iconSvg.isNotEmpty) {
-      return SvgCustom(
-        icon: widget.iconSvg,
-        size: widget.size,
-        color: color,
-      );
+      return SvgCustom(icon: widget.iconSvg, size: widget.size, color: color);
     }
 
-    return Icon(
-      widget.iconData,
-      color: color,
-      size: widget.size,
-    );
+    return Icon(widget.iconData, color: color, size: widget.size);
   }
 }

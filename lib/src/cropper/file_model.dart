@@ -7,10 +7,7 @@ import 'dart:typed_data';
 /// - [url]: ruta remota o local (path) del archivo.
 /// - [dataUint8List]: bytes en memoria (por ejemplo, al seleccionar una imagen).
 class FileModel {
-  FileModel({
-    this.url = "",
-    this.dataUint8List,
-  });
+  FileModel({this.url = "", this.dataUint8List});
 
   String url;
   Uint8List? dataUint8List;

@@ -5,8 +5,6 @@ import 'config.dart';
 import '../layout/space.dart';
 import '../text/textstyles.dart';
 
-
-
 /// THEME ///////////////////////////////////////////////////////////////////////
 ThemeData PizzacornTheme() {
   return ThemeData(
@@ -47,7 +45,10 @@ ThemeData PizzacornTheme() {
       /// Estilo Focus
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(RADIUS)),
-        borderSide: BorderSide(color: COLOR_BORDER_FOCUS, width: BORDER_SIZE_FOCUS),
+        borderSide: BorderSide(
+          color: COLOR_BORDER_FOCUS,
+          width: BORDER_SIZE_FOCUS,
+        ),
       ),
 
       /// Estilo error
@@ -64,7 +65,10 @@ ThemeData PizzacornTheme() {
 
       disabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(RADIUS)),
-        borderSide: BorderSide(color: COLOR_BORDER_NOFOCUS, width: BORDER_SIZE_FOCUS),
+        borderSide: BorderSide(
+          color: COLOR_BORDER_NOFOCUS,
+          width: BORDER_SIZE_FOCUS,
+        ),
       ),
 
       border: OutlineInputBorder(
@@ -210,8 +214,7 @@ ThemeData PizzacornTheme() {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(RADIUS)),
-          borderSide:
-          BorderSide(color: COLOR_ACCENT, width: BORDER_SIZE_FOCUS),
+          borderSide: BorderSide(color: COLOR_ACCENT, width: BORDER_SIZE_FOCUS),
         ),
         filled: true,
         prefixIconColor: COLOR_SUBTEXT,
@@ -249,9 +252,7 @@ ThemeData PizzacornTheme() {
     cupertinoOverrideTheme: const CupertinoThemeData(),
     dataTableTheme: const DataTableThemeData(),
     dialogTheme: const DialogThemeData(),
-    expansionTileTheme: const ExpansionTileThemeData(
-      shape: Border(),
-    ),
+    expansionTileTheme: const ExpansionTileThemeData(shape: Border()),
     listTileTheme: const ListTileThemeData(),
     navigationBarTheme: const NavigationBarThemeData(),
     outlinedButtonTheme: const OutlinedButtonThemeData(),

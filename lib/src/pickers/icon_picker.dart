@@ -67,10 +67,7 @@ class IconPickerCustom extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.02),
             borderRadius: BorderRadius.circular(RADIUS),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.06),
-              width: 1,
-            ),
+            border: Border.all(color: Colors.white.withOpacity(0.06), width: 1),
           ),
           child: GridView.builder(
             padding: EdgeInsets.all(space),
@@ -85,14 +82,15 @@ class IconPickerCustom extends StatelessWidget {
               final bool isNoneTile = showNoneTile && index == 0;
 
               // Comparamos los IconData directamente
-              final bool selected = selectedIcon == (isNoneTile ? null : iconData);
+              final bool selected =
+                  selectedIcon == (isNoneTile ? null : iconData);
 
               return InkWell(
                 onTap: onSelected == null
                     ? null
                     : () {
-                  onSelected!(isNoneTile ? null : iconData);
-                },
+                        onSelected!(isNoneTile ? null : iconData);
+                      },
                 borderRadius: BorderRadius.circular(10),
                 child: Container(
                   decoration: BoxDecoration(
@@ -130,8 +128,8 @@ class IconPickerCustom extends StatelessWidget {
               onPressed: onSelected == null
                   ? null
                   : () {
-                onSelected!(null);
-              },
+                      onSelected!(null);
+                    },
               child: TextCaption("Quitar icono"),
             ),
           ),

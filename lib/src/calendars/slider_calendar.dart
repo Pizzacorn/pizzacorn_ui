@@ -93,7 +93,8 @@ class SliderCalendarState extends State<SliderCalendar> {
   void onScroll() {
     // 🔁 Carga infinita: REGLA bucle con índice no aplica aquí por lógica de scroll,
     // pero sí en la generación de datos.
-    if (scrollController.position.pixels >= scrollController.position.maxScrollExtent - 500) {
+    if (scrollController.position.pixels >=
+        scrollController.position.maxScrollExtent - 500) {
       final DateTime last = days.last;
       for (int i = 1; i <= 30; i++) {
         days.add(last.add(Duration(days: i)));
@@ -107,12 +108,16 @@ class SliderCalendarState extends State<SliderCalendar> {
       final double itemEnd = itemOffset + widget.dayBoxSize;
 
       if (itemOffset >= scrollController.offset &&
-          itemEnd <= scrollController.offset + scrollController.position.viewportDimension) {
+          itemEnd <=
+              scrollController.offset +
+                  scrollController.position.viewportDimension) {
         final DateTime visibleDay = days[i];
         if (visibleDay.month != currentMonth) {
           setState(() => currentMonth = visibleDay.month);
           if (widget.onMonthChange != null) {
-            widget.onMonthChange!(DateTime(visibleDay.year, visibleDay.month, 1));
+            widget.onMonthChange!(
+              DateTime(visibleDay.year, visibleDay.month, 1),
+            );
           }
         }
         break;
@@ -127,7 +132,8 @@ class SliderCalendarState extends State<SliderCalendar> {
 
   void onTap(int idx) {
     final day = days[idx];
-    bool isBlocked = widget.blockedDays.any((d) => isSameDay(d, day)) ||
+    bool isBlocked =
+        widget.blockedDays.any((d) => isSameDay(d, day)) ||
         widget.blockedWeekdays.contains(day.weekday) ||
         (widget.lastDate != null && day.isAfter(widget.lastDate!)) ||
         day.isBefore(widget.startDate);
@@ -155,7 +161,8 @@ class SliderCalendarState extends State<SliderCalendar> {
         itemBuilder: (context, i) {
           final DateTime d = days[i];
 
-          bool isBlocked = widget.blockedDays.any((b) => isSameDay(b, d)) ||
+          bool isBlocked =
+              widget.blockedDays.any((b) => isSameDay(b, d)) ||
               widget.blockedWeekdays.contains(d.weekday) ||
               (widget.lastDate != null && d.isAfter(widget.lastDate!)) ||
               d.isBefore(widget.startDate);
@@ -197,7 +204,9 @@ class SliderCalendarState extends State<SliderCalendar> {
               margin: EdgeInsets.only(right: spacing),
               decoration: BoxDecoration(
                 color: bg,
-                borderRadius: BorderRadius.circular(RADIUS), // Usando token global
+                borderRadius: BorderRadius.circular(
+                  RADIUS,
+                ), // Usando token global
                 border: Border.all(color: brd, width: bw),
               ),
               child: Stack(
@@ -207,7 +216,15 @@ class SliderCalendarState extends State<SliderCalendar> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         TextCaption(
-                          ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'][d.weekday - 1],
+                          [
+                            'Lun',
+                            'Mar',
+                            'Mié',
+                            'Jue',
+                            'Vie',
+                            'Sáb',
+                            'Dom',
+                          ][d.weekday - 1],
                           color: txt,
                         ),
                         TextSubtitle(

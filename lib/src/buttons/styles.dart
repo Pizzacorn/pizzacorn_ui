@@ -14,13 +14,11 @@ ButtonStyle styleTransparent() {
     ),
   ).copyWith(
     splashFactory: InkRipple.splashFactory,
-    overlayColor: MaterialStateProperty.resolveWith<Color?>(
-          (states) {
-        if (states.contains(MaterialState.pressed)) {
-          return COLOR_ACCENT.withValues(alpha: 0.05);
-        }
-        return null;
-      },
-    ),
+    overlayColor: MaterialStateProperty.resolveWith<Color?>((states) {
+      if (states.contains(MaterialState.pressed)) {
+        return COLOR_ACCENT.withValues(alpha: 0.05);
+      }
+      return null;
+    }),
   );
 }

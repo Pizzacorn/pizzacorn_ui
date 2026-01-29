@@ -30,10 +30,12 @@ class DatePickerCustomState extends State<DatePickerCustom> {
     super.initState();
     // Asegura que la fecha inicial esté dentro de los límites si se han especificado.
     selectedDateTime = widget.initialDateTime;
-    if (widget.minimumDate != null && selectedDateTime.isBefore(widget.minimumDate!)) {
+    if (widget.minimumDate != null &&
+        selectedDateTime.isBefore(widget.minimumDate!)) {
       selectedDateTime = widget.minimumDate!;
     }
-    if (widget.maximumDate != null && selectedDateTime.isAfter(widget.maximumDate!)) {
+    if (widget.maximumDate != null &&
+        selectedDateTime.isAfter(widget.maximumDate!)) {
       selectedDateTime = widget.maximumDate!;
     }
   }
@@ -108,16 +110,21 @@ class DatePickerCustomState extends State<DatePickerCustom> {
                     child: ButtonCustom(
                       text: "Continuar",
                       onPressed: () {
-                        widget.onDateTimeChanged(selectedDateTime); // Notifica al callback original
-                        Navigator.pop(context, selectedDateTime); // ¡Pop con la fecha seleccionada!
+                        widget.onDateTimeChanged(
+                          selectedDateTime,
+                        ); // Notifica al callback original
+                        Navigator.pop(
+                          context,
+                          selectedDateTime,
+                        ); // ¡Pop con la fecha seleccionada!
                       },
                     ),
-                  )
+                  ),
                 ],
               ),
             ],
           ),
-        )
+        ),
       ],
     );
   }

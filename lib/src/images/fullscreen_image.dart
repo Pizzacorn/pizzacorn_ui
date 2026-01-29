@@ -15,11 +15,11 @@ class FullScreenImagePage extends StatelessWidget {
   final Color? backgroundColor;
 
   const FullScreenImagePage(
-      this.image, {
-        super.key,
-        this.title = "Imagen",
-        this.backgroundColor,
-      });
+    this.image, {
+    super.key,
+    this.title = "Imagen",
+    this.backgroundColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,32 +27,24 @@ class FullScreenImagePage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: effectiveBg,
-      appBar: AppBarBack(
-        context: context,
-        title: title,
-      ),
+      appBar: AppBarBack(context: context, title: title),
       extendBody: true,
       body: Semantics(
         label: "Visor de imagen: $title",
         image: true,
         child: SizedBox.expand(
           child: PhotoView(
-            backgroundDecoration: BoxDecoration(
-              color: effectiveBg,
-            ),
+            backgroundDecoration: BoxDecoration(color: effectiveBg),
             initialScale: PhotoViewComputedScale.contained,
             minScale: PhotoViewComputedScale.contained,
             maxScale: PhotoViewComputedScale.contained * 5,
             imageProvider: NetworkImage(image),
             loadingBuilder: (context, event) => const Center(
-              child: LoadingCustomWidget(), // Asumiendo que tienes un loading en la lib
+              child:
+                  LoadingCustomWidget(), // Asumiendo que tienes un loading en la lib
             ),
             errorBuilder: (context, error, stackTrace) => Center(
-              child: Icon(
-                Icons.broken_image,
-                color: COLOR_SUBTEXT,
-                size: 50,
-              ),
+              child: Icon(Icons.broken_image, color: COLOR_SUBTEXT, size: 50),
             ),
           ),
         ),

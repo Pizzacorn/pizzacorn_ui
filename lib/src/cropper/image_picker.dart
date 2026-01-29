@@ -87,16 +87,16 @@ class _ImagePublishState extends State<ImagePublish> {
                     : null,
                 border: widget.hasBorder
                     ? Border.all(
-                  color: effectiveBorderColor,
-                  width: widget.borderWidth,
-                )
+                        color: effectiveBorderColor,
+                        width: widget.borderWidth,
+                      )
                     : null,
                 boxShadow: widget.boxShadows,
                 image: DecorationImage(
                   fit: widget.boxFit,
                   image: widget.imageFile.dataUint8List != null
                       ? MemoryImage(widget.imageFile.dataUint8List!)
-                  as ImageProvider
+                            as ImageProvider
                       : widget.imageFile.url.isEmpty
                       ? const AssetImage('assets/image/nada.png')
                       : NetworkImage(widget.imageFile.url),
@@ -116,14 +116,15 @@ class _ImagePublishState extends State<ImagePublish> {
                   );
                 },
                 child: Center(
-                  child: (widget.imageFile.url.isNotEmpty ||
-                      widget.imageFile.dataUint8List != null)
+                  child:
+                      (widget.imageFile.url.isNotEmpty ||
+                          widget.imageFile.dataUint8List != null)
                       ? const SizedBox.shrink()
                       : SvgCustom(
-                    icon: 'anadir-imagen',
-                    color: COLOR_ACCENT.withValues(alpha: 0.5),
-                    size: 30,
-                  ),
+                          icon: 'anadir-imagen',
+                          color: COLOR_ACCENT.withValues(alpha: 0.5),
+                          size: 30,
+                        ),
                 ),
               ),
             ),
@@ -134,8 +135,9 @@ class _ImagePublishState extends State<ImagePublish> {
               right: 5,
               child: AnimatedOpacity(
                 duration: const Duration(milliseconds: 200),
-                opacity: (widget.imageFile.url.isNotEmpty ||
-                    widget.imageFile.dataUint8List != null)
+                opacity:
+                    (widget.imageFile.url.isNotEmpty ||
+                        widget.imageFile.dataUint8List != null)
                     ? 1
                     : 0,
                 child: Container(
@@ -144,13 +146,14 @@ class _ImagePublishState extends State<ImagePublish> {
                   decoration: BoxDecoration(
                     color: effectiveDeleteBackgroundColor,
                     shape: BoxShape.circle,
-                    boxShadow:
-                    widget.deleteButtonShadow ? [BoxShadowCustom()] : null,
+                    boxShadow: widget.deleteButtonShadow
+                        ? [BoxShadowCustom()]
+                        : null,
                     border: widget.deleteButtonHasBorder
                         ? Border.all(
-                      color: effectiveDeleteBorderColor,
-                      width: widget.deleteButtonBorderWidth,
-                    )
+                            color: effectiveDeleteBorderColor,
+                            width: widget.deleteButtonBorderWidth,
+                          )
                         : null,
                   ),
                   child: IconButton(

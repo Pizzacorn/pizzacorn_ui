@@ -11,20 +11,17 @@ class BlurCustom extends StatelessWidget {
   final double sigmaY;
 
   const BlurCustom(
-      this.child, {
-        super.key,
-        this.sigmaX = 100.0,
-        this.sigmaY = 100.0,
-      });
+    this.child, {
+    super.key,
+    this.sigmaX = 100.0,
+    this.sigmaY = 100.0,
+  });
 
   @override
   Widget build(BuildContext context) {
     return ImageFiltered(
       // Difuminamos SOLO el child
-      imageFilter: ImageFilter.blur(
-        sigmaX: sigmaX,
-        sigmaY: sigmaY,
-      ),
+      imageFilter: ImageFilter.blur(sigmaX: sigmaX, sigmaY: sigmaY),
       child: child,
     );
   }

@@ -11,8 +11,5 @@ const double SPACE_SMALLEST = 5;
 ///
 /// Crea un espacio cuadrado (mismo [space] en alto y ancho).
 Widget Space(double space) {
-  return SizedBox(
-    height: space,
-    width: space,
-  );
+  return SizedBox(height: space, width: space);
 }

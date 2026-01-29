@@ -6,7 +6,8 @@ import 'package:pizzacorn_ui/src/overlays/bottom_popups.dart';
 
 class WebPopupCustom extends StatelessWidget {
   final Widget child;
-  final double height;  final double width;
+  final double height;
+  final double width;
   final bool loading;
   final String titleAppbar;
   final Function? onPressedDelete;
@@ -50,18 +51,15 @@ class WebPopupCustom extends StatelessWidget {
             loading: loading,
             child: Scaffold(
               backgroundColor: COLOR_BACKGROUND,
-              appBar: AppBarClose(
-                context: context,
-                title: titleAppbar,
-              ),
+              appBar: AppBarClose(context: context, title: titleAppbar),
               body: child,
               bottomNavigationBar: noBottom
                   ? null
                   : BottomSheetPopUps(
-                onPressedDelete: onPressedDelete,
-                onPressedSave: onPressedSave,
-                title: titleButton,
-              ),
+                      onPressedDelete: onPressedDelete,
+                      onPressedSave: onPressedSave,
+                      title: titleButton,
+                    ),
             ),
           ),
         ),

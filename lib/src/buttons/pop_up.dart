@@ -62,11 +62,7 @@ class PopupMenuOptions extends StatelessWidget {
 
     return PopupMenuButton<int>(
       tooltip: tooltip,
-      icon: Icon(
-        buttonIcon,
-        color: buttonIconColor,
-        size: buttonIconSize,
-      ),
+      icon: Icon(buttonIcon, color: buttonIconColor, size: buttonIconSize),
       onSelected: (int index) async {
         final bool enabled = getEnabled(index);
         if (!enabled) return;
@@ -88,25 +84,19 @@ class PopupMenuOptions extends StatelessWidget {
                   color: isDanger(i) ? dangerIconColor : null,
                 ),
               if (hasIcon(i)) Space(space),
-              Expanded(
-                child: TextBody(labels[i]),
-              ),
+              Expanded(child: TextBody(labels[i])),
             ],
           );
 
           final Widget child = minWidth == null
               ? row
               : ConstrainedBox(
-            constraints: BoxConstraints(minWidth: minWidth!),
-            child: row,
-          );
+                  constraints: BoxConstraints(minWidth: minWidth!),
+                  child: row,
+                );
 
           items.add(
-            PopupMenuItem<int>(
-              value: i,
-              enabled: enabled,
-              child: child,
-            ),
+            PopupMenuItem<int>(value: i, enabled: enabled, child: child),
           );
 
           if (shouldAddDividerAfter(i)) {

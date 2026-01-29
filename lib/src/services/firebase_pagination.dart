@@ -40,16 +40,18 @@ class FirebasePagination {
       return PaginationResult<T>(
         items: items,
         hasMore: snapshot.docs.length == limit,
-        lastDocument: snapshot.docs.isNotEmpty ? snapshot.docs.last : lastDocument,
+        lastDocument: snapshot.docs.isNotEmpty
+            ? snapshot.docs.last
+            : lastDocument,
       );
     } catch (e) {
       if (kDebugMode) print("❌ Error al cargar $collection: $e");
       // Asumimos que openSnackbar es parte de tu toolkit
       // openSnackbar(context, text: "Error al cargar $collection");
       return PaginationResult<T>(
-          items: [],
-          hasMore: false,
-          lastDocument: lastDocument
+        items: [],
+        hasMore: false,
+        lastDocument: lastDocument,
       );
     }
   }

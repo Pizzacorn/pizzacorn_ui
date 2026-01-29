@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../pizzacorn_ui.dart';
 
-
 /// Overlay de carga simple.
 /// Envuelve [child] en un Stack y, si [loading] es true,
 /// muestra un modal con un loader centrado.
@@ -27,9 +26,7 @@ class Loading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> stackChildren = [
-      child,
-    ];
+    final List<Widget> stackChildren = [child];
 
     if (loading) {
       final Color effectiveColor = color ?? Colors.black;
@@ -55,10 +52,7 @@ class Loading extends StatelessWidget {
       stackChildren.addAll([
         Opacity(
           opacity: opacity,
-          child: ModalBarrier(
-            dismissible: dismissible,
-            color: effectiveColor,
-          ),
+          child: ModalBarrier(dismissible: dismissible, color: effectiveColor),
         ),
         Center(
           child: Container(
@@ -75,9 +69,7 @@ class Loading extends StatelessWidget {
       ]);
     }
 
-    return Stack(
-      children: stackChildren,
-    );
+    return Stack(children: stackChildren);
   }
 }
 
@@ -106,9 +98,7 @@ class LoadingWithText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> stackChildren = [
-      child,
-    ];
+    final List<Widget> stackChildren = [child];
 
     if (loading) {
       final Color effectiveColor = color ?? Colors.grey;
@@ -134,10 +124,7 @@ class LoadingWithText extends StatelessWidget {
       stackChildren.addAll([
         Opacity(
           opacity: opacity,
-          child: ModalBarrier(
-            dismissible: dismissible,
-            color: effectiveColor,
-          ),
+          child: ModalBarrier(dismissible: dismissible, color: effectiveColor),
         ),
         Center(
           child: Container(
@@ -155,10 +142,7 @@ class LoadingWithText extends StatelessWidget {
               children: [
                 layOutProgressIndicator,
                 Space(SPACE_SMALL),
-                TextCaption(
-                  text,
-                  textAlign: TextAlign.center,
-                ),
+                TextCaption(text, textAlign: TextAlign.center),
               ],
             ),
           ),
@@ -166,9 +150,7 @@ class LoadingWithText extends StatelessWidget {
       ]);
     }
 
-    return Stack(
-      children: stackChildren,
-    );
+    return Stack(children: stackChildren);
   }
 }
 

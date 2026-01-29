@@ -32,13 +32,18 @@ class ProfileImageCustom extends StatelessWidget {
 PreferredSizeWidget AppBarHome({
   required BuildContext context,
   required VoidCallback onMenuPressed, // Función para abrir el Drawer.
-  String backgroundAsset = "assets/image/background_players.png", // Path del asset para el fondo.
+  String backgroundAsset =
+      "assets/image/background_players.png", // Path del asset para el fondo.
   double backgroundOpacity = 0.3,
-  String? title, // Si se proporciona, se muestra como título; si es null/vacío, se muestra el logo.
-  String? logoAsset = "assets/icon/logo.svg", // Path del asset para el logo si no hay título.
+  String?
+  title, // Si se proporciona, se muestra como título; si es null/vacío, se muestra el logo.
+  String? logoAsset =
+      "assets/icon/logo.svg", // Path del asset para el logo si no hay título.
   String? profileImageUrl, // URL de la imagen de perfil del usuario.
-  VoidCallback? onProfilePressed, // Función a ejecutar al pulsar la imagen de perfil.
-  VoidCallback? onProfileUpdate, // Función para ejecutar al volver de la página de perfil (ej. setState).
+  VoidCallback?
+  onProfilePressed, // Función a ejecutar al pulsar la imagen de perfil.
+  VoidCallback?
+  onProfileUpdate, // Función para ejecutar al volver de la página de perfil (ej. setState).
   Color? appBarBackgroundColor, // Color de fondo si no quieres el COLOR_ACCENT
   Color? iconColor, // Color de los iconos y texto principal.
 }) {
@@ -48,7 +53,8 @@ PreferredSizeWidget AppBarHome({
   return AppBar(
     toolbarHeight: 80,
     elevation: 0,
-    backgroundColor: effectiveAppBarBg, // Usa el color de fondo configurable o COLOR_ACCENT.
+    backgroundColor:
+        effectiveAppBarBg, // Usa el color de fondo configurable o COLOR_ACCENT.
     flexibleSpace: Opacity(
       opacity: backgroundOpacity,
       child: Container(
@@ -66,7 +72,8 @@ PreferredSizeWidget AppBarHome({
     ),
 
     leadingWidth: 250, // Permite que el área de leading sea más ancha.
-    leading: ShimmerCustom( // Asumimos que ShimmerCustom existe y está exportado.
+    leading: ShimmerCustom(
+      // Asumimos que ShimmerCustom existe y está exportado.
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -81,16 +88,19 @@ PreferredSizeWidget AppBarHome({
             ),
           ),
           Space(SPACE_SMALL), // Espacio de su librería.
-
           // Título o Logo (condicionalmente)
           if (title != null && title.trim().isNotEmpty)
-            Flexible(child: TextBig(title, color: effectiveIconColor)) // TextBig con el título.
+            Flexible(
+              child: TextBig(title, color: effectiveIconColor),
+            ) // TextBig con el título.
           else if (logoAsset != null && logoAsset.trim().isNotEmpty)
-            SvgCustom( // Asumimos que SvgCustom existe y está exportado.
+            SvgCustom(
+              // Asumimos que SvgCustom existe y está exportado.
               fullIcon: logoAsset,
               size: 40,
               color: effectiveIconColor,
-              semanticLabel: "Logo de la aplicación Pizzacorn", // Etiqueta para accesibilidad del logo.
+              semanticLabel:
+                  "Logo de la aplicación Pizzacorn", // Etiqueta para accesibilidad del logo.
             ),
         ],
       ),
@@ -103,11 +113,15 @@ PreferredSizeWidget AppBarHome({
 
     actions: [
       // Imagen de perfil si se proporciona URL e interacción.
-      if (profileImageUrl != null && profileImageUrl.trim().isNotEmpty && onProfilePressed != null)
+      if (profileImageUrl != null &&
+          profileImageUrl.trim().isNotEmpty &&
+          onProfilePressed != null)
         Semantics(
-          label: "Ver y editar perfil de usuario", // Etiqueta para accesibilidad.
+          label:
+              "Ver y editar perfil de usuario", // Etiqueta para accesibilidad.
           button: true,
-          child: ProfileImageCustom( // Asumimos que ProfileImageCustom existe y está exportado.
+          child: ProfileImageCustom(
+            // Asumimos que ProfileImageCustom existe y está exportado.
             imageUrl: profileImageUrl,
             onPressed: () {
               onProfilePressed(); // Ejecuta la función para ir al perfil.

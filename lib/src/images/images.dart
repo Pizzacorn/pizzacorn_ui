@@ -47,18 +47,12 @@ class ImageCustom extends StatelessWidget {
         height: height,
         decoration: BoxDecoration(
           shape: isCircular ? BoxShape.circle : BoxShape.rectangle,
-          borderRadius:
-          isCircular ? null : BorderRadius.circular(borderRadius),
+          borderRadius: isCircular ? null : BorderRadius.circular(borderRadius),
           border: Border.all(color: borderColor, width: borderWidth),
           color: COLOR_BACKGROUND_SECONDARY,
         ),
         clipBehavior: Clip.antiAlias,
-        child: Image.asset(
-          placeholder,
-          width: width,
-          height: height,
-          fit: fit,
-        ),
+        child: Image.asset(placeholder, width: width, height: height, fit: fit),
       );
     }
 
@@ -70,44 +64,32 @@ class ImageCustom extends StatelessWidget {
       fit: fit,
       fadeInDuration: const Duration(milliseconds: 200),
       fadeOutDuration: const Duration(milliseconds: 100),
-      placeholder: (ctx, url) => Image.asset(
-        placeholder,
-        width: width,
-        height: height,
-        fit: fit,
-      ),
-      errorWidget: (ctx, url, err) => Image.asset(
-        placeholder,
-        width: width,
-        height: height,
-        fit: fit,
-      ),
+      placeholder: (ctx, url) =>
+          Image.asset(placeholder, width: width, height: height, fit: fit),
+      errorWidget: (ctx, url, err) =>
+          Image.asset(placeholder, width: width, height: height, fit: fit),
     );
 
     final clippedImage = isCircular
         ? ClipOval(child: imageWidget)
         : ClipRRect(
-      borderRadius: BorderRadius.circular(borderRadius),
-      child: imageWidget,
-    );
+            borderRadius: BorderRadius.circular(borderRadius),
+            child: imageWidget,
+          );
 
     return Container(
       width: width,
       height: height,
       decoration: BoxDecoration(
         shape: isCircular ? BoxShape.circle : BoxShape.rectangle,
-        borderRadius:
-        isCircular ? null : BorderRadius.circular(borderRadius),
+        borderRadius: isCircular ? null : BorderRadius.circular(borderRadius),
         border: Border.all(color: borderColor, width: borderWidth),
         color: COLOR_BACKGROUND_SECONDARY,
       ),
       clipBehavior: Clip.antiAlias,
       child: Stack(
         fit: StackFit.expand,
-        children: [
-          clippedImage,
-          if (overlay != null) overlay!,
-        ],
+        children: [clippedImage, if (overlay != null) overlay!],
       ),
     );
   }
@@ -148,11 +130,9 @@ class ProfileImageCustom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double innerSize =
-        size - (singleBorder ? 0 : outerBorderWidth * 2);
+    final double innerSize = size - (singleBorder ? 0 : outerBorderWidth * 2);
 
-    final Color effectiveOuterBorderColor =
-        outerBorderColor ?? COLOR_ACCENT;
+    final Color effectiveOuterBorderColor = outerBorderColor ?? COLOR_ACCENT;
     final Color effectiveInnerBorderColor =
         innerBorderColor ?? COLOR_BACKGROUND;
 

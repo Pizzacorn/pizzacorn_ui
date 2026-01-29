@@ -4,9 +4,7 @@ import 'package:uicons_pro/uicons_pro.dart';
 
 void main() {
   // Configuración global opcional antes de arrancar
-  PizzacornTextConfig.configure(
-    primaryFontFamily: 'Montserrat',
-  );
+  PizzacornTextConfig.configure(primaryFontFamily: 'Montserrat');
 
   runApp(const PizzacornShowcaseApp());
 }
@@ -66,13 +64,14 @@ class _ShowcasePageState extends State<ShowcasePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             // --- SECCIÓN TEXTOS (CON SEMANTICS) ---
             TextTitle("Tipografía y Accesibilidad"),
             Space(SPACE_SMALL),
             TextBig("Texto Big (Header)"),
             TextSubtitle("Texto Subtitle (Header)"),
-            TextBody("Este es un texto body normal para descripciones largas que necesitan leerse bien."),
+            TextBody(
+              "Este es un texto body normal para descripciones largas que necesitan leerse bien.",
+            ),
             TextCaption("Texto Caption para detalles técnicos."),
             TextSmall("Texto Small para letra pequeña."),
 
@@ -81,10 +80,7 @@ class _ShowcasePageState extends State<ShowcasePage> {
             // --- SECCIÓN BOTONES ---
             TextTitle("Botones e Interacción"),
             Space(SPACE_SMALL),
-            ButtonCustom(
-              text: "BOTÓN PRIMARIO",
-              onPressed: () {},
-            ),
+            ButtonCustom(text: "BOTÓN PRIMARIO", onPressed: () {}),
             Space(SPACE_SMALL),
             ButtonCustom(
               text: "BOTÓN CON BORDE",

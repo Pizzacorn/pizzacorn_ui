@@ -43,11 +43,19 @@ class _DatePickerFieldState extends State<DatePickerField> {
   void initState() {
     super.initState();
     // Usa la fecha inicial proporcionada o una por defecto (ej. hoy o hace 20 años)
-    _currentSelectedDate = widget.initialDate ?? DateTime(DateTime.now().year - 20, DateTime.now().month, DateTime.now().day);
+    _currentSelectedDate =
+        widget.initialDate ??
+        DateTime(
+          DateTime.now().year - 20,
+          DateTime.now().month,
+          DateTime.now().day,
+        );
 
     // Inicializa el texto del controlador si no tiene texto y hay una fecha inicial
     if (widget.controller.text.isEmpty && widget.initialDate != null) {
-      widget.controller.text = DateFormat('dd/MM/yyyy').format(_currentSelectedDate);
+      widget.controller.text = DateFormat(
+        'dd/MM/yyyy',
+      ).format(_currentSelectedDate);
     }
   }
 
@@ -56,7 +64,8 @@ class _DatePickerFieldState extends State<DatePickerField> {
 
     final DateTime? picked = await showModalBottomSheet<DateTime>(
       context: context,
-      isScrollControlled: true, // Importante para que el picker no se corte en pantallas pequeñas
+      isScrollControlled:
+          true, // Importante para que el picker no se corte en pantallas pequeñas
       builder: (BuildContext builderContext) {
         return DatePickerCustom(
           initialDateTime: _currentSelectedDate,
@@ -74,7 +83,9 @@ class _DatePickerFieldState extends State<DatePickerField> {
     if (picked != null && picked != _currentSelectedDate) {
       setState(() {
         _currentSelectedDate = picked;
-        widget.controller.text = DateFormat('dd/MM/yyyy').format(_currentSelectedDate);
+        widget.controller.text = DateFormat(
+          'dd/MM/yyyy',
+        ).format(_currentSelectedDate);
       });
       widget.onDateSelected?.call(picked); // Notifica al widget padre
     }
@@ -100,7 +111,9 @@ class _DatePickerFieldState extends State<DatePickerField> {
           // definido en PizzacornTheme() (theme.dart)
         ),
         validator: widget.validator,
-        style: styleBody(color: widget.enabled ? COLOR_TEXT : COLOR_TEXT_BLOCKED),
+        style: styleBody(
+          color: widget.enabled ? COLOR_TEXT : COLOR_TEXT_BLOCKED,
+        ),
       ),
     );
   }

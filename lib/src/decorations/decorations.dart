@@ -15,13 +15,15 @@ BoxDecoration BoxDecorationCustom({
 }) {
   return BoxDecoration(
     // REGLA: Sin const para que sea reactivo
-    boxShadow: noShadow ? [] : [
-      BoxShadow(
-        color: COLOR_SHADOW.withOpacity(0.1),
-        blurRadius: 10,
-        offset: Offset(0, 4),
-      )
-    ],
+    boxShadow: noShadow
+        ? []
+        : [
+            BoxShadow(
+              color: COLOR_SHADOW.withOpacity(0.1),
+              blurRadius: 10,
+              offset: Offset(0, 4),
+            ),
+          ],
     color: color ?? COLOR_BACKGROUND,
     borderRadius: BorderRadiusCustomAll(
       // radiusSmall usa RADIUS (6), si es false podría usar uno mayor (ej: 12)

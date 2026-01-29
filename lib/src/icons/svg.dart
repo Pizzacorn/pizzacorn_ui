@@ -23,20 +23,14 @@ Widget SvgCustom({
 
   return Semantics(
     label: semanticLabel,
-      excludeSemantics: semanticLabel == null, // Si no hay label, que lo ignore
+    excludeSemantics: semanticLabel == null, // Si no hay label, que lo ignore
     child: SvgPicture.asset(
       fullIcon.isNotEmpty ? fullIcon : "assets/icons/$icon.svg",
       height: size,
       width: size,
-      colorFilter: noColor
-          ? null
-          : ColorFilter.mode(
-        effectiveColor,
-        blendMode,
-      ),
-    )
+      colorFilter: noColor ? null : ColorFilter.mode(effectiveColor, blendMode),
+    ),
   );
-
 }
 
 /// Icono SVG sin aplicar ningún color (usa los colores del propio asset).

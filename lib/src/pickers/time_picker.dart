@@ -96,12 +96,12 @@ class TimePickerCustomState extends State<TimePickerCustom> {
                         Navigator.pop(context);
                       },
                     ),
-                  )
+                  ),
                 ],
               ),
             ],
           ),
-        )
+        ),
       ],
     );
   }

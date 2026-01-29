@@ -31,11 +31,7 @@ class MoreMenuButton extends StatelessWidget {
 
     return PopupMenuButton<MoreMenuCustom>(
       tooltip: tooltip,
-      icon: Icon(
-        Icons.more_vert,
-        color: finalIconColor,
-        size: iconSize,
-      ),
+      icon: Icon(Icons.more_vert, color: finalIconColor, size: iconSize),
       color: finalBackgroundColor,
       onSelected: (action) {
         if (action == MoreMenuCustom.edit && onEdit != null) {
@@ -47,7 +43,8 @@ class MoreMenuButton extends StatelessWidget {
         }
       },
       itemBuilder: (context) {
-        final List<PopupMenuEntry<MoreMenuCustom>> items = <PopupMenuEntry<MoreMenuCustom>>[];
+        final List<PopupMenuEntry<MoreMenuCustom>> items =
+            <PopupMenuEntry<MoreMenuCustom>>[];
 
         if (onEdit != null) {
           items.add(

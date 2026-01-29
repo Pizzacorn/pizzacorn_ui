@@ -6,18 +6,10 @@ import 'package:flutter/material.dart';
 /// ```dart
 /// goTo(context, const HomePage());
 /// ```
-Future<T?> goTo<T>(
-    BuildContext context,
-    Widget page, {
-      VoidCallback? onBack,
-    }) {
-  return Navigator.of(context)
-      .push<T>(
-    MaterialPageRoute(
-      builder: (_) => page,
-    ),
-  )
-      .then((value) {
+Future<T?> goTo<T>(BuildContext context, Widget page, {VoidCallback? onBack}) {
+  return Navigator.of(
+    context,
+  ).push<T>(MaterialPageRoute(builder: (_) => page)).then((value) {
     if (onBack != null) {
       onBack();
     }
@@ -32,22 +24,18 @@ Future<T?> goTo<T>(
 /// goToNoBack(context, const LoginPage());
 /// ```
 Future<T?> goToNoBack<T>(
-    BuildContext context,
-    Widget page, {
-      VoidCallback? onBack,
-    }) {
+  BuildContext context,
+  Widget page, {
+  VoidCallback? onBack,
+}) {
   return Navigator.of(context)
-      .pushReplacement<T, T?>(
-    MaterialPageRoute(
-      builder: (_) => page,
-    ),
-  )
+      .pushReplacement<T, T?>(MaterialPageRoute(builder: (_) => page))
       .then((value) {
-    if (onBack != null) {
-      onBack();
-    }
-    return value;
-  });
+        if (onBack != null) {
+          onBack();
+        }
+        return value;
+      });
 }
 
 /// Navega a una nueva página y limpia por completo el histórico de navegación.
@@ -59,23 +47,21 @@ Future<T?> goToNoBack<T>(
 /// goToClear(context, const HomePage());
 /// ```
 Future<T?> goToClear<T>(
-    BuildContext context,
-    Widget page, {
-      VoidCallback? onBack,
-    }) {
+  BuildContext context,
+  Widget page, {
+  VoidCallback? onBack,
+}) {
   return Navigator.of(context)
       .pushAndRemoveUntil<T>(
-    MaterialPageRoute(
-      builder: (_) => page,
-    ),
+        MaterialPageRoute(builder: (_) => page),
         (_) => false,
-  )
+      )
       .then((value) {
-    if (onBack != null) {
-      onBack();
-    }
-    return value;
-  });
+        if (onBack != null) {
+          onBack();
+        }
+        return value;
+      });
 }
 
 /// Hace pop de la ruta actual si es posible (equivalente a Navigator.pop()).

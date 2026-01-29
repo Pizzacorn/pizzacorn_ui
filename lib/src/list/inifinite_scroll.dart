@@ -43,7 +43,8 @@ class InfiniteListViewState extends State<InfiniteListView> {
   }
 
   void onScroll() {
-    if (scrollController.position.pixels >= scrollController.position.maxScrollExtent - 200) {
+    if (scrollController.position.pixels >=
+        scrollController.position.maxScrollExtent - 200) {
       if (widget.hasMore && !widget.isLoadingMore) {
         widget.onLoadMore();
       }
@@ -76,9 +77,7 @@ class InfiniteListViewState extends State<InfiniteListView> {
         if (!widget.hasMore && widget.itemCount > 0)
           Padding(
             padding: PADDING,
-            child: Center(
-              child: TextCaption("No hay más registros"),
-            ),
+            child: Center(child: TextCaption("No hay más registros")),
           ),
       ],
     );

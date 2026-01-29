@@ -14,12 +14,12 @@ import '../utils/color_utils.dart';
 /// );
 /// ```
 Future<void> openBottomSheet(
-    BuildContext context,
-    Widget widget, {
-      bool noBarrierColor = false,
-      bool disableDrag = false,
-      Function()? onBack,
-    }) async {
+  BuildContext context,
+  Widget widget, {
+  bool noBarrierColor = false,
+  bool disableDrag = false,
+  Function()? onBack,
+}) async {
   final scheme = Theme.of(context).colorScheme;
 
   await showModalBottomSheet(
@@ -27,8 +27,9 @@ Future<void> openBottomSheet(
     isScrollControlled: true,
     // Fondo basado en el surface del theme
     backgroundColor: scheme.surface.withValues(alpha: 0),
-    barrierColor:
-    noBarrierColor ? Colors.transparent : Colors.black.withValues(alpha: 0.1),
+    barrierColor: noBarrierColor
+        ? Colors.transparent
+        : Colors.black.withValues(alpha: 0.1),
     useSafeArea: true,
     elevation: 0,
     enableDrag: !disableDrag,
@@ -56,10 +57,10 @@ Future<void> openBottomSheet(
 /// );
 /// ```
 Future<void> openBottomNoBack(
-    BuildContext context,
-    Widget widget, {
-      Function()? onBack,
-    }) async {
+  BuildContext context,
+  Widget widget, {
+  Function()? onBack,
+}) async {
   await showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -98,10 +99,10 @@ Future<void> openBottomNoBack(
 /// );
 /// ```
 Future<void> openDialog(
-    BuildContext context,
-    Widget widget, {
-      Function()? onBack,
-    }) async {
+  BuildContext context,
+  Widget widget, {
+  Function()? onBack,
+}) async {
   await showDialog(
     context: context,
     barrierDismissible: true,
@@ -128,11 +129,7 @@ Future<void> openDialog(
 ///
 /// [text] → mensaje a mostrar.
 /// [color] → color de fondo del snackbar. Si es null, se usa [ColorScheme.error].
-void openSnackbar(
-    BuildContext context, {
-      String text = "",
-      Color? color,
-    }) {
+void openSnackbar(BuildContext context, {String text = "", Color? color}) {
   final scheme = Theme.of(context).colorScheme;
 
   // Si no se pasa color, usamos por defecto el color de error del theme
@@ -152,11 +149,7 @@ void openSnackbar(
       elevation: 100,
       content: Row(
         children: [
-          Icon(
-            iconData,
-            color: BestOnColor(effectiveColor, context),
-            size: 18,
-          ),
+          Icon(iconData, color: BestOnColor(effectiveColor, context), size: 18),
           Space(SPACE_SMALL),
           Expanded(
             child: TextBody(

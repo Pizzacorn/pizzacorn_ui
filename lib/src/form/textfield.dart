@@ -134,7 +134,8 @@ class TextFieldCustomState extends State<TextFieldCustom> {
     super.dispose();
   }
 
-  bool isNumericKeyboard() { // ⬅ Sin guion bajo
+  bool isNumericKeyboard() {
+    // ⬅ Sin guion bajo
     final type = widget.textInputType;
     return type == TextInputType.number ||
         type == TextInputType.phone ||
@@ -147,8 +148,8 @@ class TextFieldCustomState extends State<TextFieldCustom> {
     // 🔥 RESOLUCIÓN DE DEFAULTS REACTIVOS (Reglas de Oro: Sin const)
     final double effectiveTextSize = widget.textSize ?? TEXT_BODY_SIZE;
     final double effectiveHintSize = widget.hintSize ?? TEXT_BODY_SIZE;
-    final double effectiveRadius   = widget.radius ?? RADIUS;
-    final Color effectiveFill      = widget.colorFill ?? COLOR_BACKGROUND_SECONDARY;
+    final double effectiveRadius = widget.radius ?? RADIUS;
+    final Color effectiveFill = widget.colorFill ?? COLOR_BACKGROUND_SECONDARY;
     final Color effectiveHintColor = widget.colorHint ?? COLOR_SUBTEXT;
 
     // 📏 ALTURA REACTIVA BASADA EN CONFIG
@@ -156,7 +157,9 @@ class TextFieldCustomState extends State<TextFieldCustom> {
 
     return Container(
       width: widget.width,
-      height: widget.maxLines > 1 ? null : finalHeight, // Si es multilínea, dejamos que crezca
+      height: widget.maxLines > 1
+          ? null
+          : finalHeight, // Si es multilínea, dejamos que crezca
       decoration: BoxDecoration(
         boxShadow: widget.shadow ? [BoxShadowCustom()] : null,
       ),
@@ -169,11 +172,9 @@ class TextFieldCustomState extends State<TextFieldCustom> {
         obscureText: widget.password ? !obscureVisible : false,
         textCapitalization: widget.textCapitalization,
         textAlignVertical: widget.textAlignVertical,
-        style: widget.textStyleCustom ??
-            styleBody(
-              color: COLOR_TEXT,
-              size: effectiveTextSize,
-            ),
+        style:
+            widget.textStyleCustom ??
+            styleBody(color: COLOR_TEXT, size: effectiveTextSize),
         inputFormatters: widget.inputFormatters ?? [],
         maxLines: widget.maxLines,
         minLines: widget.minLines,
@@ -190,8 +191,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
           if (widget.validator != null) {
             return widget.validator!(value);
           }
-          if (widget.errorText.isNotEmpty &&
-              (value == null || value.isEmpty)) {
+          if (widget.errorText.isNotEmpty && (value == null || value.isEmpty)) {
             return widget.errorText;
           }
           return null;
@@ -221,14 +221,17 @@ class TextFieldCustomState extends State<TextFieldCustom> {
           // BORDE
           border: widget.filled
               ? OutlineInputBorder(
-            borderRadius: BorderRadius.circular(effectiveRadius),
-            borderSide: BorderSide.none,
-          )
+                  borderRadius: BorderRadius.circular(effectiveRadius),
+                  borderSide: BorderSide.none,
+                )
               : null,
 
           contentPadding: widget.noPadding
               ? EdgeInsets.zero
-              : EdgeInsets.symmetric(horizontal: 15, vertical: (finalHeight - effectiveTextSize) / 2),
+              : EdgeInsets.symmetric(
+                  horizontal: 15,
+                  vertical: (finalHeight - effectiveTextSize) / 2,
+                ),
 
           // SUFFIX
           suffixText: widget.sufixText.isNotEmpty ? widget.sufixText : null,
@@ -237,23 +240,26 @@ class TextFieldCustomState extends State<TextFieldCustom> {
           // PREFIX
           prefixText: widget.prefixText.isNotEmpty ? widget.prefixText : null,
           prefixStyle: styleBody(color: COLOR_ACCENT),
-          prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+          prefixIconConstraints: const BoxConstraints(
+            minWidth: 0,
+            minHeight: 0,
+          ),
           prefixIcon: widget.prefixIcon.isNotEmpty
               ? TextButton(
-            style: styleTransparent(),
-            onPressed: () {
-              if (widget.onPrefixPressed != null) {
-                widget.onPrefixPressed!();
-              }
-            },
-            child: Padding(
-              padding: const EdgeInsets.only(left: 15, right: 15),
-              child: SvgCustom(
-                icon: widget.prefixIcon,
-                size: widget.prefixIconSize,
-              ),
-            ),
-          )
+                  style: styleTransparent(),
+                  onPressed: () {
+                    if (widget.onPrefixPressed != null) {
+                      widget.onPrefixPressed!();
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 15, right: 15),
+                    child: SvgCustom(
+                      icon: widget.prefixIcon,
+                      size: widget.prefixIconSize,
+                    ),
+                  ),
+                )
               : null,
         ),
       ),
@@ -287,10 +293,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
         },
         child: Padding(
           padding: const EdgeInsets.only(left: 15, right: 15),
-          child: SvgCustom(
-            icon: widget.sufixIcon,
-            size: 16,
-          ),
+          child: SvgCustom(icon: widget.sufixIcon, size: 16),
         ),
       );
     }
@@ -298,10 +301,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
     // Teclado numérico: botón para ocultar si está en foco
     if (isNumericKeyboard() && focusNode.hasFocus) {
       return IconButton(
-        icon: Icon(
-          Icons.keyboard_hide_outlined,
-          color: COLOR_BORDER,
-        ),
+        icon: Icon(Icons.keyboard_hide_outlined, color: COLOR_BORDER),
         onPressed: () {
           FocusScope.of(context).unfocus();
         },

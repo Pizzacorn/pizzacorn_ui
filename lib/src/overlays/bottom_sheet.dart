@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../pizzacorn_ui.dart';
 import '../layout/space.dart';
 
-
 /// Bottom sheet sencillo con UN botón.
 /// Suele usarse como footer fijo de un modal/bottomSheet.
 class BottomSheetCustomOneButton extends StatelessWidget {

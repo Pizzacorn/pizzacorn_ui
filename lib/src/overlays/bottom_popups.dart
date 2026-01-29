@@ -24,9 +24,7 @@ class BottomSheetPopUps extends StatelessWidget {
       height: 70,
       decoration: BoxDecoration(
         // Usamos el token de color de borde de tu config.dart
-        border: Border(
-          top: BorderSide(color: COLOR_BORDER, width: 1.0),
-        ),
+        border: Border(top: BorderSide(color: COLOR_BORDER, width: 1.0)),
         color: COLOR_BACKGROUND,
       ),
       child: Row(
@@ -37,15 +35,15 @@ class BottomSheetPopUps extends StatelessWidget {
           // Botón de eliminar (solo si hay función)
           onPressedDelete != null
               ? ButtonCustom(
-            height: height,
-            width: width,
-            text: "Eliminar",
-            onlyText: true,
-            textColor: COLOR_ERROR,
-            onPressed: () {
-              onPressedDelete!();
-            },
-          )
+                  height: height,
+                  width: width,
+                  text: "Eliminar",
+                  onlyText: true,
+                  textColor: COLOR_ERROR,
+                  onPressed: () {
+                    onPressedDelete!();
+                  },
+                )
               : SizedBox.shrink(),
 
           Spacer(),

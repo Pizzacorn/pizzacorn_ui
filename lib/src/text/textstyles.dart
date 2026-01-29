@@ -95,17 +95,16 @@ double get TEXT_SMALL_SIZE => PizzacornTextConfig.sizes.small;
 FontWeight get WEIGHT_NORMAL => PizzacornTextConfig.weights.normal;
 FontWeight get WEIGHT_BOLD => PizzacornTextConfig.weights.bold;
 
-
 /// =================== BASES DE ESTILO ===================
 TextStyle getStyleCustom(
-    double size,
-    FontWeight weight,
-    Color color, {
-      double letterspacing = 0,
-      bool shadow = false,
-      bool underlined = false,
-      double height = 1.2,
-    }) {
+  double size,
+  FontWeight weight,
+  Color color, {
+  double letterspacing = 0,
+  bool shadow = false,
+  bool underlined = false,
+  double height = 1.2,
+}) {
   try {
     return GoogleFonts.getFont(
       PizzacornTextConfig.primaryFontFamily,
@@ -132,14 +131,14 @@ TextStyle getStyleCustom(
 }
 
 TextStyle getStyleSecondaryCustom(
-    double size,
-    FontWeight weight,
-    Color color, {
-      double letterspacing = 0,
-      bool shadow = false,
-      bool underlined = false,
-      double height = 1.2,
-    }) {
+  double size,
+  FontWeight weight,
+  Color color, {
+  double letterspacing = 0,
+  bool shadow = false,
+  bool underlined = false,
+  double height = 1.2,
+}) {
   try {
     return GoogleFonts.getFont(
       PizzacornTextConfig.secondaryFontFamily,
@@ -289,21 +288,22 @@ TextStyle styleSmall({
 
 // Helper para construir el texto con Semantics y SelectableRegion
 Widget _buildSelectableSemanticsText(
-    String text,
-    TextStyle style, {
-      TextAlign textAlign = TextAlign.start,
-      int? maxlines, // Nullable para poder ser 'null' si es 0 o no se especifica
-      TextOverflow textOverflow = TextOverflow.ellipsis,
-      bool isUppercase = false,
-      bool isHeader = false, // Para diferenciar si es header o no
-    }) {
-
+  String text,
+  TextStyle style, {
+  TextAlign textAlign = TextAlign.start,
+  int? maxlines, // Nullable para poder ser 'null' si es 0 o no se especifica
+  TextOverflow textOverflow = TextOverflow.ellipsis,
+  bool isUppercase = false,
+  bool isHeader = false, // Para diferenciar si es header o no
+}) {
   // El widget de texto base
   final Widget textWidget = Text(
     isUppercase ? text.toUpperCase() : text,
     overflow: textOverflow,
     textAlign: textAlign,
-    maxLines: maxlines == 0 ? null : maxlines, // Permitir null para scroll infinito
+    maxLines: maxlines == 0
+        ? null
+        : maxlines, // Permitir null para scroll infinito
     style: style,
   );
 
@@ -325,17 +325,17 @@ Widget _buildSelectableSemanticsText(
 // --- Widgets de Texto ---
 
 Widget TextBig(
-    String text, {
-      double? fontSize,
-      Color? color,
-      bool shadow = false,
-      FontWeight? fontWeight,
-      TextAlign textAlign = TextAlign.start,
-      int maxlines = MAXLINES,
-      TextOverflow textOverflow = TextOverflow.ellipsis,
-      double espacioLetras = 0,
-      bool isUppercase = false,
-    }) {
+  String text, {
+  double? fontSize,
+  Color? color,
+  bool shadow = false,
+  FontWeight? fontWeight,
+  TextAlign textAlign = TextAlign.start,
+  int maxlines = MAXLINES,
+  TextOverflow textOverflow = TextOverflow.ellipsis,
+  double espacioLetras = 0,
+  bool isUppercase = false,
+}) {
   final Color effectiveColor = color ?? COLOR_TEXT;
 
   return _buildSelectableSemanticsText(
@@ -355,18 +355,18 @@ Widget TextBig(
 }
 
 Widget TextTitle(
-    String text, {
-      double? fontSize,
-      Color? color,
-      bool shadow = false,
-      FontWeight? fontWeight,
-      TextAlign textAlign = TextAlign.start,
-      int maxlines = MAXLINES,
-      TextOverflow textOverflow = TextOverflow.ellipsis,
-      double espacioLetras = 0,
-      bool isUppercase = false,
-      double height = 1.2,
-    }) {
+  String text, {
+  double? fontSize,
+  Color? color,
+  bool shadow = false,
+  FontWeight? fontWeight,
+  TextAlign textAlign = TextAlign.start,
+  int maxlines = MAXLINES,
+  TextOverflow textOverflow = TextOverflow.ellipsis,
+  double espacioLetras = 0,
+  bool isUppercase = false,
+  double height = 1.2,
+}) {
   final Color effectiveColor = color ?? COLOR_TEXT;
 
   return _buildSelectableSemanticsText(
@@ -386,18 +386,18 @@ Widget TextTitle(
 }
 
 Widget TextSubtitle(
-    String text, {
-      double? fontSize,
-      Color? color,
-      bool shadow = false,
-      FontWeight? fontWeight,
-      TextAlign textAlign = TextAlign.start,
-      int maxlines = MAXLINES,
-      TextOverflow textOverflow = TextOverflow.ellipsis,
-      double espacioLetras = 0,
-      bool isUppercase = false,
-      double height = 1.2,
-    }) {
+  String text, {
+  double? fontSize,
+  Color? color,
+  bool shadow = false,
+  FontWeight? fontWeight,
+  TextAlign textAlign = TextAlign.start,
+  int maxlines = MAXLINES,
+  TextOverflow textOverflow = TextOverflow.ellipsis,
+  double espacioLetras = 0,
+  bool isUppercase = false,
+  double height = 1.2,
+}) {
   final Color effectiveColor = color ?? COLOR_TEXT;
 
   return _buildSelectableSemanticsText(
@@ -417,18 +417,18 @@ Widget TextSubtitle(
 }
 
 Widget TextBody(
-    String texto, {
-      double? fontSize,
-      Color? color,
-      bool shadow = false,
-      FontWeight? fontWeight,
-      TextAlign textAlign = TextAlign.start,
-      int? maxlines,
-      TextOverflow textOverflow = TextOverflow.ellipsis,
-      double espacioLetras = 0,
-      bool isUppercase = false,
-      double height = 1.2,
-    }) {
+  String texto, {
+  double? fontSize,
+  Color? color,
+  bool shadow = false,
+  FontWeight? fontWeight,
+  TextAlign textAlign = TextAlign.start,
+  int? maxlines,
+  TextOverflow textOverflow = TextOverflow.ellipsis,
+  double espacioLetras = 0,
+  bool isUppercase = false,
+  double height = 1.2,
+}) {
   final Color effectiveColor = color ?? COLOR_TEXT;
 
   return _buildSelectableSemanticsText(
@@ -449,17 +449,17 @@ Widget TextBody(
 }
 
 Widget TextButtonCustom(
-    String texto, {
-      double? fontSize,
-      bool shadow = false,
-      Color? color,
-      FontWeight? fontWeight,
-      TextAlign textAlign = TextAlign.start,
-      int maxlines = MAXLINES,
-      TextOverflow textOverflow = TextOverflow.ellipsis,
-      double espacioLetras = 0,
-      bool isUppercase = false,
-    }) {
+  String texto, {
+  double? fontSize,
+  bool shadow = false,
+  Color? color,
+  FontWeight? fontWeight,
+  TextAlign textAlign = TextAlign.start,
+  int maxlines = MAXLINES,
+  TextOverflow textOverflow = TextOverflow.ellipsis,
+  double espacioLetras = 0,
+  bool isUppercase = false,
+}) {
   final Color effectiveColor = color ?? COLOR_TEXT_BUTTONS;
 
   // Los botones no suelen ser seleccionables, solo "tappables".
@@ -482,27 +482,23 @@ Widget TextButtonCustom(
 }
 
 Widget TextCaption(
-    String texto, {
-      double? fontSize,
-      Color? color,
-      bool shadow = false,
-      FontWeight? fontWeight,
-      TextAlign textAlign = TextAlign.start,
-      int maxlines = MAXLINES,
-      TextOverflow textOverflow = TextOverflow.ellipsis,
-      double espacioLetras = 0,
-      bool isUppercase = false,
-    }) {
+  String texto, {
+  double? fontSize,
+  Color? color,
+  bool shadow = false,
+  FontWeight? fontWeight,
+  TextAlign textAlign = TextAlign.start,
+  int maxlines = MAXLINES,
+  TextOverflow textOverflow = TextOverflow.ellipsis,
+  double espacioLetras = 0,
+  bool isUppercase = false,
+}) {
   final Color effectiveColor = color ?? COLOR_SUBTEXT;
 
   // Ahora TextCaption también es seleccionable.
   return _buildSelectableSemanticsText(
     texto,
-    styleCaption(
-      size: fontSize,
-      fontWeight: fontWeight,
-      color: effectiveColor,
-    ),
+    styleCaption(size: fontSize, fontWeight: fontWeight, color: effectiveColor),
     textAlign: textAlign,
     maxlines: maxlines,
     textOverflow: textOverflow,
@@ -512,27 +508,23 @@ Widget TextCaption(
 }
 
 Widget TextSmall(
-    String texto, {
-      double? fontSize,
-      Color? color,
-      bool shadow = false,
-      FontWeight? fontWeight,
-      TextAlign textAlign = TextAlign.start,
-      int maxlines = MAXLINES,
-      TextOverflow textOverflow = TextOverflow.ellipsis,
-      double espacioLetras = 0,
-      bool isUppercase = false,
-    }) {
+  String texto, {
+  double? fontSize,
+  Color? color,
+  bool shadow = false,
+  FontWeight? fontWeight,
+  TextAlign textAlign = TextAlign.start,
+  int maxlines = MAXLINES,
+  TextOverflow textOverflow = TextOverflow.ellipsis,
+  double espacioLetras = 0,
+  bool isUppercase = false,
+}) {
   final Color effectiveColor = color ?? COLOR_TEXT;
 
   // Ahora TextSmall también es seleccionable.
   return _buildSelectableSemanticsText(
     texto,
-    styleSmall(
-      size: fontSize,
-      fontWeight: fontWeight,
-      color: effectiveColor,
-    ),
+    styleSmall(size: fontSize, fontWeight: fontWeight, color: effectiveColor),
     textAlign: textAlign,
     maxlines: maxlines,
     textOverflow: textOverflow,
@@ -542,26 +534,28 @@ Widget TextSmall(
 }
 
 Widget TextCustom(
-    String texto, {
-      double? fontSize,
-      bool shadow = false,
-      Color? color,
-      FontWeight? fontWeight,
-      TextAlign textAlign = TextAlign.start,
-      int maxlines = MAXLINES,
-      TextOverflow textOverflow = TextOverflow.ellipsis,
-      double espacioLetras = 0,
-      double height = 1,
-      bool isUppercase = false,
-    }) {
+  String texto, {
+  double? fontSize,
+  bool shadow = false,
+  Color? color,
+  FontWeight? fontWeight,
+  TextAlign textAlign = TextAlign.start,
+  int maxlines = MAXLINES,
+  TextOverflow textOverflow = TextOverflow.ellipsis,
+  double espacioLetras = 0,
+  double height = 1,
+  bool isUppercase = false,
+}) {
   final Color effectiveColor = color ?? COLOR_TEXT;
 
   // Ahora TextCustom también es seleccionable.
   return _buildSelectableSemanticsText(
     texto,
     getStyleCustom(
-      fontSize ?? TEXT_BUTTON_SIZE, // Usa TEXT_BUTTON_SIZE como fallback si no se da fontSize
-      fontWeight ?? WEIGHT_BOLD, // Usa WEIGHT_BOLD como fallback si no se da fontWeight
+      fontSize ??
+          TEXT_BUTTON_SIZE, // Usa TEXT_BUTTON_SIZE como fallback si no se da fontSize
+      fontWeight ??
+          WEIGHT_BOLD, // Usa WEIGHT_BOLD como fallback si no se da fontWeight
       effectiveColor,
       letterspacing: espacioLetras,
       shadow: shadow,

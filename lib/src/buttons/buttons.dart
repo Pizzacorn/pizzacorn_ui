@@ -77,13 +77,15 @@ class ButtonCustom extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // FIX: Ahora el color por defecto es COLOR_TEXT_BUTTONS si no se especifica
-    final Color effectiveTextColor = textColor ?? (border ? COLOR_TEXT : COLOR_TEXT_BUTTONS);
+    final Color effectiveTextColor =
+        textColor ?? (border ? COLOR_TEXT : COLOR_TEXT_BUTTONS);
     final Color effectiveBorderColor = borderColor ?? COLOR_BORDER;
     final double effectiveBorderRadius = borderRadius ?? RADIUS;
     final Color effectiveColor = color ?? COLOR_ACCENT;
     final Color effectiveColorSplash = colorSplash ?? COLOR_ACCENT_PRESSED;
     final Color effectiveGradientPrimary = colorGradientPrimary ?? COLOR_ACCENT;
-    final Color effectiveGradientSecondary = colorGradientSecondary ?? COLOR_ACCENT_SECONDARY;
+    final Color effectiveGradientSecondary =
+        colorGradientSecondary ?? COLOR_ACCENT_SECONDARY;
 
     final double finalHeight = height ?? BUTTON_HEIGHT;
 
@@ -109,34 +111,38 @@ class ButtonCustom extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           shape: border
               ? RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(effectiveBorderRadius),
-            side: BorderSide(
-              color: effectiveBorderColor,
-              width: borderWidth,
-              strokeAlign: BorderSide.strokeAlignInside,
-            ),
-          )
+                  borderRadius: BorderRadius.circular(effectiveBorderRadius),
+                  side: BorderSide(
+                    color: effectiveBorderColor,
+                    width: borderWidth,
+                    strokeAlign: BorderSide.strokeAlignInside,
+                  ),
+                )
               : RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(effectiveBorderRadius),
-          ),
+                  borderRadius: BorderRadius.circular(effectiveBorderRadius),
+                ),
           child: InkWell(
             splashColor: effectiveColorSplash,
             onTap: onPressed,
             onLongPress: onLongPressed,
-            excludeFromSemantics: true, // Importante: Ya lo maneja el padre Semantics
+            excludeFromSemantics:
+                true, // Importante: Ya lo maneja el padre Semantics
             child: Ink(
               decoration: BoxDecoration(
-                gradient: !hasGradient || richTexts.isNotEmpty || onlyText || border
+                gradient:
+                    !hasGradient || richTexts.isNotEmpty || onlyText || border
                     ? null
                     : LinearGradient(
-                  colors: [
-                    effectiveGradientPrimary,
-                    effectiveGradientSecondary,
-                  ],
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                ),
-                color: hasGradient || richTexts.isNotEmpty || onlyText || border ? null : effectiveColor,
+                        colors: [
+                          effectiveGradientPrimary,
+                          effectiveGradientSecondary,
+                        ],
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                      ),
+                color: hasGradient || richTexts.isNotEmpty || onlyText || border
+                    ? null
+                    : effectiveColor,
               ),
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: padding),
@@ -145,12 +151,20 @@ class ButtonCustom extends StatelessWidget {
                   children: [
                     if (iconBegin.isNotEmpty)
                       Padding(
-                        padding: EdgeInsets.only(right: text.isNotEmpty ? 10 : 0),
+                        padding: EdgeInsets.only(
+                          right: text.isNotEmpty ? 10 : 0,
+                        ),
                         child: iconNoColor
                             ? SvgCustomNoColor(icon: iconBegin, size: iconSize)
-                            : SvgCustom(icon: iconBegin, size: iconSize, color: iconColor),
+                            : SvgCustom(
+                                icon: iconBegin,
+                                size: iconSize,
+                                color: iconColor,
+                              ),
                       )
-                    else if (iconFinal.isNotEmpty && text.isNotEmpty && mainAxisAlignment == MainAxisAlignment.center)
+                    else if (iconFinal.isNotEmpty &&
+                        text.isNotEmpty &&
+                        mainAxisAlignment == MainAxisAlignment.center)
                       SizedBox(width: iconSize + 10),
 
                     if (text.isNotEmpty)
@@ -158,24 +172,32 @@ class ButtonCustom extends StatelessWidget {
                         child: TextButtonCustom(
                           text,
                           color: effectiveTextColor,
-                          fontSize: customSizeText != 0 ? customSizeText : TEXT_BUTTON_SIZE,
+                          fontSize: customSizeText != 0
+                              ? customSizeText
+                              : TEXT_BUTTON_SIZE,
                         ),
                       )
                     else if (richTexts.isNotEmpty)
                       RichText(
-                        text: TextSpan(
-                          children: buildRichTextChildren(),
-                        ),
+                        text: TextSpan(children: buildRichTextChildren()),
                       ),
 
                     if (iconFinal.isNotEmpty)
                       Padding(
-                        padding: EdgeInsets.only(left: text.isNotEmpty ? 10 : 0),
+                        padding: EdgeInsets.only(
+                          left: text.isNotEmpty ? 10 : 0,
+                        ),
                         child: iconNoColor
                             ? SvgCustomNoColor(icon: iconFinal, size: iconSize)
-                            : SvgCustom(icon: iconFinal, size: iconSize, color: iconColor),
+                            : SvgCustom(
+                                icon: iconFinal,
+                                size: iconSize,
+                                color: iconColor,
+                              ),
                       )
-                    else if (iconBegin.isNotEmpty && text.isNotEmpty && mainAxisAlignment == MainAxisAlignment.center)
+                    else if (iconBegin.isNotEmpty &&
+                        text.isNotEmpty &&
+                        mainAxisAlignment == MainAxisAlignment.center)
                       SizedBox(width: iconSize + 10),
                   ],
                 ),
@@ -195,18 +217,14 @@ class ButtonCustom extends StatelessWidget {
       final String value = textData.values.first;
 
       if (key == "destacado") {
-        children.add(TextSpan(
-          text: value,
-          style: styleBody(
-            fontWeight: FontWeight.bold,
-            color: COLOR_ACCENT,
+        children.add(
+          TextSpan(
+            text: value,
+            style: styleBody(fontWeight: FontWeight.bold, color: COLOR_ACCENT),
           ),
-        ));
+        );
       } else {
-        children.add(TextSpan(
-          text: value,
-          style: styleBody(),
-        ));
+        children.add(TextSpan(text: value, style: styleBody()));
       }
     }
     return children;

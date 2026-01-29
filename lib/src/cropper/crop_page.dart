@@ -39,10 +39,7 @@ class _CropPageState extends State<CropPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: COLOR_BACKGROUND,
-      appBar: AppBarBack(
-        context: context,
-        title: "Recortar imagen",
-      ),
+      appBar: AppBarBack(context: context, title: "Recortar imagen"),
       body: Loading(
         loading: loading,
         child: Stack(
@@ -74,7 +71,7 @@ class _CropPageState extends State<CropPage> {
 
               // No queremos puntos en las esquinas
               cornerDotBuilder: (size, edgeAlignment) =>
-              const SizedBox.shrink(),
+                  const SizedBox.shrink(),
 
               clipBehavior: Clip.none,
               interactive: true,
@@ -97,8 +94,7 @@ class _CropPageState extends State<CropPage> {
     setState(() => loading = true);
 
     // PATH
-    final String pathFile =
-    DateTime.now().millisecondsSinceEpoch.toString();
+    final String pathFile = DateTime.now().millisecondsSinceEpoch.toString();
 
     // Directorio local
     final directory = await getApplicationDocumentsDirectory();

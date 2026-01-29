@@ -25,12 +25,16 @@ class BottomBarCustom extends StatelessWidget {
     this.backgroundColor,
     this.activeColor,
     this.inactiveColor,
-  }) : assert(icons.length == titles.length, "La lista de iconos y títulos debe tener el mismo tamaño, Don Sput.");
+  }) : assert(
+         icons.length == titles.length,
+         "La lista de iconos y títulos debe tener el mismo tamaño, Don Sput.",
+       );
 
   @override
   Widget build(BuildContext context) {
     final Color effectiveActiveColor = activeColor ?? COLOR_ACCENT;
-    final Color effectiveInactiveColor = inactiveColor ?? COLOR_TEXT.withValues(alpha: 0.8);
+    final Color effectiveInactiveColor =
+        inactiveColor ?? COLOR_TEXT.withValues(alpha: 0.8);
     final Color effectiveBg = backgroundColor ?? COLOR_BACKGROUND;
 
     return Semantics(
@@ -65,7 +69,7 @@ class BottomBarCustom extends StatelessWidget {
                     color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
-                  )
+                  ),
                 ],
               ),
               child: Row(
@@ -153,11 +157,7 @@ class BottomItem extends StatelessWidget {
     final Color color = isSelected ? activeColor : inactiveColor;
 
     if (iconData is IconData) {
-      return Icon(
-        iconData,
-        size: 20,
-        color: color,
-      );
+      return Icon(iconData, size: 20, color: color);
     } else if (iconData is String) {
       return SvgPicture.asset(
         iconData,

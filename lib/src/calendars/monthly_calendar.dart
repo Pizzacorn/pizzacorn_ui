@@ -68,11 +68,19 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
   }
 
   void changeMonth(int offset) {
-    final newMonth = DateTime(currentMonth.year, currentMonth.month + offset, 1);
+    final newMonth = DateTime(
+      currentMonth.year,
+      currentMonth.month + offset,
+      1,
+    );
     final minMonth = DateTime(widget.startDate.year, widget.startDate.month, 1);
     if (newMonth.isBefore(minMonth)) return;
     if (widget.lastDate != null) {
-      final maxMonth = DateTime(widget.lastDate!.year, widget.lastDate!.month, 1);
+      final maxMonth = DateTime(
+        widget.lastDate!.year,
+        widget.lastDate!.month,
+        1,
+      );
       if (newMonth.isAfter(maxMonth)) return;
     }
     setState(() => currentMonth = newMonth);
@@ -84,7 +92,11 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
 
   @override
   Widget build(BuildContext context) {
-    final daysInMonth = DateTime(currentMonth.year, currentMonth.month + 1, 0).day;
+    final daysInMonth = DateTime(
+      currentMonth.year,
+      currentMonth.month + 1,
+      0,
+    ).day;
     final offset = currentMonth.weekday - 1;
     final List<DateTime?> cells = <DateTime?>[];
 
@@ -106,7 +118,9 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
             ),
             Column(
               children: [
-                TextSubtitle(formatMonthText.format(currentMonth).toUpperCase()),
+                TextSubtitle(
+                  formatMonthText.format(currentMonth).toUpperCase(),
+                ),
                 TextCaption(formatYear.format(currentMonth)),
               ],
             ),
@@ -141,8 +155,13 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
             final day = cells[idx];
             if (day == null) return Container();
 
-            final today = DateTime(widget.startDate.year, widget.startDate.month, widget.startDate.day);
-            final bool blocked = widget.blockedDays.any((d) => isSameDay(d, day)) ||
+            final today = DateTime(
+              widget.startDate.year,
+              widget.startDate.month,
+              widget.startDate.day,
+            );
+            final bool blocked =
+                widget.blockedDays.any((d) => isSameDay(d, day)) ||
                 widget.blockedWeekdays.contains(day.weekday) ||
                 (widget.lastDate != null && day.isAfter(widget.lastDate!));
 
@@ -152,15 +171,24 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
               if (isSameDay(widget.markedDates[i], day)) highlightedCount++;
             }
 
-            final bool isSingleSel = widget.selectionMode == CalendarSelectionMode.single &&
-                selectedDay != null && isSameDay(day, selectedDay!);
-            final bool isStart = widget.selectionMode == CalendarSelectionMode.range &&
-                startSelected != null && isSameDay(day, startSelected!);
-            final bool isEnd = widget.selectionMode == CalendarSelectionMode.range &&
-                endSelected != null && isSameDay(day, endSelected!);
-            final bool inRange = widget.selectionMode == CalendarSelectionMode.range &&
-                startSelected != null && endSelected != null &&
-                day.isAfter(startSelected!) && day.isBefore(endSelected!);
+            final bool isSingleSel =
+                widget.selectionMode == CalendarSelectionMode.single &&
+                selectedDay != null &&
+                isSameDay(day, selectedDay!);
+            final bool isStart =
+                widget.selectionMode == CalendarSelectionMode.range &&
+                startSelected != null &&
+                isSameDay(day, startSelected!);
+            final bool isEnd =
+                widget.selectionMode == CalendarSelectionMode.range &&
+                endSelected != null &&
+                isSameDay(day, endSelected!);
+            final bool inRange =
+                widget.selectionMode == CalendarSelectionMode.range &&
+                startSelected != null &&
+                endSelected != null &&
+                day.isAfter(startSelected!) &&
+                day.isBefore(endSelected!);
 
             var bg = widget.style.backgroundUnselected;
             var txt = widget.style.textUnselected;
@@ -201,32 +229,50 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
             BorderRadius radius = BorderRadius.circular(RADIUS);
             if (widget.selectionMode == CalendarSelectionMode.range) {
               if (isStart && !isEnd) {
-                radius = BorderRadius.only(topLeft: Radius.circular(RADIUS), bottomLeft: Radius.circular(RADIUS));
+                radius = BorderRadius.only(
+                  topLeft: Radius.circular(RADIUS),
+                  bottomLeft: Radius.circular(RADIUS),
+                );
               } else if (!isStart && isEnd) {
-                radius = BorderRadius.only(topRight: Radius.circular(RADIUS), bottomRight: Radius.circular(RADIUS));
+                radius = BorderRadius.only(
+                  topRight: Radius.circular(RADIUS),
+                  bottomRight: Radius.circular(RADIUS),
+                );
               } else if (inRange) {
                 radius = BorderRadius.zero;
               }
             }
 
             return GestureDetector(
-              onTap: blocked ? null : () {
-                if (widget.selectionMode == CalendarSelectionMode.single) {
-                  setState(() => selectedDay = day);
-                  if (widget.onDaySelected != null) widget.onDaySelected!(day);
-                } else {
-                  if (startSelected == null || endSelected != null) {
-                    setState(() { startSelected = day; endSelected = null; });
-                  } else if (day.isBefore(startSelected!)) {
-                    setState(() => startSelected = day);
-                  } else {
-                    setState(() => endSelected = day);
-                    if (widget.onRangeSelected != null) {
-                      widget.onRangeSelected!(DateTimeRange(start: startSelected!, end: endSelected!));
-                    }
-                  }
-                }
-              },
+              onTap: blocked
+                  ? null
+                  : () {
+                      if (widget.selectionMode ==
+                          CalendarSelectionMode.single) {
+                        setState(() => selectedDay = day);
+                        if (widget.onDaySelected != null)
+                          widget.onDaySelected!(day);
+                      } else {
+                        if (startSelected == null || endSelected != null) {
+                          setState(() {
+                            startSelected = day;
+                            endSelected = null;
+                          });
+                        } else if (day.isBefore(startSelected!)) {
+                          setState(() => startSelected = day);
+                        } else {
+                          setState(() => endSelected = day);
+                          if (widget.onRangeSelected != null) {
+                            widget.onRangeSelected!(
+                              DateTimeRange(
+                                start: startSelected!,
+                                end: endSelected!,
+                              ),
+                            );
+                          }
+                        }
+                      }
+                    },
               child: Container(
                 decoration: BoxDecoration(
                   color: bg,
@@ -236,11 +282,17 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
                 child: Stack(
                   children: [
                     Center(
-                      child: TextBody('${day.day}', fontWeight: FontWeight.w600, color: txt),
+                      child: TextBody(
+                        '${day.day}',
+                        fontWeight: FontWeight.w600,
+                        color: txt,
+                      ),
                     ),
-                    if (highlightedCount > 0 && widget.style.showHighlightedCircle)
+                    if (highlightedCount > 0 &&
+                        widget.style.showHighlightedCircle)
                       Positioned(
-                        right: 2, top: 2,
+                        right: 2,
+                        top: 2,
                         child: Container(
                           width: widget.style.highlightedCircle.size,
                           height: widget.style.highlightedCircle.size,
@@ -248,8 +300,10 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
                             color: widget.style.highlightedCircle.background,
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: widget.style.highlightedCircle.border.color,
-                              width: widget.style.highlightedCircle.border.width,
+                              color:
+                                  widget.style.highlightedCircle.border.color,
+                              width:
+                                  widget.style.highlightedCircle.border.width,
                             ),
                           ),
                           child: Center(
@@ -260,7 +314,7 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
                             ),
                           ),
                         ),
-                      )
+                      ),
                   ],
                 ),
               ),
