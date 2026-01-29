@@ -35,6 +35,8 @@ export 'src/effects/blur.dart';
 
 // form
 export 'src/form/textfield.dart';
+export 'src/form/datefield.dart';
+export 'src/form/title_and_textfield.dart';
 
 // icons
 export 'src/icons/svg.dart';

@@ -1,19 +1,13 @@
-## 0.0.19
-
-### ♿ ACCESSIBILITY (SEMANTICS)
-- **Universal Semantics Support**: Implementación de `Semantics` en toda la librería de textos (`TextBig`, `TextTitle`, `TextBody`, etc.).
-- **Header Navigation**: Los títulos ahora están marcados como `header: true` para facilitar la navegación a usuarios con lectores de pantalla.
-- **Button Accessibility**: `ButtonCustom` y `TextButtonCustom` ahora se identifican correctamente como `button: true` y generan etiquetas de voz automáticas basadas en su contenido o `semanticLabel`.
-- **Navigation Clarity**: Las AppBars (`AppBarBack`, `AppBarClose`) ahora anuncian explícitamente las acciones "Atrás" y "Cerrar".
+## 0.0.20
 
 ### 🚀 NEW WIDGETS (PIZZACORN_UI CANDIDATES)
-- **`BottomBarCustom`**: Nueva barra de navegación premium con soporte híbrido para `IconData` (UIconsPro) y `SVG`. Incluye efectos de elevación, gradientes de fondo y animaciones de selección.
-- **`CheckboxPolitics`**: Componente legal estandarizado con `RichText` integrado, enlaces táctiles para términos y condiciones, y soporte de accesibilidad.
-- **`BlurChildWidget`**: Widget de efecto visual para aplicar desenfoque gaussiano dinámico (`ImageFilter.blur`) a cualquier elemento hijo.
-- **`FullScreenImagePage`**: Pantalla completa para visualización de imágenes con soporte de gestos (pinch-to-zoom) mediante `PhotoView`.
-- **`LoadingWidget`**: Extracción del loader estándar como componente independiente y reutilizable.
+- **`TitleAndTextField`**: Widget de composición que integra un label (`TextBody`) y un campo de entrada (`TextFieldCustom`).
+    - **API Posicional**: Implementado con el título como parámetro posicional para seguir el estándar de la librería.
+    - **Full Mirror**: Sincronización total de propiedades con `TextFieldCustom` (keyboardType, obscureText, inputFormatters, etc.).
+    - **Space Integration**: Uso de la constante `SPACE_SMALL` por defecto entre el título y el input.
 
 ### 🛠️ IMPROVEMENTS & FIXES
-- **`ButtonCustom` Color Logic**: Se ha corregido el "Expediente X" de los colores. Ahora el color de texto se adapta inteligentemente: `COLOR_TEXT_BUTTONS` para botones sólidos y `COLOR_TEXT` para botones con borde.
-- **Icon Rendering**: Optimización de la lógica de renderizado de iconos en el BottomBar para distinguir automáticamente entre fuentes tipográficas y archivos vectoriales.
-- **Flutter Modernization**: Actualización de los métodos de color con opacidad al nuevo estándar `.withValues(alpha: ...)` de Flutter 3.27+.
+- **Naming Convention Fix**: Se ha renombrado el parámetro `maxLines` a `maxlines` (todo en minúsculas) en los inputs para cumplir estrictamente con la **Ley pizzacorn_ui**.
+- **Enhanced Inmutability**: Eliminación de parámetros `required` no esenciales, sustituyéndolos por valores por defecto robustos para evitar nulos en tiempo de ejecución.
+- **Improved Semantics**: El widget `TitleAndTextField` ahora utiliza `Semantics` para agrupar lógicamente el título con su campo de texto correspondiente, mejorando la experiencia con lectores de pantalla.
+- **Styling Hooks**: Añadidos parámetros `titleColor` y `titleFontWeight` (por defecto `WEIGHT_BOLD`) para mayor flexibilidad visual sin romper el estándar.

@@ -1,3 +1,4 @@
+// C:/Users/hola/StudioProjects/pizzacorn_ui/lib/src/pickers/date_picker.dart
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pizzacorn_ui/pizzacorn_ui.dart';
@@ -6,11 +7,15 @@ import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 class DatePickerCustom extends StatefulWidget {
   final DateTime initialDateTime;
   final ValueChanged<DateTime> onDateTimeChanged;
+  final DateTime? minimumDate; // ¡Nuevo: fecha mínima seleccionable!
+  final DateTime? maximumDate; // ¡Nuevo: fecha máxima seleccionable!
 
   DatePickerCustom({
     super.key,
     required this.initialDateTime,
     required this.onDateTimeChanged,
+    this.minimumDate, // Añadido al constructor
+    this.maximumDate, // Añadido al constructor
   });
 
   @override
@@ -23,7 +28,14 @@ class DatePickerCustomState extends State<DatePickerCustom> {
   @override
   void initState() {
     super.initState();
+    // Asegura que la fecha inicial esté dentro de los límites si se han especificado.
     selectedDateTime = widget.initialDateTime;
+    if (widget.minimumDate != null && selectedDateTime.isBefore(widget.minimumDate!)) {
+      selectedDateTime = widget.minimumDate!;
+    }
+    if (widget.maximumDate != null && selectedDateTime.isAfter(widget.maximumDate!)) {
+      selectedDateTime = widget.maximumDate!;
+    }
   }
 
   @override
@@ -67,6 +79,10 @@ class DatePickerCustomState extends State<DatePickerCustom> {
                         selectedDateTime = value;
                       });
                     },
+                    minimumDate: widget.minimumDate, // ¡Pasa minimumDate!
+                    maximumDate: widget.maximumDate, // ¡Pasa maximumDate!
+                    // Por defecto, CupertinoDatePicker ya tiene unos límites amplios,
+                    // pero si los proporciona, los usará.
                   ),
                 ),
               ),
@@ -80,7 +96,7 @@ class DatePickerCustomState extends State<DatePickerCustom> {
                       text: "Cancelar",
                       border: true,
                       onPressed: () {
-                        // goBack() debe estar definido en tus utils globales
+                        // Pop sin resultado para Cancelar
                         Navigator.pop(context);
                       },
                     ),
@@ -92,8 +108,8 @@ class DatePickerCustomState extends State<DatePickerCustom> {
                     child: ButtonCustom(
                       text: "Continuar",
                       onPressed: () {
-                        widget.onDateTimeChanged(selectedDateTime);
-                        Navigator.pop(context);
+                        widget.onDateTimeChanged(selectedDateTime); // Notifica al callback original
+                        Navigator.pop(context, selectedDateTime); // ¡Pop con la fecha seleccionada!
                       },
                     ),
                   )
