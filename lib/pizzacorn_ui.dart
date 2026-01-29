@@ -3,7 +3,7 @@ export 'src/adapters/web_adapter.dart';
 export 'src/adapters/web_popup.dart';
 
 // appbar
-export 'src/appbars/appbars.dart';
+export 'src/appbars/appbar_back.dart';
 
 // buttons
 export 'src/buttons/button_icon.dart';

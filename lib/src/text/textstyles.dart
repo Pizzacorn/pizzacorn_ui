@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -117,6 +118,7 @@ TextStyle getStyleCustom(
       shadows: shadow ? [Shadow(blurRadius: 70, color: COLOR_SUBTEXT)] : null,
     );
   } catch (_) {
+    // Fallback por si la fuente no está disponible
     return GoogleFonts.leagueGothic(
       fontSize: size,
       letterSpacing: letterspacing,
@@ -150,6 +152,7 @@ TextStyle getStyleSecondaryCustom(
       shadows: shadow ? [Shadow(blurRadius: 70, color: COLOR_SUBTEXT)] : null,
     );
   } catch (_) {
+    // Fallback por si la fuente no está disponible
     return GoogleFonts.raleway(
       fontSize: size,
       letterSpacing: letterspacing,
@@ -284,9 +287,47 @@ TextStyle styleSmall({
 
 /// =================== WIDGETS ===================
 
+// Helper para construir el texto con Semantics y SelectableRegion
+Widget _buildSelectableSemanticsText(
+    String text,
+    TextStyle style, {
+      TextAlign textAlign = TextAlign.start,
+      int? maxlines, // Nullable para poder ser 'null' si es 0 o no se especifica
+      TextOverflow textOverflow = TextOverflow.ellipsis,
+      bool isUppercase = false,
+      bool isHeader = false, // Para diferenciar si es header o no
+    }) {
+
+  // El widget de texto base
+  final Widget textWidget = Text(
+    isUppercase ? text.toUpperCase() : text,
+    overflow: textOverflow,
+    textAlign: textAlign,
+    maxLines: maxlines == 0 ? null : maxlines, // Permitir null para scroll infinito
+    style: style,
+  );
+
+  // El SelectableRegion permite la selección de texto
+  final Widget selectableText = SelectableRegion(
+    selectionControls: MaterialTextSelectionControls(),
+    child: textWidget,
+  );
+
+  // El Semantics se mantiene para la accesibilidad de navegación (header, button, etc.)
+  // Se envuelve el SelectableRegion con Semantics
+  return Semantics(
+    label: text,
+    header: isHeader, // Aplicar header solo si se indica
+    child: selectableText,
+  );
+}
+
+// --- Widgets de Texto ---
+
 Widget TextBig(
     String text, {
-      double? fontSize,Color? color,
+      double? fontSize,
+      Color? color,
       bool shadow = false,
       FontWeight? fontWeight,
       TextAlign textAlign = TextAlign.start,
@@ -297,21 +338,19 @@ Widget TextBig(
     }) {
   final Color effectiveColor = color ?? COLOR_TEXT;
 
-  return Semantics(
-    label: text,
-    header: true,
-    child: Text(
-      isUppercase ? text.toUpperCase() : text,
-      overflow: textOverflow,
-      textAlign: textAlign,
-      maxLines: maxlines,
-      style: styleBig(
-        fontSize: fontSize,
-        fontWeight: fontWeight,
-        color: effectiveColor,
-        shadow: shadow,
-      ),
+  return _buildSelectableSemanticsText(
+    text,
+    styleBig(
+      fontSize: fontSize,
+      fontWeight: fontWeight,
+      color: effectiveColor,
+      shadow: shadow,
     ),
+    textAlign: textAlign,
+    maxlines: maxlines,
+    textOverflow: textOverflow,
+    isUppercase: isUppercase,
+    isHeader: true, // TextBig es un header
   );
 }
 
@@ -330,21 +369,19 @@ Widget TextTitle(
     }) {
   final Color effectiveColor = color ?? COLOR_TEXT;
 
-  return Semantics(
-    label: text,
-    header: true,
-    child: Text(
-      isUppercase ? text.toUpperCase() : text,
-      overflow: textOverflow,
-      textAlign: textAlign,
-      maxLines: maxlines,
-      style: styleTitle(
-        size: fontSize,
-        fontWeight: fontWeight,
-        color: effectiveColor,
-        height: height,
-      ),
+  return _buildSelectableSemanticsText(
+    text,
+    styleTitle(
+      size: fontSize,
+      fontWeight: fontWeight,
+      color: effectiveColor,
+      height: height,
     ),
+    textAlign: textAlign,
+    maxlines: maxlines,
+    textOverflow: textOverflow,
+    isUppercase: isUppercase,
+    isHeader: true, // TextTitle es un header
   );
 }
 
@@ -363,21 +400,19 @@ Widget TextSubtitle(
     }) {
   final Color effectiveColor = color ?? COLOR_TEXT;
 
-  return Semantics(
-    label: text,
-    header: true,
-    child: Text(
-      isUppercase ? text.toUpperCase() : text,
-      overflow: textOverflow,
-      textAlign: textAlign,
-      maxLines: maxlines,
-      style: styleSubtitle(
-        size: fontSize,
-        fontWeight: fontWeight,
-        color: effectiveColor,
-        height: height,
-      ),
+  return _buildSelectableSemanticsText(
+    text,
+    styleSubtitle(
+      size: fontSize,
+      fontWeight: fontWeight,
+      color: effectiveColor,
+      height: height,
     ),
+    textAlign: textAlign,
+    maxlines: maxlines,
+    textOverflow: textOverflow,
+    isUppercase: isUppercase,
+    isHeader: true, // TextSubtitle es un header
   );
 }
 
@@ -396,21 +431,20 @@ Widget TextBody(
     }) {
   final Color effectiveColor = color ?? COLOR_TEXT;
 
-  return Semantics(
-    label: texto,
-    child: Text(
-      isUppercase ? texto.toUpperCase() : texto,
-      overflow: textOverflow,
-      textAlign: textAlign,
-      maxLines: maxlines == 0 ? null : maxlines,
-      style: styleBody(
-        size: fontSize,
-        fontWeight: fontWeight,
-        color: effectiveColor,
-        shadow: shadow,
-        height: height,
-      ),
+  return _buildSelectableSemanticsText(
+    texto,
+    styleBody(
+      size: fontSize,
+      fontWeight: fontWeight,
+      color: effectiveColor,
+      shadow: shadow,
+      height: height,
     ),
+    textAlign: textAlign,
+    maxlines: maxlines,
+    textOverflow: textOverflow,
+    isUppercase: isUppercase,
+    isHeader: false, // TextBody no es un header por defecto
   );
 }
 
@@ -428,6 +462,8 @@ Widget TextButtonCustom(
     }) {
   final Color effectiveColor = color ?? COLOR_TEXT_BUTTONS;
 
+  // Los botones no suelen ser seleccionables, solo "tappables".
+  // Mantenemos el Semantics para que se identifique como botón.
   return Semantics(
     label: texto,
     button: true,
@@ -459,19 +495,19 @@ Widget TextCaption(
     }) {
   final Color effectiveColor = color ?? COLOR_SUBTEXT;
 
-  return Semantics(
-    label: texto,
-    child: Text(
-      isUppercase ? texto.toUpperCase() : texto,
-      overflow: textOverflow,
-      textAlign: textAlign,
-      maxLines: maxlines,
-      style: styleCaption(
-        size: fontSize,
-        fontWeight: fontWeight,
-        color: effectiveColor,
-      ),
+  // Ahora TextCaption también es seleccionable.
+  return _buildSelectableSemanticsText(
+    texto,
+    styleCaption(
+      size: fontSize,
+      fontWeight: fontWeight,
+      color: effectiveColor,
     ),
+    textAlign: textAlign,
+    maxlines: maxlines,
+    textOverflow: textOverflow,
+    isUppercase: isUppercase,
+    isHeader: false, // TextCaption no es un header por defecto
   );
 }
 
@@ -489,19 +525,19 @@ Widget TextSmall(
     }) {
   final Color effectiveColor = color ?? COLOR_TEXT;
 
-  return Semantics(
-    label: texto,
-    child: Text(
-      isUppercase ? texto.toUpperCase() : texto,
-      overflow: textOverflow,
-      textAlign: textAlign,
-      maxLines: maxlines,
-      style: styleSmall(
-        size: fontSize,
-        fontWeight: fontWeight,
-        color: effectiveColor,
-      ),
+  // Ahora TextSmall también es seleccionable.
+  return _buildSelectableSemanticsText(
+    texto,
+    styleSmall(
+      size: fontSize,
+      fontWeight: fontWeight,
+      color: effectiveColor,
     ),
+    textAlign: textAlign,
+    maxlines: maxlines,
+    textOverflow: textOverflow,
+    isUppercase: isUppercase,
+    isHeader: false, // TextSmall no es un header por defecto
   );
 }
 
@@ -520,21 +556,21 @@ Widget TextCustom(
     }) {
   final Color effectiveColor = color ?? COLOR_TEXT;
 
-  return Semantics(
-    label: texto,
-    child: Text(
-      isUppercase ? texto.toUpperCase() : texto,
-      overflow: textOverflow,
-      textAlign: textAlign,
-      maxLines: maxlines,
-      style: getStyleCustom(
-        fontSize ?? TEXT_BUTTON_SIZE,
-        fontWeight ?? WEIGHT_BOLD,
-        effectiveColor,
-        letterspacing: espacioLetras,
-        shadow: shadow,
-        height: height,
-      ),
+  // Ahora TextCustom también es seleccionable.
+  return _buildSelectableSemanticsText(
+    texto,
+    getStyleCustom(
+      fontSize ?? TEXT_BUTTON_SIZE, // Usa TEXT_BUTTON_SIZE como fallback si no se da fontSize
+      fontWeight ?? WEIGHT_BOLD, // Usa WEIGHT_BOLD como fallback si no se da fontWeight
+      effectiveColor,
+      letterspacing: espacioLetras,
+      shadow: shadow,
+      height: height,
     ),
+    textAlign: textAlign,
+    maxlines: maxlines,
+    textOverflow: textOverflow,
+    isUppercase: isUppercase,
+    isHeader: false, // TextCustom no es un header por defecto
   );
 }
