@@ -4,7 +4,7 @@ import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 class WebAdapterCustom extends StatelessWidget {
   final List<Widget> children;
 
-  WebAdapterCustom({super.key, required this.children});
+  const WebAdapterCustom({super.key, required this.children});
 
   @override
   Widget build(BuildContext context) {

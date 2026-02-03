@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../../pizzacorn_ui.dart';
 
 class BlurCustom extends StatelessWidget {
   // El contenido es posicional siguiendo la ley de la lib

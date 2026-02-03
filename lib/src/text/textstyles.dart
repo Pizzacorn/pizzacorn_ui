@@ -1,7 +1,6 @@
-import 'package:flutter/gestures.dart';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../theme/config.dart';
 
 /// =================== CONFIG GLOBAL (Fonts, Sizes, Weights) ===================

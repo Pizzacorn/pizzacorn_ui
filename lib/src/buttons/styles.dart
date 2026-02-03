@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 
 import '../../pizzacorn_ui.dart';
 
-/// Estilo de botón transparente con ripple suave usando el color de acento.
 ButtonStyle styleTransparent() {
   return TextButton.styleFrom(
     backgroundColor: Colors.transparent,
-    padding: EdgeInsets.zero,
-    side: BorderSide.none,
+    padding: EdgeInsets.zero, // Eliminamos el padding interno
+    minimumSize: Size.zero, // <-- ¡CLAVE! Eliminamos el tamaño mínimo de 48x48
+    tapTargetSize: MaterialTapTargetSize.shrinkWrap, // <-- ¡CLAVE! El área de toque se ajusta al contenido
+    elevation: 0, // Aseguramos que no haya sombra
+    side: BorderSide.none, // Eliminamos cualquier borde
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.zero,
-      side: BorderSide.none,
+      side: BorderSide.none, // Aseguramos que el borde de la forma también sea ninguno
     ),
   ).copyWith(
     splashFactory: InkRipple.splashFactory,

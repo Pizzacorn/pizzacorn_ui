@@ -1,0 +1,22 @@
+# Directorios de compilación
+build/
+.dart_tool/
+.packages
+.pub/
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Logs y temporales
+*.log
+*.temp
+
+# Test y ejemplos pesados si fuera necesario
+# (Aunque el example suele ser pequeño, a veces tiene screenshots)
+doc/api/
