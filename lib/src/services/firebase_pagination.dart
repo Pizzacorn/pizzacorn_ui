@@ -12,13 +12,28 @@ class FirebasePagination {
     int limit = 20,
     DocumentSnapshot? lastDocument,
     bool descending = false,
+    Map<String, dynamic>? where, // ¡NUEVO: Parámetro para cláusulas WHERE!
   }) async {
     // Usamos tus constantes de debug si existen, si no, prints limpios
     if (kDebugMode) print("🚀 Cargando $collection (Paginando)...");
 
     try {
       Query query = FirebaseFirestore.instance
-          .collection(collection)
+          .collection(collection);
+
+      // APLICANDO LA LEY: Bucles con índice, prohibido for-in o forEach
+      // Primero aplicamos los filtros 'where' si existen
+      if (where != null && where.isNotEmpty) {
+        final whereEntries = where.entries.toList(); // Convertimos a lista para usar bucle con índice
+        for (int i = 0; i < whereEntries.length; i++) {
+          final entry = whereEntries[i];
+          // Asumimos 'isEqualTo' por defecto para los filtros del mapa
+          query = query.where(entry.key, isEqualTo: entry.value);
+        }
+      }
+
+      // Luego aplicamos el orden y el límite
+      query = query
           .orderBy(orderBy, descending: descending)
           .limit(limit);
 
