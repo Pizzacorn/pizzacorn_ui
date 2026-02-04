@@ -21,12 +21,26 @@ Añade la dependencia en tu `pubspec.yaml`:
 
 Configura tu marca y tipografía en el `main()` antes de lanzar la app. ¡Sin reinicios, todo reactivo!
 
-dart Future<void> main() async { WidgetsFlutterBinding.ensureInitialized();
-// 1. Configuración de Colores y Dimensiones ConfigurePizzacornColors( background: Colors.white, backgroundSecondary: Color(0xffF7F7F7), accent: const Color(0xFF5256D6), radius: 8, webSize: 1100, );
-// 2. Configuración de Tipografía PizzacornTextConfig.configure( primaryFontFamily: 'Montserrat', secondaryFontFamily: 'Montserrat', sizes: PizzacornTextSizes( big: 26, title: 19, subtitle: 15, body: 13, button: 12, caption: 10, small: 8, ), weights: const PizzacornTextWeights( normal: FontWeight.w400, bold: FontWeight.w600, ), );
-runApp(MyApp()); }
-
-
+/// =================== CONFIG GLOBAL (Fonts, Sizes, Weights) ===================
+/// Úsalo en tu app antes de runApp(), por ejemplo:
+///
+/// PizzacornTextConfig.configure(
+///   primaryFontFamily: 'Montserrat',
+///   secondaryFontFamily: 'Inter',
+///   sizes: PizzacornTextSizes(
+///     big: 40,
+///     title: 26,
+///     subtitle: 22,
+///     body: 13,
+///     button: 13,
+///     caption: 11,
+///     small: 9,
+///   ),
+///   weights: PizzacornTextWeights(
+///     normal: FontWeight.w400,
+///     bold: FontWeight.w700,
+///   ),
+/// );
 
 ---
 
