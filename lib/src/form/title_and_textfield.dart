@@ -22,6 +22,7 @@ class TitleAndTextField extends StatelessWidget {
   final double spaceSize;
   final VoidCallback? onTap;
   final TextInputType? textInputType;
+  final int maxLength;
 
   const TitleAndTextField(
       this.title, { // El contenido (título) es parámetro posicional según la ley
@@ -39,6 +40,7 @@ class TitleAndTextField extends StatelessWidget {
         this.spaceSize = SPACE_SMALL,
         this.onTap,
         this.textInputType,
+        this.maxLength = 0,
       });
 
   @override
@@ -65,6 +67,7 @@ class TitleAndTextField extends StatelessWidget {
             inputFormatters: inputFormatters,
             onTap: onTap,
             textInputType: textInputType ?? TextInputType.name,
+            maxLength: maxLength,
           ),
         ],
       ),
