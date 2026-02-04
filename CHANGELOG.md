@@ -1,4 +1,4 @@
-## 0.0.27
+## 0.0.28
 
 ### 🚀 NEW WIDGETS (PIZZACORN_UI CANDIDATES)
 - **`TitleAndTextField`**: Widget de composición que integra un label (`TextBody`) y un campo de entrada (`TextFieldCustom`).
