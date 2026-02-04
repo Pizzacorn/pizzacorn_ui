@@ -1,12 +1,14 @@
+// C:/Users/hola/StudioProjects/pizzacorn_ui/lib/src/buttons/more_menu_button.dart
 import 'package:flutter/material.dart';
 import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 
-enum MoreMenuCustom { edit, delete, duplicate }
+enum MoreMenuCustom { edit, delete, duplicate, report } // <-- Añadido 'report'
 
 class MoreMenuButton extends StatelessWidget {
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
   final VoidCallback? onDuplicate;
+  final VoidCallback? onReport; // <-- Nuevo callback para reportar
   final Color? iconColor;
   final double iconSize;
   final String tooltip;
@@ -17,6 +19,7 @@ class MoreMenuButton extends StatelessWidget {
     this.onEdit,
     this.onDelete,
     this.onDuplicate,
+    this.onReport, // <-- Añadido al constructor
     this.iconColor,
     this.iconSize = 18,
     this.tooltip = 'Más opciones',
@@ -40,35 +43,47 @@ class MoreMenuButton extends StatelessWidget {
           onDelete!();
         } else if (action == MoreMenuCustom.duplicate && onDuplicate != null) {
           onDuplicate!();
+        } else if (action == MoreMenuCustom.report && onReport != null) { // <-- Lógica para reportar
+          onReport!();
         }
       },
       itemBuilder: (context) {
         final List<PopupMenuEntry<MoreMenuCustom>> items =
-            <PopupMenuEntry<MoreMenuCustom>>[];
+        <PopupMenuEntry<MoreMenuCustom>>[];
 
         if (onEdit != null) {
           items.add(
-            PopupMenuItem(
+            PopupMenuItem<MoreMenuCustom>( // Especificando el tipo para mayor claridad
               value: MoreMenuCustom.edit,
-              child: TextCaption("Editar"),
+              child: TextCaption("Editar"), // Semántico por defecto
             ),
           );
         }
 
         if (onDelete != null) {
           items.add(
-            PopupMenuItem(
+            PopupMenuItem<MoreMenuCustom>(
               value: MoreMenuCustom.delete,
-              child: TextCaption("Eliminar"),
+              child: TextCaption("Eliminar"), // Semántico por defecto
             ),
           );
         }
 
         if (onDuplicate != null) {
           items.add(
-            PopupMenuItem(
+            PopupMenuItem<MoreMenuCustom>(
               value: MoreMenuCustom.duplicate,
-              child: TextCaption("Duplicar"),
+              child: TextCaption("Duplicar"), // Semántico por defecto
+            ),
+          );
+        }
+
+        // <-- NUEVO: Opción de Reportar
+        if (onReport != null) {
+          items.add(
+            PopupMenuItem<MoreMenuCustom>(
+              value: MoreMenuCustom.report,
+              child: TextCaption("Reportar"), // Semántico por defecto
             ),
           );
         }
