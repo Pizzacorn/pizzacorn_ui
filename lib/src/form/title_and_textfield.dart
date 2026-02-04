@@ -21,23 +21,25 @@ class TitleAndTextField extends StatelessWidget {
   final List<TextInputFormatter> inputFormatters;
   final double spaceSize;
   final VoidCallback? onTap;
+  final TextInputType? textInputType;
 
   const TitleAndTextField(
-    this.title, { // El contenido (título) es parámetro posicional según la ley
-    super.key,
-    required this.controller,
-    this.hintText = "",
-    this.labelText = "",
-    this.autofocus = false,
-    this.textCapitalization = TextCapitalization.none,
-    this.validator,
-    this.readOnly = false,
-    this.onChanged,
-    this.focusNode,
-    this.inputFormatters = const [],
-    this.spaceSize = SPACE_SMALL,
-    this.onTap,
-  });
+      this.title, { // El contenido (título) es parámetro posicional según la ley
+        super.key,
+        required this.controller,
+        this.hintText = "",
+        this.labelText = "",
+        this.autofocus = false,
+        this.textCapitalization = TextCapitalization.none,
+        this.validator,
+        this.readOnly = false,
+        this.onChanged,
+        this.focusNode,
+        this.inputFormatters = const [],
+        this.spaceSize = SPACE_SMALL,
+        this.onTap,
+        this.textInputType,
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +64,7 @@ class TitleAndTextField extends StatelessWidget {
             focusNode: focusNode,
             inputFormatters: inputFormatters,
             onTap: onTap,
+            textInputType: textInputType ?? TextInputType.name,
           ),
         ],
       ),
