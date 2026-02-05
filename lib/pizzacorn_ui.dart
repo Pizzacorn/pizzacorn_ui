@@ -16,7 +16,6 @@ export 'src/buttons/styles.dart';
 
 // cropper
 export 'src/cropper/crop_page.dart';
-export 'src/cropper/file_model.dart';
 export 'src/cropper/image_picker.dart';
 export 'src/cropper/pressed_image.dart';
 
@@ -55,10 +54,15 @@ export 'src/layout/space.dart';
 //list
 export 'src/list/inifinite_scroll.dart';
 
+//models
+export 'src/models/file_model.dart';
+export 'src/models/social_model.dart';
+
 // navigation
 export 'src/navigation/navigation_helpers.dart';
 export 'src/navigation/overlays_helpers.dart';
 export 'src/navigation/bottombar.dart';
+export 'src/navigation/bottombar_central.dart';
 
 // overlays
 export 'src/overlays/bottom_sheet.dart';
@@ -71,8 +75,14 @@ export 'src/pickers/icon_picker.dart';
 export 'src/pickers/date_picker.dart';
 export 'src/pickers/time_picker.dart';
 
+//segmented
+export 'src/segmented/segmented.dart';
+
 //services
 export 'src/services/firebase_pagination.dart';
+
+//Socials
+export 'src/socials/socials.dart';
 
 // text
 export 'src/text/textstyles.dart';

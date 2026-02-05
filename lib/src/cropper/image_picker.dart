@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pizzacorn_ui/src/cropper/pressed_image.dart';
 import '../../pizzacorn_ui.dart';
-import 'file_model.dart';
+import 'package:pizzacorn_ui/src/models/file_model.dart';
 
 // OJO: aquí debes importar tu FileModel y la función pressedImage
 // import 'package:TU_APP/models/file_model.dart';

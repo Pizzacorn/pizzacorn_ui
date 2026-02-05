@@ -1,11 +1,8 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
-// Estos imports asumirán que también migras FileModel, getImage y CropPage
-// a la librería (en la misma carpeta cropper/ por ejemplo).
 import 'crop_page.dart';
-import 'file_model.dart'; // <- tu modelo de archivo (o el que definamos en la lib)
+import 'package:pizzacorn_ui/src/models/file_model.dart';
 
 /// Abre el picker de imagen, opcionalmente recorta, y devuelve el resultado
 /// mediante [onFinish].
