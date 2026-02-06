@@ -7,6 +7,11 @@ export 'src/appbars/appbar_back.dart';
 export 'src/appbars/appbar_close.dart';
 export 'src/appbars/appbar_home.dart';
 
+//calendars
+export 'src/calendars/calendar_style.dart';
+export 'src/calendars/monthly_calendar.dart';
+export 'src/calendars/slider_calendar.dart';
+
 // buttons
 export 'src/buttons/button_icon.dart';
 export 'src/buttons/buttons.dart';
