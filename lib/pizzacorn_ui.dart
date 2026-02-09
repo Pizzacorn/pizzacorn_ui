@@ -79,6 +79,7 @@ export 'src/overlays/bottom_popups.dart';
 export 'src/pickers/icon_picker.dart';
 export 'src/pickers/date_picker.dart';
 export 'src/pickers/time_picker.dart';
+export 'src/pickers/uicon_picker.dart';
 
 //segmented
 export 'src/segmented/segmented.dart';
@@ -100,3 +101,4 @@ export 'src/theme/theme.dart';
 export 'src/utils/date_formats.dart';
 export 'src/utils/color_utils.dart';
 export 'src/utils/close_keyboard.dart';
+export 'src/utils/uicons_helper.dart';
