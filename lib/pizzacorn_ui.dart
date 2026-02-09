@@ -99,3 +99,4 @@ export 'src/theme/theme.dart';
 // utils
 export 'src/utils/date_formats.dart';
 export 'src/utils/color_utils.dart';
+export 'src/utils/close_keyboard.dart';
