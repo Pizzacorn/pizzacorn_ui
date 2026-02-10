@@ -55,10 +55,10 @@ class BottomSheetCustomTwoButtons extends StatelessWidget {
 
   const BottomSheetCustomTwoButtons({
     super.key,
-    required this.leftTitle,
-    required this.rightTitle,
-    required this.onLeftPressed,
-    required this.onRightPressed,
+    this.leftTitle = "",
+    this.rightTitle = "",
+    this.onLeftPressed,
+    this.onRightPressed,
     this.colorBackground,
   });
 
@@ -66,8 +66,12 @@ class BottomSheetCustomTwoButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     final Color effectiveBackground = colorBackground ?? COLOR_BACKGROUND;
 
+    // Comprobamos si debemos mostrar cada botón
+    final bool showLeft = leftTitle.isNotEmpty && onLeftPressed != null;
+    final bool showRight = rightTitle.isNotEmpty && onRightPressed != null;
+
     return Container(
-      padding: const EdgeInsets.only(
+      padding: EdgeInsets.only(
         bottom: SPACE_MEDIUM,
         left: SPACE_MEDIUM,
         right: SPACE_MEDIUM,
@@ -75,32 +79,31 @@ class BottomSheetCustomTwoButtons extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: effectiveBackground,
-        //boxShadow: [BoxShadowCustom()],
       ),
       child: Row(
         children: [
-          Expanded(
-            child: ButtonCustom(
-              text: leftTitle,
-              border: true,
-              onPressed: () {
-                if (onLeftPressed != null) {
-                  onLeftPressed!();
-                }
-              },
+          // Botón Izquierdo
+          if (showLeft)
+            Expanded(
+              child: ButtonCustom(
+                text: leftTitle,
+                border: true,
+                onPressed: onLeftPressed!,
+              ),
             ),
-          ),
-          const SizedBox(width: SPACE_SMALL),
-          Expanded(
-            child: ButtonCustom(
-              text: rightTitle,
-              onPressed: () {
-                if (onRightPressed != null) {
-                  onRightPressed!();
-                }
-              },
+
+          // Espaciador (Solo si ambos están visibles)
+          if (showLeft && showRight)
+            Space(SPACE_SMALL),
+
+          // Botón Derecho
+          if (showRight)
+            Expanded(
+              child: ButtonCustom(
+                text: rightTitle,
+                onPressed: onRightPressed!,
+              ),
             ),
-          ),
         ],
       ),
     );
