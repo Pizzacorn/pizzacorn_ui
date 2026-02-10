@@ -4,16 +4,20 @@ import '../layout/space.dart';
 
 /// Bottom sheet sencillo con UN botón.
 /// Suele usarse como footer fijo de un modal/bottomSheet.
+/// Bottom sheet sencillo con UN botón.
+/// Suele usarse como footer fijo de un modal/bottomSheet.
 class BottomSheetCustomOneButton extends StatelessWidget {
   final String title;
   final VoidCallback? onPressed;
   final Color? colorButton;
+  final bool hasBackground; // <-- El nuevo parámetro de Don Sputo
 
   const BottomSheetCustomOneButton({
     super.key,
     required this.title,
     this.colorButton,
     required this.onPressed,
+    this.hasBackground = true, // Por defecto true para no romper lo anterior
   });
 
   @override
@@ -28,8 +32,9 @@ class BottomSheetCustomOneButton extends StatelessWidget {
         top: SPACE_MEDIUM,
       ),
       decoration: BoxDecoration(
-        color: COLOR_BACKGROUND,
-        boxShadow: [BoxShadowCustom()],
+        // Si tiene background ponemos color y sombra, si no, transparente
+        color: hasBackground ? COLOR_BACKGROUND : Colors.transparent,
+        boxShadow: hasBackground ? [BoxShadowCustom()] : [],
       ),
       child: ButtonCustom(
         text: title,
@@ -46,12 +51,15 @@ class BottomSheetCustomOneButton extends StatelessWidget {
 
 /// Bottom sheet con DOS botones (izquierda y derecha).
 /// Ideal para "Cancelar / Aceptar" o similares.
+/// Bottom sheet con DOS botones (izquierda y derecha).
+/// Ideal para "Cancelar / Aceptar" o similares.
 class BottomSheetCustomTwoButtons extends StatelessWidget {
   final String leftTitle;
   final String rightTitle;
   final Color? colorBackground;
   final VoidCallback? onLeftPressed;
   final VoidCallback? onRightPressed;
+  final bool hasBackground; // <-- El nuevo parámetro de Don Sput
 
   const BottomSheetCustomTwoButtons({
     super.key,
@@ -60,6 +68,7 @@ class BottomSheetCustomTwoButtons extends StatelessWidget {
     this.onLeftPressed,
     this.onRightPressed,
     this.colorBackground,
+    this.hasBackground = true, // Por defecto true
   });
 
   @override
@@ -71,14 +80,9 @@ class BottomSheetCustomTwoButtons extends StatelessWidget {
     final bool showRight = rightTitle.isNotEmpty && onRightPressed != null;
 
     return Container(
-      padding: EdgeInsets.only(
-        bottom: SPACE_MEDIUM,
-        left: SPACE_MEDIUM,
-        right: SPACE_MEDIUM,
-        top: SPACE_MEDIUM,
-      ),
+      padding: const EdgeInsets.all(SPACE_MEDIUM),
       decoration: BoxDecoration(
-        color: effectiveBackground,
+        color: hasBackground ? effectiveBackground : Colors.transparent,
       ),
       child: Row(
         children: [
