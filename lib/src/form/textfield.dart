@@ -4,7 +4,7 @@ import '../../pizzacorn_ui.dart';
 
 class TextFieldCustom extends StatefulWidget {
   const TextFieldCustom({
-    super.key, // Usando el super.key moderno
+    super.key,
     this.controller,
     this.onChanged,
     this.onSuffixPressed,
@@ -17,19 +17,16 @@ class TextFieldCustom extends StatefulWidget {
     this.labelText = "",
     this.hintText = "",
     this.shadow = false,
-    this.height, // ⬅ Ahora es nullable para usar el token global
+    this.height,
     this.onTap,
     this.readOnly = false,
     this.width = double.infinity,
-
     this.hintSize,
     this.textSize,
-
     this.filled = true,
     this.radius,
     this.colorFill,
     this.colorHint,
-
     this.minLines = 1,
     this.maxLines = 1,
     this.maxLength = 0,
@@ -39,15 +36,17 @@ class TextFieldCustom extends StatefulWidget {
     this.textInputType = TextInputType.text,
     this.password = false,
     this.textAlignVertical = TextAlignVertical.center,
-    this.prefixIcon = "",
-    this.prefixIconSize = 18,
-    this.sufixIcon = "",
+    this.prefixIconSvg = "",
+    this.IconSize = 18,
+    this.sufixIconSvg = "",
     this.prefixText = "",
     this.sufixText = "",
     this.focusNode,
     this.inputFormatters,
     this.textStyleCustom,
     this.autofocus = false,
+    this.prefixIcon, // ⬅ Añadido IconData
+    this.suffixIcon, // ⬅ Añadido IconData
   });
 
   // CONTROL
@@ -58,7 +57,7 @@ class TextFieldCustom extends StatefulWidget {
   final Function()? onTap;
 
   // TAMAÑOS / LAYOUT
-  final double? height; // ⬅ Cambiado a nullable
+  final double? height;
   final double width;
   final double? radius;
   final double? textSize;
@@ -77,13 +76,18 @@ class TextFieldCustom extends StatefulWidget {
   final String hintText;
   final String helperText;
   final String errorText;
-  final String sufixIcon;
-  final String prefixIcon;
+  final String sufixIconSvg;
+  final String prefixIconSvg;
   final String prefixText;
   final String sufixText;
   final TextStyle? textStyleCustom;
   final Color? colorFill;
   final Color? colorHint;
+
+  // ICONOS
+  final IconData? prefixIcon; // ⬅ IconData para UIcons
+  final IconData? suffixIcon; // ⬅ IconData para UIcons
+  final double IconSize;
 
   // TECLADO
   final TextInputType textInputType;
@@ -93,9 +97,6 @@ class TextFieldCustom extends StatefulWidget {
 
   // PASSWORD
   final bool password;
-
-  // ICONOS
-  final double prefixIconSize;
 
   // CALLBACKS
   final void Function(String)? onChanged;
@@ -111,8 +112,8 @@ class TextFieldCustom extends StatefulWidget {
 }
 
 class TextFieldCustomState extends State<TextFieldCustom> {
-  late FocusNode focusNode; // ⬅ Sin guion bajo
-  bool obscureVisible = false; // ⬅ Sin guion bajo
+  late FocusNode focusNode;
+  bool obscureVisible = false;
 
   @override
   void initState() {
@@ -135,31 +136,26 @@ class TextFieldCustomState extends State<TextFieldCustom> {
   }
 
   bool isNumericKeyboard() {
-    // ⬅ Sin guion bajo
     final type = widget.textInputType;
     return type == TextInputType.number ||
         type == TextInputType.phone ||
+        type == TextInputType.multiline ||
         type == const TextInputType.numberWithOptions() ||
         type == const TextInputType.numberWithOptions(decimal: true);
   }
 
   @override
   Widget build(BuildContext context) {
-    // 🔥 RESOLUCIÓN DE DEFAULTS REACTIVOS (Reglas de Oro: Sin const)
     final double effectiveTextSize = widget.textSize ?? TEXT_BODY_SIZE;
     final double effectiveHintSize = widget.hintSize ?? TEXT_BODY_SIZE;
     final double effectiveRadius = widget.radius ?? RADIUS;
     final Color effectiveFill = widget.colorFill ?? COLOR_BACKGROUND_SECONDARY;
     final Color effectiveHintColor = widget.colorHint ?? COLOR_SUBTEXT;
-
-    // 📏 ALTURA REACTIVA BASADA EN CONFIG
     final double finalHeight = widget.height ?? FIELD_HEIGHT;
 
     return Container(
       width: widget.width,
-      height: widget.maxLines > 1
-          ? null
-          : finalHeight, // Si es multilínea, dejamos que crezca
+      height: widget.maxLines > 1 ? null : finalHeight,
       decoration: BoxDecoration(
         boxShadow: widget.shadow ? [BoxShadowCustom()] : null,
       ),
@@ -172,9 +168,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
         obscureText: widget.password ? !obscureVisible : false,
         textCapitalization: widget.textCapitalization,
         textAlignVertical: widget.textAlignVertical,
-        style:
-            widget.textStyleCustom ??
-            styleBody(color: COLOR_TEXT, size: effectiveTextSize),
+        style: widget.textStyleCustom ?? styleBody(color: COLOR_TEXT, size: effectiveTextSize),
         inputFormatters: widget.inputFormatters ?? [],
         maxLines: widget.maxLines,
         minLines: widget.minLines,
@@ -184,127 +178,107 @@ class TextFieldCustomState extends State<TextFieldCustom> {
           if (widget.onChanged != null) widget.onChanged!(value);
         },
         onEditingComplete: widget.onEditingComplete,
-        autovalidateMode: widget.errorText.isNotEmpty
-            ? AutovalidateMode.onUserInteraction
-            : widget.autovalidateMode,
+        autovalidateMode: widget.errorText.isNotEmpty ? AutovalidateMode.onUserInteraction : widget.autovalidateMode,
         validator: (value) {
-          if (widget.validator != null) {
-            return widget.validator!(value);
-          }
-          if (widget.errorText.isNotEmpty && (value == null || value.isEmpty)) {
-            return widget.errorText;
-          }
+          if (widget.validator != null) return widget.validator!(value);
+          if (widget.errorText.isNotEmpty && (value == null || value.isEmpty)) return widget.errorText;
           return null;
         },
         decoration: InputDecoration(
           filled: widget.filled,
           fillColor: effectiveFill,
-
-          // HINT / LABEL / HELPER
           hintText: widget.hintText.isNotEmpty ? widget.hintText : null,
-          hintStyle: styleBody(
-            color: effectiveHintColor,
-            size: effectiveHintSize,
-          ),
+          hintStyle: styleBody(color: effectiveHintColor, size: effectiveHintSize),
           labelText: widget.labelText.isNotEmpty ? widget.labelText : null,
-          labelStyle: styleBody(
-            color: effectiveHintColor,
-            size: effectiveHintSize,
-          ),
+          labelStyle: styleBody(color: effectiveHintColor, size: effectiveHintSize),
           helperText: widget.helperText.isNotEmpty ? widget.helperText : null,
-          helperStyle: styleBody(
-            color: effectiveHintColor,
-            size: effectiveHintSize,
-          ),
+          helperStyle: styleBody(color: effectiveHintColor, size: effectiveHintSize),
           errorStyle: styleCaption(color: COLOR_ERROR),
-
-          // BORDE
           border: widget.filled
               ? OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(effectiveRadius),
-                  borderSide: BorderSide.none,
-                )
+            borderRadius: BorderRadius.circular(effectiveRadius),
+            borderSide: BorderSide.none,
+          )
               : null,
-
           contentPadding: widget.noPadding
               ? EdgeInsets.zero
               : EdgeInsets.symmetric(
-                  horizontal: 15,
-                  vertical: (finalHeight - effectiveTextSize) / 2,
-                ),
-
-          // SUFFIX
+            horizontal: 15,
+            vertical: (finalHeight - effectiveTextSize) / 2,
+          ),
           suffixText: widget.sufixText.isNotEmpty ? widget.sufixText : null,
           suffixIcon: buildSuffixIcon(context),
-
-          // PREFIX
           prefixText: widget.prefixText.isNotEmpty ? widget.prefixText : null,
           prefixStyle: styleBody(color: COLOR_ACCENT),
-          prefixIconConstraints: const BoxConstraints(
-            minWidth: 0,
-            minHeight: 0,
-          ),
-          prefixIcon: widget.prefixIcon.isNotEmpty
-              ? TextButton(
-                  style: styleTransparent(),
-                  onPressed: () {
-                    if (widget.onPrefixPressed != null) {
-                      widget.onPrefixPressed!();
-                    }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 15, right: 15),
-                    child: SvgCustom(
-                      icon: widget.prefixIcon,
-                      size: widget.prefixIconSize,
-                    ),
-                  ),
-                )
-              : null,
+          prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+          prefixIcon: buildPrefixIcon(),
         ),
       ),
     );
   }
 
+  Widget? buildPrefixIcon() {
+    // Prioridad 1: IconData (UIcons)
+    if (widget.prefixIcon != null) {
+      return IconButton(
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        onPressed: widget.onPrefixPressed,
+        icon: Icon(widget.prefixIcon, size: widget.IconSize, color: COLOR_ACCENT),
+      );
+    }
+    // Prioridad 2: SVG
+    if (widget.prefixIconSvg.isNotEmpty) {
+      return TextButton(
+        style: styleTransparent(),
+        onPressed: widget.onPrefixPressed,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: SvgCustom(
+            icon: widget.prefixIconSvg,
+            size: widget.IconSize,
+          ),
+        ),
+      );
+    }
+    return null;
+  }
+
   Widget? buildSuffixIcon(BuildContext context) {
-    // Password: icono de candado
     if (widget.password) {
       return IconButton(
         icon: Icon(
           obscureVisible ? Icons.lock_open_outlined : Icons.lock_outline,
           color: COLOR_ACCENT,
         ),
-        onPressed: () {
-          setState(() {
-            obscureVisible = !obscureVisible;
-          });
-        },
+        onPressed: () => setState(() => obscureVisible = !obscureVisible),
       );
     }
 
-    // Suffix SVG con callback
-    if (widget.sufixIcon.isNotEmpty) {
+    // Prioridad 1: IconData (UIcons)
+    if (widget.suffixIcon != null) {
+      return IconButton(
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        onPressed: widget.onSuffixPressed,
+        icon: Icon(widget.suffixIcon, size: widget.IconSize, color: COLOR_ACCENT),
+      );
+    }
+
+    // Prioridad 2: SVG
+    if (widget.sufixIconSvg.isNotEmpty) {
       return TextButton(
         style: styleTransparent(),
-        onPressed: () {
-          if (widget.onSuffixPressed != null) {
-            widget.onSuffixPressed!();
-          }
-        },
+        onPressed: widget.onSuffixPressed,
         child: Padding(
-          padding: const EdgeInsets.only(left: 15, right: 15),
-          child: SvgCustom(icon: widget.sufixIcon, size: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: SvgCustom(icon: widget.sufixIconSvg, size: widget.IconSize),
         ),
       );
     }
 
-    // Teclado numérico: botón para ocultar si está en foco
     if (isNumericKeyboard() && focusNode.hasFocus) {
       return IconButton(
         icon: Icon(Icons.keyboard_hide_outlined, color: COLOR_BORDER),
-        onPressed: () {
-          FocusScope.of(context).unfocus();
-        },
+        onPressed: () => FocusScope.of(context).unfocus(),
       );
     }
 
