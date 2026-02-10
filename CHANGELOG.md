@@ -1,4 +1,4 @@
-## 0.0.37
+## 0.0.38
 
-### NEW ADD [APPBAR HOME]
-- **`AppbarHome`**: Nueva appbar que ayuda a montar la app bar de la pantalla de home.
+### NEW WIDGET
+- **`WIDGET`**: Añadidos cambios a los widgets.
