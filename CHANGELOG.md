@@ -1,4 +1,4 @@
-## 0.0.39
+## 0.0.40
 
 ### NEW WIDGET
 - **`WIDGET`**: Añadidos cambios a los widgets.

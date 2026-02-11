@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pizzacorn_ui/pizzacorn_ui.dart';
-import '../icons/svg.dart';
 
 /// Botón custom Pizzacorn - Versión Equilibrada y Centrada con Soporte de Accesibilidad
+/// Soporta Iconos SVG e IconData (UIconsPro) con Splash dinámico oscurecido.
 class ButtonCustom extends StatelessWidget {
   final void Function()? onPressed;
   final void Function()? onLongPressed;
@@ -26,11 +26,16 @@ class ButtonCustom extends StatelessWidget {
   final Color? borderColor;
   final double borderWidth;
 
-  // ICONS
-  final double padding;
-  final double iconSize;
+  // ICONS (SVG)
   final String iconBegin;
   final String iconFinal;
+
+  // ICONS (ICON DATA)
+  final IconData? iconBeginData;
+  final IconData? iconFinalData;
+
+  final double padding;
+  final double iconSize;
   final Color iconColor;
   final bool iconNoColor;
 
@@ -67,6 +72,8 @@ class ButtonCustom extends StatelessWidget {
     this.colorGradientSecondary,
     this.iconBegin = "",
     this.iconFinal = "",
+    this.iconBeginData,
+    this.iconFinalData,
     this.iconColor = Colors.white,
     this.iconNoColor = false,
     this.iconSize = 18,
@@ -76,20 +83,25 @@ class ButtonCustom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // FIX: Ahora el color por defecto es COLOR_TEXT_BUTTONS si no se especifica
-    final Color effectiveTextColor =
-        textColor ?? (border ? COLOR_TEXT : COLOR_TEXT_BUTTONS);
+    // 1. Lógica de Colores Efectivos
+    final Color effectiveColor = color ?? COLOR_ACCENT;
+
+    // PIZZACORN DYNAMIC SPLASH: Oscurecemos el color de acento un 15% para el splash
+    final HSLColor hsl = HSLColor.fromColor(effectiveColor);
+    final Color autoDarkenedSplash = hsl
+        .withLightness((hsl.lightness - 0.15).clamp(0.0, 1.0))
+        .toColor();
+
+    final Color effectiveColorSplash = colorSplash ?? autoDarkenedSplash;
+    final Color effectiveTextColor = textColor ?? (border ? COLOR_TEXT : COLOR_TEXT_BUTTONS);
     final Color effectiveBorderColor = borderColor ?? COLOR_BORDER;
     final double effectiveBorderRadius = borderRadius ?? RADIUS;
-    final Color effectiveColor = color ?? COLOR_ACCENT;
-    final Color effectiveColorSplash = colorSplash ?? COLOR_ACCENT_PRESSED;
     final Color effectiveGradientPrimary = colorGradientPrimary ?? COLOR_ACCENT;
-    final Color effectiveGradientSecondary =
-        colorGradientSecondary ?? COLOR_ACCENT_SECONDARY;
+    final Color effectiveGradientSecondary = colorGradientSecondary ?? COLOR_ACCENT_SECONDARY;
 
     final double finalHeight = height ?? BUTTON_HEIGHT;
 
-    // Lógica para el label de accesibilidad
+    // 2. Lógica de Accesibilidad
     String label = semanticLabel ?? text;
     if (label.isEmpty && richTexts.isNotEmpty) {
       for (int i = 0; i < richTexts.length; i++) {
@@ -111,35 +123,30 @@ class ButtonCustom extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           shape: border
               ? RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(effectiveBorderRadius),
-                  side: BorderSide(
-                    color: effectiveBorderColor,
-                    width: borderWidth,
-                    strokeAlign: BorderSide.strokeAlignInside,
-                  ),
-                )
+            borderRadius: BorderRadius.circular(effectiveBorderRadius),
+            side: BorderSide(
+              color: effectiveBorderColor,
+              width: borderWidth,
+              strokeAlign: BorderSide.strokeAlignInside,
+            ),
+          )
               : RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(effectiveBorderRadius),
-                ),
+            borderRadius: BorderRadius.circular(effectiveBorderRadius),
+          ),
           child: InkWell(
             splashColor: effectiveColorSplash,
             onTap: onPressed,
             onLongPress: onLongPressed,
-            excludeFromSemantics:
-                true, // Importante: Ya lo maneja el padre Semantics
+            excludeFromSemantics: true,
             child: Ink(
               decoration: BoxDecoration(
-                gradient:
-                    !hasGradient || richTexts.isNotEmpty || onlyText || border
+                gradient: !hasGradient || richTexts.isNotEmpty || onlyText || border
                     ? null
                     : LinearGradient(
-                        colors: [
-                          effectiveGradientPrimary,
-                          effectiveGradientSecondary,
-                        ],
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                      ),
+                  colors: [effectiveGradientPrimary, effectiveGradientSecondary],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                ),
                 color: hasGradient || richTexts.isNotEmpty || onlyText || border
                     ? null
                     : effectiveColor,
@@ -149,32 +156,29 @@ class ButtonCustom extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: mainAxisAlignment,
                   children: [
-                    if (iconBegin.isNotEmpty)
+                    // ICON BEGIN (SVG o IconData)
+                    if (iconBegin.isNotEmpty || iconBeginData != null)
                       Padding(
-                        padding: EdgeInsets.only(
-                          right: text.isNotEmpty ? 10 : 0,
-                        ),
-                        child: iconNoColor
+                        padding: EdgeInsets.only(right: text.isNotEmpty ? 10 : 0),
+                        child: iconBeginData != null
+                            ? Icon(iconBeginData, size: iconSize, color: iconColor)
+                            : (iconNoColor
                             ? SvgCustomNoColor(icon: iconBegin, size: iconSize)
-                            : SvgCustom(
-                                icon: iconBegin,
-                                size: iconSize,
-                                color: iconColor,
-                              ),
+                            : SvgCustom(icon: iconBegin, size: iconSize, color: iconColor)),
                       )
-                    else if (iconFinal.isNotEmpty &&
+                    // Compensación para centrado si solo hay icono al final
+                    else if ((iconFinal.isNotEmpty || iconFinalData != null) &&
                         text.isNotEmpty &&
                         mainAxisAlignment == MainAxisAlignment.center)
                       SizedBox(width: iconSize + 10),
 
+                    // TEXTO O RICHTEXT
                     if (text.isNotEmpty)
                       Flexible(
                         child: TextButtonCustom(
                           text,
                           color: effectiveTextColor,
-                          fontSize: customSizeText != 0
-                              ? customSizeText
-                              : TEXT_BUTTON_SIZE,
+                          fontSize: customSizeText != 0 ? customSizeText : TEXT_BUTTON_SIZE,
                         ),
                       )
                     else if (richTexts.isNotEmpty)
@@ -182,20 +186,18 @@ class ButtonCustom extends StatelessWidget {
                         text: TextSpan(children: buildRichTextChildren()),
                       ),
 
-                    if (iconFinal.isNotEmpty)
+                    // ICON FINAL (SVG o IconData)
+                    if (iconFinal.isNotEmpty || iconFinalData != null)
                       Padding(
-                        padding: EdgeInsets.only(
-                          left: text.isNotEmpty ? 10 : 0,
-                        ),
-                        child: iconNoColor
+                        padding: EdgeInsets.only(left: text.isNotEmpty ? 10 : 0),
+                        child: iconFinalData != null
+                            ? Icon(iconFinalData, size: iconSize, color: iconColor)
+                            : (iconNoColor
                             ? SvgCustomNoColor(icon: iconFinal, size: iconSize)
-                            : SvgCustom(
-                                icon: iconFinal,
-                                size: iconSize,
-                                color: iconColor,
-                              ),
+                            : SvgCustom(icon: iconFinal, size: iconSize, color: iconColor)),
                       )
-                    else if (iconBegin.isNotEmpty &&
+                    // Compensación para centrado si solo hay icono al principio
+                    else if ((iconBegin.isNotEmpty || iconBeginData != null) &&
                         text.isNotEmpty &&
                         mainAxisAlignment == MainAxisAlignment.center)
                       SizedBox(width: iconSize + 10),

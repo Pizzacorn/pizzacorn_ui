@@ -1,6 +1,7 @@
 // C:/Users/hola/StudioProjects/pizzacorn_ui/lib/src/form/datefield.dart
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:uicons_pro/uicons_pro.dart';
 import '../../pizzacorn_ui.dart';
 
 /// PIZZACORN_UI CANDIDATE
@@ -93,6 +94,7 @@ class DatePickerFieldState extends State<DatePickerField> {
         labelText: widget.labelText,
         hintText: widget.hintText,
         validator: widget.validator,
+        prefixIcon: UIconsPro.regularRounded.calendar_day,
       ),
     );
   }
