@@ -6,6 +6,7 @@ export 'src/adapters/web_popup.dart';
 export 'src/appbars/appbar_back.dart';
 export 'src/appbars/appbar_close.dart';
 export 'src/appbars/appbar_home.dart';
+export 'src/appbars/appbar_back_withoptions.dart';
 
 //calendars
 export 'src/calendars/calendar_style.dart';
