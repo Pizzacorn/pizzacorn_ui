@@ -16,14 +16,14 @@ enum PizzacornBackground {
   String get assetName => 'background${index + 1}.json';
 }
 
-class BackgroundCustom extends StatelessWidget {
+class BackgroundLottieCustom extends StatelessWidget {
   final Widget child;
   final PizzacornBackground type;
   final double opacity;
   final BoxFit fit;
   final bool repeat; // <--- Nueva propiedad
 
-  const BackgroundCustom({
+  const BackgroundLottieCustom({
     super.key,
     required this.child,
     this.type = PizzacornBackground.classic,
