@@ -129,11 +129,19 @@ Future<void> openDialog(
 ///
 /// [text] → mensaje a mostrar.
 /// [color] → color de fondo del snackbar. Si es null, se usa [ColorScheme.error].
-void openSnackbar(BuildContext context, {String text = "", Color? color}) {
+void openSnackbar(
+    BuildContext context, {
+      String text = "",
+      Color? color,
+      Color? textColor, // <-- Nuevo parámetro añadido
+    }) {
   final scheme = Theme.of(context).colorScheme;
 
   // Si no se pasa color, usamos por defecto el color de error del theme
   final Color effectiveColor = color ?? scheme.error;
+
+  // Si el usuario no pasa textColor, calculamos el mejor contraste automáticamente
+  final Color effectiveTextColor = textColor ?? BestOnColor(effectiveColor, context);
 
   // Elegimos un icono base según el tipo de color.
   IconData iconData = Icons.done;
@@ -149,13 +157,17 @@ void openSnackbar(BuildContext context, {String text = "", Color? color}) {
       elevation: 100,
       content: Row(
         children: [
-          Icon(iconData, color: BestOnColor(effectiveColor, context), size: 18),
+          Icon(
+            iconData,
+            color: effectiveTextColor, // <-- Usamos el color efectivo
+            size: 18,
+          ),
           Space(SPACE_SMALL),
           Expanded(
             child: TextBody(
               text,
               maxlines: 5,
-              color: BestOnColor(effectiveColor, context),
+              color: effectiveTextColor, // <-- Usamos el color efectivo
             ),
           ),
         ],

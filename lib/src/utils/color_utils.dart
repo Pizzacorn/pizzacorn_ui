@@ -14,18 +14,18 @@ import 'package:flutter/material.dart';
 Color BestOnColor(Color bg, BuildContext context) {
   final scheme = Theme.of(context).colorScheme;
 
-  // Candidatos:
-  // - Uno "oscuro" (típico color de texto)
-  // - Uno "claro" (suele ser blanco o similar)
-  final Color darkCandidate = scheme.onSurface;
-  final Color lightCandidate = scheme.onPrimary;
+  // .computeLuminance() devuelve un valor de 0 (negro) a 1 (blanco)
+  // 0.5 es la mitad, pero 0.15 - 0.2 suele ser el límite para rojos/azules intensos
+  if (bg.computeLuminance() < 0.25) {
+    return Colors.white;
+  }
 
-  final double contrastWithDark = ContrastRatio(bg, darkCandidate);
-  final double contrastWithLight = ContrastRatio(bg, lightCandidate);
+  final double contrastWithDark = ContrastRatio(bg, scheme.onSurface);
+  final double contrastWithLight = ContrastRatio(bg, Colors.white);
 
   return (contrastWithLight >= contrastWithDark)
-      ? lightCandidate
-      : darkCandidate;
+      ? Colors.white
+      : scheme.onSurface;
 }
 
 /// Contraste WCAG 2.1: (L1 + 0.05) / (L2 + 0.05)
