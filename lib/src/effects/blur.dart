@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 
 class BlurCustom extends StatelessWidget {
   // El contenido es posicional siguiendo la ley de la lib
-  final Widget child;
+  final Widget? child;
 
   // Intensidad del blur en X e Y
   final double sigmaX;
   final double sigmaY;
 
-  const BlurCustom(
-    this.child, {
+  const BlurCustom({
     super.key,
+    this.child,
     this.sigmaX = 100.0,
     this.sigmaY = 100.0,
   });

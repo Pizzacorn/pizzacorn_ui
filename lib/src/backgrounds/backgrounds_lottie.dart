@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:pizzacorn_ui/pizzacorn_ui.dart';
+
 
 enum PizzacornBackground {
   classic,   // background1.json
@@ -17,38 +19,52 @@ enum PizzacornBackground {
 }
 
 class BackgroundLottieCustom extends StatelessWidget {
-  final Widget child;
   final PizzacornBackground type;
   final double opacity;
   final BoxFit fit;
-  final bool repeat; // <--- Nueva propiedad
+  final bool repeat;
+
+  // Parámetros para tu BlurCustom
+  final bool isBlurred;
+  final double sigmaX;
+  final double sigmaY;
 
   const BackgroundLottieCustom({
     super.key,
-    required this.child,
     this.type = PizzacornBackground.classic,
     this.opacity = 1.0,
     this.fit = BoxFit.cover,
-    this.repeat = true, // Por defecto suele ser mejor que se repita
+    this.repeat = true,
+    this.isBlurred = false,
+    this.sigmaX = 10.0, // Valores más realistas por defecto, 100 es mucho blur
+    this.sigmaY = 10.0,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Opacity(
-          opacity: opacity,
-          child: Lottie.asset(
-            'assets/lottie/${type.assetName}',
-            package: 'pizzacorn_ui',
-            width: double.infinity,
-            height: double.infinity,
-            fit: fit,
-            repeat: repeat, // <--- Aplicamos la propiedad aquí
-          ),
-        ),
-        child,
-      ],
+    // 1. Creamos el contenido base (el Lottie)
+    Widget content = Lottie.asset(
+      'assets/lottie/${type.assetName}',
+      package: 'pizzacorn_ui',
+      width: double.infinity,
+      height: double.infinity,
+      fit: fit,
+      repeat: repeat,
+    );
+
+    // 2. Si el usuario quiere blur, envolvemos con TU BlurCustom
+    if (isBlurred) {
+      content = BlurCustom(
+        sigmaX: sigmaX,
+        sigmaY: sigmaY,
+        child: content,
+      );
+    }
+
+    // 3. Aplicamos la opacidad al final de la cadena
+    return Opacity(
+      opacity: opacity,
+      child: content,
     );
   }
 }
