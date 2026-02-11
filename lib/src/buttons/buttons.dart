@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 
-/// Botón custom Pizzacorn - Versión Equilibrada y Centrada con Soporte de Accesibilidad
-/// Soporta Iconos SVG e IconData (UIconsPro) con Splash dinámico oscurecido.
 class ButtonCustom extends StatelessWidget {
   final void Function()? onPressed;
   final void Function()? onLongPressed;
-
   final double? width;
   final double? height;
   final MainAxisAlignment mainAxisAlignment;
@@ -26,14 +23,11 @@ class ButtonCustom extends StatelessWidget {
   final Color? borderColor;
   final double borderWidth;
 
-  // ICONS (SVG)
+  // ICONS
   final String iconBegin;
   final String iconFinal;
-
-  // ICONS (ICON DATA)
   final IconData? iconBeginData;
   final IconData? iconFinalData;
-
   final double padding;
   final double iconSize;
   final Color iconColor;
@@ -83,10 +77,8 @@ class ButtonCustom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 1. Lógica de Colores Efectivos
     final Color effectiveColor = color ?? COLOR_ACCENT;
 
-    // PIZZACORN DYNAMIC SPLASH: Oscurecemos el color de acento un 15% para el splash
     final HSLColor hsl = HSLColor.fromColor(effectiveColor);
     final Color autoDarkenedSplash = hsl
         .withLightness((hsl.lightness - 0.15).clamp(0.0, 1.0))
@@ -101,53 +93,44 @@ class ButtonCustom extends StatelessWidget {
 
     final double finalHeight = height ?? BUTTON_HEIGHT;
 
-    // 2. Lógica de Accesibilidad
     String label = semanticLabel ?? text;
     if (label.isEmpty && richTexts.isNotEmpty) {
-      for (int i = 0; i < richTexts.length; i++) {
-        label += "${richTexts[i].values.first} ";
-      }
+      for (var map in richTexts) { label += "${map.values.first} "; }
     }
 
     return Semantics(
       label: label.trim(),
       button: true,
       enabled: onPressed != null,
-      onTap: onPressed,
-      onLongPress: onLongPressed,
       child: SizedBox(
         height: richTexts.isNotEmpty || onlyText ? 35 : finalHeight,
         width: width,
         child: Material(
           type: MaterialType.transparency,
           clipBehavior: Clip.antiAlias,
-          shape: border
-              ? RoundedRectangleBorder(
+          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(effectiveBorderRadius),
-            side: BorderSide(
-              color: effectiveBorderColor,
-              width: borderWidth,
-              strokeAlign: BorderSide.strokeAlignInside,
-            ),
-          )
-              : RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(effectiveBorderRadius),
+            side: border
+                ? BorderSide(color: effectiveBorderColor, width: borderWidth)
+                : BorderSide.none,
           ),
           child: InkWell(
             splashColor: effectiveColorSplash,
             onTap: onPressed,
             onLongPress: onLongPressed,
-            excludeFromSemantics: true,
             child: Ink(
               decoration: BoxDecoration(
-                gradient: !hasGradient || richTexts.isNotEmpty || onlyText || border
+                borderRadius: BorderRadius.circular(effectiveBorderRadius),
+                // Lógica de Gradiente: Se quita si es texto simple o richText
+                gradient: !hasGradient || richTexts.isNotEmpty || onlyText
                     ? null
                     : LinearGradient(
                   colors: [effectiveGradientPrimary, effectiveGradientSecondary],
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                 ),
-                color: hasGradient || richTexts.isNotEmpty || onlyText || border
+                // Lógica de Color: Ahora NO depende de "border", se pinta siempre si no hay gradiente
+                color: hasGradient || richTexts.isNotEmpty || onlyText
                     ? null
                     : effectiveColor,
               ),
@@ -156,7 +139,6 @@ class ButtonCustom extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: mainAxisAlignment,
                   children: [
-                    // ICON BEGIN (SVG o IconData)
                     if (iconBegin.isNotEmpty || iconBeginData != null)
                       Padding(
                         padding: EdgeInsets.only(right: text.isNotEmpty ? 10 : 0),
@@ -165,14 +147,7 @@ class ButtonCustom extends StatelessWidget {
                             : (iconNoColor
                             ? SvgCustomNoColor(icon: iconBegin, size: iconSize)
                             : SvgCustom(icon: iconBegin, size: iconSize, color: iconColor)),
-                      )
-                    // Compensación para centrado si solo hay icono al final
-                    else if ((iconFinal.isNotEmpty || iconFinalData != null) &&
-                        text.isNotEmpty &&
-                        mainAxisAlignment == MainAxisAlignment.center)
-                      SizedBox(width: iconSize + 10),
-
-                    // TEXTO O RICHTEXT
+                      ),
                     if (text.isNotEmpty)
                       Flexible(
                         child: TextButtonCustom(
@@ -182,11 +157,7 @@ class ButtonCustom extends StatelessWidget {
                         ),
                       )
                     else if (richTexts.isNotEmpty)
-                      RichText(
-                        text: TextSpan(children: buildRichTextChildren()),
-                      ),
-
-                    // ICON FINAL (SVG o IconData)
+                      RichText(text: TextSpan(children: buildRichTextChildren())),
                     if (iconFinal.isNotEmpty || iconFinalData != null)
                       Padding(
                         padding: EdgeInsets.only(left: text.isNotEmpty ? 10 : 0),
@@ -195,12 +166,7 @@ class ButtonCustom extends StatelessWidget {
                             : (iconNoColor
                             ? SvgCustomNoColor(icon: iconFinal, size: iconSize)
                             : SvgCustom(icon: iconFinal, size: iconSize, color: iconColor)),
-                      )
-                    // Compensación para centrado si solo hay icono al principio
-                    else if ((iconBegin.isNotEmpty || iconBeginData != null) &&
-                        text.isNotEmpty &&
-                        mainAxisAlignment == MainAxisAlignment.center)
-                      SizedBox(width: iconSize + 10),
+                      ),
                   ],
                 ),
               ),
@@ -212,23 +178,15 @@ class ButtonCustom extends StatelessWidget {
   }
 
   List<TextSpan> buildRichTextChildren() {
-    final List<TextSpan> children = <TextSpan>[];
-    for (int i = 0; i < richTexts.length; i++) {
-      final Map<String, String> textData = richTexts[i];
+    return richTexts.map((textData) {
       final String key = textData.keys.first;
       final String value = textData.values.first;
-
-      if (key == "destacado") {
-        children.add(
-          TextSpan(
-            text: value,
-            style: styleBody(fontWeight: FontWeight.bold, color: COLOR_ACCENT),
-          ),
-        );
-      } else {
-        children.add(TextSpan(text: value, style: styleBody()));
-      }
-    }
-    return children;
+      return TextSpan(
+        text: value,
+        style: key == "destacado"
+            ? styleBody(fontWeight: FontWeight.bold, color: COLOR_ACCENT)
+            : styleBody(),
+      );
+    }).toList();
   }
 }
