@@ -45,7 +45,7 @@ dependencies:
   crop_your_image: ^2.0.0
 
   # --- ANIMATIONS ---
-  flame_lottie: ^0.4.2+19
+  lottie: ^3.3.2
 
   #URL
   url_launcher: ^6.3.0

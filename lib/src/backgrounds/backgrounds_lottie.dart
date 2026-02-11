@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
-
 enum PizzacornBackground {
   classic,   // background1.json
   space,     // background2.json
@@ -14,11 +13,7 @@ enum PizzacornBackground {
   cloudy,    // background9.json
   premium;   // background10.json
 
-  /// Devuelve el nombre del archivo basado en el índice (1-10)
-  String get assetName {
-    // index empieza en 0, por eso sumamos 1
-    return 'background${index + 1}.json';
-  }
+  String get assetName => 'background${index + 1}.json';
 }
 
 class BackgroundCustom extends StatelessWidget {
@@ -26,6 +21,7 @@ class BackgroundCustom extends StatelessWidget {
   final PizzacornBackground type;
   final double opacity;
   final BoxFit fit;
+  final bool repeat; // <--- Nueva propiedad
 
   const BackgroundCustom({
     super.key,
@@ -33,6 +29,7 @@ class BackgroundCustom extends StatelessWidget {
     this.type = PizzacornBackground.classic,
     this.opacity = 1.0,
     this.fit = BoxFit.cover,
+    this.repeat = true, // Por defecto suele ser mejor que se repita
   });
 
   @override
@@ -43,13 +40,13 @@ class BackgroundCustom extends StatelessWidget {
           opacity: opacity,
           child: Lottie.asset(
             'assets/lottie/${type.assetName}',
-            package: 'pizzacorn_ui', // Crucial para que encuentre los archivos en la lib
+            package: 'pizzacorn_ui',
             width: double.infinity,
             height: double.infinity,
             fit: fit,
+            repeat: repeat, // <--- Aplicamos la propiedad aquí
           ),
         ),
-        // Ponemos el child dentro de un SafeArea opcional o directo
         child,
       ],
     );
