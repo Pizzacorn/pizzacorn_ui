@@ -1,4 +1,3 @@
-// C:/Users/hola/StudioProjects/pizzacorn_ui/lib/src/inputs/title_and_text_field.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../pizzacorn_ui.dart';
@@ -24,8 +23,12 @@ class TitleAndTextField extends StatelessWidget {
   final TextInputType? textInputType;
   final int maxLength;
 
+  // NUEVOS CAMPOS
+  final int maxLines;
+  final int minLines;
+
   const TitleAndTextField(
-      this.title, { // El contenido (título) es parámetro posicional según la ley
+      this.title, { // El título es parámetro posicional según la ley
         super.key,
         required this.controller,
         this.hintText = "",
@@ -41,6 +44,8 @@ class TitleAndTextField extends StatelessWidget {
         this.onTap,
         this.textInputType,
         this.maxLength = 0,
+        this.maxLines = 1, // Por defecto 1 como un TextField normal
+        this.minLines = 1,
       });
 
   @override
@@ -52,8 +57,11 @@ class TitleAndTextField extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Sin const según la ley Pizzacorn
           TextBody(title, fontWeight: FontWeight.bold),
-          Space(spaceSize), // Constante de espacio posicional
+
+          Space(spaceSize),
+
           TextFieldCustom(
             controller: controller,
             hintText: hintText,
@@ -68,6 +76,9 @@ class TitleAndTextField extends StatelessWidget {
             onTap: onTap,
             textInputType: textInputType ?? TextInputType.name,
             maxLength: maxLength,
+            // Pasamos los nuevos parámetros
+            maxLines: maxLines,
+            minLines: minLines,
           ),
         ],
       ),

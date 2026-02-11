@@ -43,6 +43,7 @@ export 'src/form/textfield.dart';
 export 'src/form/datefield.dart';
 export 'src/form/title_and_textfield.dart';
 export 'src/form/selector_list.dart';
+export 'src/form/timefield.dart';
 
 // icons
 export 'src/icons/svg.dart';
