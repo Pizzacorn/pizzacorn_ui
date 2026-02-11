@@ -1,31 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 
-import 'package:flutter/material.dart';
-import 'package:pizzacorn_ui/pizzacorn_ui.dart';
-
 PreferredSizeWidget AppBarClose({
   required BuildContext context,
   String title = "",
   Color? color,
   VoidCallback? onClose,
   double height = 60,
-  bool showBottomBorder = true, // <-- Nuevo parámetro para decidir si aparece la barra
+  bool showBottomBorder = true,
 }) {
-  // Si el texto es vacío, no se renderiza nada (tamaño cero)
-  if (title.isEmpty) {
-    return const PreferredSize(
-      preferredSize: Size.zero,
-      child: SizedBox.shrink(),
-    );
-  }
-
   final Color effectiveColor = color ?? COLOR_BACKGROUND_SECONDARY;
 
   return PreferredSize(
     preferredSize: Size.fromHeight(height),
     child: Container(
-      // La barra de abajo solo aparece si showBottomBorder es true
       decoration: BoxDecoration(
         border: showBottomBorder
             ? Border(bottom: BorderSide(color: COLOR_BORDER, width: 1))
@@ -37,7 +25,10 @@ PreferredSizeWidget AppBarClose({
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
-        title: TextSubtitle(title, fontWeight: FontWeight.normal),
+        // Si el título está vacío, pasamos null para que no ocupe espacio
+        title: title.isNotEmpty
+            ? TextSubtitle(title, fontWeight: FontWeight.normal)
+            : null,
         leading: IconButton(
           splashColor: COLOR_ACCENT.withValues(alpha: 0.2),
           highlightColor: COLOR_ACCENT.withValues(alpha: 0.2),
