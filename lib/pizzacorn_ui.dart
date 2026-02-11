@@ -8,10 +8,8 @@ export 'src/appbars/appbar_close.dart';
 export 'src/appbars/appbar_home.dart';
 export 'src/appbars/appbar_back_withoptions.dart';
 
-//calendars
-export 'src/calendars/calendar_style.dart';
-export 'src/calendars/monthly_calendar.dart';
-export 'src/calendars/slider_calendar.dart';
+// backgrounds
+export 'src/backgrounds/backgrounds_lottie.dart';
 
 // buttons
 export 'src/buttons/button_icon.dart';
@@ -19,6 +17,11 @@ export 'src/buttons/buttons.dart';
 export 'src/buttons/more_menu_button.dart';
 export 'src/buttons/pop_up.dart';
 export 'src/buttons/styles.dart';
+
+//calendars
+export 'src/calendars/calendar_style.dart';
+export 'src/calendars/monthly_calendar.dart';
+export 'src/calendars/slider_calendar.dart';
 
 // cropper
 export 'src/cropper/crop_page.dart';

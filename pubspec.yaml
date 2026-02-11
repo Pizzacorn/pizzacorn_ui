@@ -1,7 +1,7 @@
 name: pizzacorn_ui
 description: "Pizzacorn UI: a Flutter design system with configurable theme, typography, colors and reusable UI widgets."
 
-version: 0.0.41
+version: 0.0.42
 
 homepage: https://github.com/Pizzacorn/pizzacorn_ui
 repository: https://github.com/Pizzacorn/pizzacorn_ui
@@ -44,6 +44,9 @@ dependencies:
   cached_network_image: ^3.4.1
   crop_your_image: ^2.0.0
 
+  # --- ANIMATIONS ---
+  flame_lottie: ^0.4.2+19
+
   #URL
   url_launcher: ^6.3.0
 
@@ -58,3 +61,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/lottie/
+    - assets/icons/
