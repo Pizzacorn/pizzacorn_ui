@@ -13,8 +13,10 @@ enum PizzacornBackground {
   forest,    // background7.json
   abstract,  // background8.json
   cloudy,    // background9.json
-  premium;   // background10.json
-
+  premium,  // background10.json
+  silver,  // background11.json
+  gold,   // background12.json
+  antique;   // background13.json
   String get assetName => 'background${index + 1}.json';
 }
 
