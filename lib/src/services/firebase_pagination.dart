@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class FirebasePagination {
-  /// Función MAESTRA GENÉRICA para Firestore
   static Future<PaginationResult<T>> get<T>({
     required BuildContext context,
     required String collection,
@@ -12,64 +11,98 @@ class FirebasePagination {
     int limit = 20,
     DocumentSnapshot? lastDocument,
     bool descending = false,
-    Map<String, dynamic>? where, // ¡NUEVO: Parámetro para cláusulas WHERE!
+    List<WhereFilter>? where,
   }) async {
-    // Usamos tus constantes de debug si existen, si no, prints limpios
     if (kDebugMode) print("🚀 Cargando $collection (Paginando)...");
 
     try {
-      Query query = FirebaseFirestore.instance
-          .collection(collection);
+      // 1. Referencia base
+      Query query = FirebaseFirestore.instance.collection(collection);
 
-      // APLICANDO LA LEY: Bucles con índice, prohibido for-in o forEach
-      // Primero aplicamos los filtros 'where' si existen
+      // 2. Aplicar Filtros (Ley del Bucle Indexado)
       if (where != null && where.isNotEmpty) {
-        final whereEntries = where.entries.toList(); // Convertimos a lista para usar bucle con índice
-        for (int i = 0; i < whereEntries.length; i++) {
-          final entry = whereEntries[i];
-          // Asumimos 'isEqualTo' por defecto para los filtros del mapa
-          query = query.where(entry.key, isEqualTo: entry.value);
+        for (int i = 0; i < where.length; i++) {
+          final filter = where[i];
+
+          // Ignoramos filtros con valores nulos para evitar que la query muera
+          if (filter.value == null) continue;
+
+          switch (filter.operator) {
+            case WhereOperator.isEqualTo:
+              query = query.where(filter.field, isEqualTo: filter.value);
+              break;
+            case WhereOperator.isNotEqualTo:
+              query = query.where(filter.field, isNotEqualTo: filter.value);
+              break;
+            case WhereOperator.isGreaterThan:
+              query = query.where(filter.field, isGreaterThan: filter.value);
+              break;
+            case WhereOperator.isGreaterThanOrEqualTo:
+              query = query.where(filter.field, isGreaterThanOrEqualTo: filter.value);
+              break;
+            case WhereOperator.isLessThan:
+              query = query.where(filter.field, isLessThan: filter.value);
+              break;
+            case WhereOperator.isLessThanOrEqualTo:
+              query = query.where(filter.field, isLessThanOrEqualTo: filter.value);
+              break;
+            case WhereOperator.arrayContains:
+              query = query.where(filter.field, arrayContains: filter.value);
+              break;
+            case WhereOperator.arrayContainsAny:
+              query = query.where(filter.field, arrayContainsAny: filter.value as List);
+              break;
+          }
         }
       }
 
-      // Luego aplicamos el orden y el límite
-      query = query
-          .orderBy(orderBy, descending: descending)
-          .limit(limit);
+      // 3. Orden y Paginación
+      // 🔥 IMPORTANTE: Si usas filtros de rango (<, >, <=, >=), el primer orderBy debe ser sobre ese mismo campo.
+      query = query.orderBy(orderBy, descending: descending);
 
       if (lastDocument != null) {
         query = query.startAfterDocument(lastDocument);
       }
 
-      final snapshot = await query.get();
+      // 4. Ejecución con Límite
+      final snapshot = await query.limit(limit).get();
 
-      // REGLA: Bucles con índice, prohibido for-in o forEach
+      // 5. Mapeo de Resultados (Ley del Bucle Indexado)
       final List<T> items = <T>[];
-      for (int i = 0; i < snapshot.docs.length; i++) {
-        final data = snapshot.docs[i].data() as Map<String, dynamic>;
+      final docs = snapshot.docs;
+
+      for (int i = 0; i < docs.length; i++) {
+        final doc = docs[i];
+        final data = doc.data() as Map<String, dynamic>;
+
+        // Inyectamos el ID del documento siempre
+        data['id'] = doc.id;
+
         items.add(fromFirestore(data));
       }
 
-      if (kDebugMode) print("✅ $collection - Cargados: ${items.length}");
-
       return PaginationResult<T>(
         items: items,
-        hasMore: snapshot.docs.length == limit,
-        lastDocument: snapshot.docs.isNotEmpty
-            ? snapshot.docs.last
-            : lastDocument,
+        hasMore: docs.length == limit,
+        lastDocument: docs.isNotEmpty ? docs.last : lastDocument,
       );
     } catch (e) {
-      if (kDebugMode) print("❌ Error al cargar $collection: $e");
-      // Asumimos que openSnackbar es parte de tu toolkit
-      // openSnackbar(context, text: "Error al cargar $collection");
-      return PaginationResult<T>(
-        items: [],
-        hasMore: false,
-        lastDocument: lastDocument,
-      );
+      if (kDebugMode) print("❌ Error en FirebasePagination ($collection): $e");
+      return PaginationResult<T>(items: [], hasMore: false, lastDocument: lastDocument);
     }
   }
+}
+
+// 🟢 Enum extendido para ser el Rey de las Queries
+enum WhereOperator {
+  isEqualTo,
+  isNotEqualTo,
+  isGreaterThan,
+  isGreaterThanOrEqualTo,
+  isLessThan,
+  isLessThanOrEqualTo,
+  arrayContains,
+  arrayContainsAny
 }
 
 class PaginationResult<T> {
@@ -114,4 +147,13 @@ class PaginationState<T> {
       lastDocument: lastDocument ?? this.lastDocument,
     );
   }
+}
+
+
+class WhereFilter {
+  final String field;
+  final dynamic value;
+  final WhereOperator operator;
+
+  WhereFilter(this.field, this.value, {this.operator = WhereOperator.isEqualTo});
 }
