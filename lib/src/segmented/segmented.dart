@@ -8,9 +8,9 @@ import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 /// API: SegmentedControlCustom(segments: ["Uno", "Dos"], currentIndex: 0, onValueChanged: (i) => ...)
 class SegmentedControlCustom extends StatelessWidget {
   /// Lista de etiquetas que se mostrarán en cada segmento
-  final List<String> segments;
+  final List<String> items;
   /// Textos secundarios (opcional), uno por segmento
-  final List<String>? secondaryTexts;
+  final List<String>? itemsSecondary;
   /// Índice del segmento actualmente seleccionado
   final int currentIndex;
   /// Callback que devuelve el índice cuando se pulsa un segmento
@@ -31,18 +31,18 @@ class SegmentedControlCustom extends StatelessWidget {
 
   const SegmentedControlCustom({
     super.key, // Usando super.key moderno
-    required this.segments,
-    this.secondaryTexts,
+    required this.items,
+    this.itemsSecondary,
     required this.currentIndex,
     required this.onValueChanged,
-    this.padding = const EdgeInsets.all(16),
+    this.padding = const EdgeInsets.all(0),
     this.thumbColor,
     this.backgroundColor,
     this.activeTextColor,
     this.inactiveTextColor,
     this.thumbRadius = 0,
     this.height = 32.0,
-  }) : assert(secondaryTexts == null || secondaryTexts.length == segments.length,
+  }) : assert(itemsSecondary == null || itemsSecondary.length == items.length,
   'secondaryTexts debe tener la misma longitud que segments');
 
   @override
@@ -57,7 +57,7 @@ class SegmentedControlCustom extends StatelessWidget {
       padding: padding,
       child: LayoutBuilder(builder: (context, constraints) {
         final totalWidth = constraints.maxWidth;
-        final segmentWidth = totalWidth / segments.length;
+        final segmentWidth = totalWidth / items.length;
 
         return Stack(
           children: [
@@ -89,11 +89,11 @@ class SegmentedControlCustom extends StatelessWidget {
 
             // Opciones encima
             Row(
-              children: segments.asMap().entries.map((entry) {
+              children: items.asMap().entries.map((entry) {
                 final idx = entry.key;
                 final label = entry.value;
-                final secondary = secondaryTexts != null
-                    ? secondaryTexts![idx]
+                final secondary = itemsSecondary != null
+                    ? itemsSecondary![idx]
                     : '';
                 final selected = idx == currentIndex;
 

@@ -88,6 +88,8 @@ export 'src/pickers/uicon_picker.dart';
 
 //segmented
 export 'src/segmented/segmented.dart';
+export 'src/segmented/segmented_cupertino.dart';
+export 'src/segmented/segmented_subtitles.dart';
 
 //services
 export 'src/services/firebase_pagination.dart';
