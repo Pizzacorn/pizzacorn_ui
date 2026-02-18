@@ -80,6 +80,11 @@ export 'src/overlays/loading.dart';
 export 'src/overlays/loading_widget.dart';
 export 'src/overlays/bottom_popups.dart';
 
+//PAGINATION
+export 'src/pagination/pagination_list.dart';
+export 'src/pagination/pagination_grid.dart';
+export 'src/pagination/pagination_controller.dart';
+
 // pickers
 export 'src/pickers/icon_picker.dart';
 export 'src/pickers/date_picker.dart';

@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class FirebasePagination {
-  static Future<PaginationResult<T>> get<T>({
+class OldFirebasePagination {
+  static Future<OldPaginationResult<T>> get<T>({
     required BuildContext context,
     required String collection,
     required String orderBy,
@@ -11,7 +11,7 @@ class FirebasePagination {
     int limit = 20,
     DocumentSnapshot? lastDocument,
     bool descending = false,
-    List<WhereFilter>? where,
+    List<OldWhereFilter>? where,
   }) async {
     if (kDebugMode) print("🚀 Cargando $collection (Paginando)...");
 
@@ -28,28 +28,28 @@ class FirebasePagination {
           if (filter.value == null) continue;
 
           switch (filter.operator) {
-            case WhereOperator.isEqualTo:
+            case OldWhereOperator.isEqualTo:
               query = query.where(filter.field, isEqualTo: filter.value);
               break;
-            case WhereOperator.isNotEqualTo:
+            case OldWhereOperator.isNotEqualTo:
               query = query.where(filter.field, isNotEqualTo: filter.value);
               break;
-            case WhereOperator.isGreaterThan:
+            case OldWhereOperator.isGreaterThan:
               query = query.where(filter.field, isGreaterThan: filter.value);
               break;
-            case WhereOperator.isGreaterThanOrEqualTo:
+            case OldWhereOperator.isGreaterThanOrEqualTo:
               query = query.where(filter.field, isGreaterThanOrEqualTo: filter.value);
               break;
-            case WhereOperator.isLessThan:
+            case OldWhereOperator.isLessThan:
               query = query.where(filter.field, isLessThan: filter.value);
               break;
-            case WhereOperator.isLessThanOrEqualTo:
+            case OldWhereOperator.isLessThanOrEqualTo:
               query = query.where(filter.field, isLessThanOrEqualTo: filter.value);
               break;
-            case WhereOperator.arrayContains:
+            case OldWhereOperator.arrayContains:
               query = query.where(filter.field, arrayContains: filter.value);
               break;
-            case WhereOperator.arrayContainsAny:
+            case OldWhereOperator.arrayContainsAny:
               query = query.where(filter.field, arrayContainsAny: filter.value as List);
               break;
           }
@@ -81,20 +81,20 @@ class FirebasePagination {
         items.add(fromFirestore(data));
       }
 
-      return PaginationResult<T>(
+      return OldPaginationResult<T>(
         items: items,
         hasMore: docs.length == limit,
         lastDocument: docs.isNotEmpty ? docs.last : lastDocument,
       );
     } catch (e) {
       if (kDebugMode) print("❌ Error en FirebasePagination ($collection): $e");
-      return PaginationResult<T>(items: [], hasMore: false, lastDocument: lastDocument);
+      return OldPaginationResult<T>(items: [], hasMore: false, lastDocument: lastDocument);
     }
   }
 }
 
 // 🟢 Enum extendido para ser el Rey de las Queries
-enum WhereOperator {
+enum OldWhereOperator {
   isEqualTo,
   isNotEqualTo,
   isGreaterThan,
@@ -105,26 +105,26 @@ enum WhereOperator {
   arrayContainsAny
 }
 
-class PaginationResult<T> {
+class OldPaginationResult<T> {
   final List<T> items;
   final bool hasMore;
   final DocumentSnapshot? lastDocument;
 
-  PaginationResult({
+  OldPaginationResult({
     required this.items,
     required this.hasMore,
     this.lastDocument,
   });
 }
 
-class PaginationState<T> {
+class OldPaginationState<T> {
   final List<T> items;
   final bool loading;
   final bool loadingMore;
   final bool hasMore;
   final DocumentSnapshot? lastDocument;
 
-  PaginationState({
+  OldPaginationState({
     this.items = const [],
     this.loading = false,
     this.loadingMore = false,
@@ -132,14 +132,14 @@ class PaginationState<T> {
     this.lastDocument,
   });
 
-  PaginationState<T> copyWith({
+  OldPaginationState<T> copyWith({
     List<T>? items,
     bool? loading,
     bool? loadingMore,
     bool? hasMore,
     DocumentSnapshot? lastDocument,
   }) {
-    return PaginationState<T>(
+    return OldPaginationState<T>(
       items: items ?? this.items,
       loading: loading ?? this.loading,
       loadingMore: loadingMore ?? this.loadingMore,
@@ -149,11 +149,10 @@ class PaginationState<T> {
   }
 }
 
-
-class WhereFilter {
+class OldWhereFilter {
   final String field;
   final dynamic value;
-  final WhereOperator operator;
+  final OldWhereOperator operator;
 
-  WhereFilter(this.field, this.value, {this.operator = WhereOperator.isEqualTo});
+  OldWhereFilter(this.field, this.value, {this.operator = OldWhereOperator.isEqualTo});
 }
