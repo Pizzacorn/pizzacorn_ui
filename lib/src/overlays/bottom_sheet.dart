@@ -121,7 +121,7 @@ class BottomSheetCustomTwoButtons extends StatelessWidget {
                 border: leftBorder,
                 color: leftColor,
                 textColor: leftTextColor ?? COLOR_TEXT,
-                borderColor: leftBorderColor ?? COLOR_TEXT,
+                borderColor: leftBorderColor ?? COLOR_BORDER,
                 onPressed: onLeftPressed!,
               ),
             ),

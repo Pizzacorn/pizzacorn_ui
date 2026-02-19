@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../pizzacorn_ui.dart';
 import '../layout/space.dart';
 import '../text/textstyles.dart';
 import '../utils/color_utils.dart';
@@ -141,7 +142,7 @@ void openSnackbar(
   final Color effectiveColor = color ?? scheme.error;
 
   // Si el usuario no pasa textColor, calculamos el mejor contraste automáticamente
-  final Color effectiveTextColor = textColor ?? BestOnColor(effectiveColor, context);
+  final Color effectiveTextColor = COLOR_BACKGROUND;
 
   // Elegimos un icono base según el tipo de color.
   IconData iconData = Icons.done;

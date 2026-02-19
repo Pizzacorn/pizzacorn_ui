@@ -80,6 +80,8 @@ class TimePickerCustomState extends State<TimePickerCustom> {
                     child: ButtonCustom(
                       text: "Cancelar",
                       border: true, // Estilo secundario para cancelar
+                      color: COLOR_BACKGROUND,
+                      borderColor: COLOR_BORDER,
                       onPressed: () {
                         Navigator.pop(context);
                       },

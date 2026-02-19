@@ -97,6 +97,8 @@ class DatePickerCustomState extends State<DatePickerCustom> {
                     child: ButtonCustom(
                       text: "Cancelar",
                       border: true,
+                      color: COLOR_BACKGROUND,
+                      borderColor: COLOR_BORDER,
                       onPressed: () {
                         // Pop sin resultado para Cancelar
                         Navigator.pop(context);
