@@ -13,7 +13,8 @@ class GridCustom<T> extends ConsumerWidget {
   final int crossAxisCount;
   final double childAspectRatio;
 
-  GridCustom({
+  const GridCustom({ // 🟢 Añadido const y super.key
+    super.key,
     required this.params,
     required this.itemBuilder,
     required this.itemPlaceholder,
@@ -26,11 +27,11 @@ class GridCustom<T> extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Usamos el mismo provider de paginación que la lista
+    // 🟢 MAGIA: Quitamos el <T> y dejamos que infiera por 'params'
     final state = ref.watch(paginationProvider(params));
     final controller = ref.read(paginationProvider(params).notifier);
 
-    // 1. ESTADO DE CARGA INICIAL (Cargamos 6 para llenar el grid de skeletons)
+    // 1. ESTADO DE CARGA INICIAL
     if (state.isLoading && state.items.isEmpty) {
       return Skeletonizer.sliver(
         enabled: true,
@@ -85,7 +86,7 @@ class GridCustom<T> extends ConsumerWidget {
           ),
           delegate: SliverChildBuilderDelegate(
                 (context, i) {
-              // Pre-fetch cuando quedan pocos elementos
+              // Pre-fetch
               final fetchThreshold = state.items.length - 4;
               if (i >= fetchThreshold && state.hasMore && !state.isFetchingMore && !state.isLoading) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -100,7 +101,7 @@ class GridCustom<T> extends ConsumerWidget {
           ),
         ),
 
-        // 5. CARGANDO MÁS (Fila de skeletons inferior)
+        // 5. CARGANDO MÁS
         if (state.isFetchingMore)
           Skeletonizer.sliver(
             enabled: true,
@@ -115,13 +116,12 @@ class GridCustom<T> extends ConsumerWidget {
                 ),
                 delegate: SliverChildBuilderDelegate(
                       (context, i) => itemBuilder(itemPlaceholder),
-                  childCount: crossAxisCount, // Una fila de skeletons
+                  childCount: crossAxisCount,
                 ),
               ),
             ),
           ),
 
-        // Espaciador final para que no pegue abajo del todo
         SliverToBoxAdapter(child: Space(SPACE_MEDIUM)),
       ],
     );

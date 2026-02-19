@@ -35,37 +35,17 @@ class PaginationState<T> {
 }
 
 // --- PARÁMETROS ---
-class PaginationWhereFilter {
-  final String field;
-  final dynamic value;
-  PaginationWhereFilter(this.field, this.value);
-
-  // 🟢 Añadido para que la comparación de parámetros funcione correctamente
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-          other is PaginationWhereFilter &&
-              runtimeType == other.runtimeType &&
-              field == other.field &&
-              value == other.value;
-
-  @override
-  int get hashCode => field.hashCode ^ value.hashCode;
-}
-
 class PaginationParams<T> {
   final String collection;
-  final List<PaginationWhereFilter>? whereFilters;
-  final String? orderBy;
-  final bool descending;
+  final Query Function(Query q)? query;
+  final int limit;
   final T Function(Map<String, dynamic> data, String id) fromJson;
 
   PaginationParams({
     required this.collection,
     required this.fromJson,
-    this.whereFilters,
-    this.orderBy,
-    this.descending = false,
+    this.query,
+    this.limit = 15,
   });
 
   @override
@@ -74,24 +54,16 @@ class PaginationParams<T> {
           other is PaginationParams &&
               runtimeType == other.runtimeType &&
               collection == other.collection &&
-              orderBy == other.orderBy &&
-              descending == other.descending &&
-              // 🟢 Ahora comparamos también los filtros
-              const ListEquality().equals(whereFilters, other.whereFilters);
+              limit == other.limit;
 
   @override
-  int get hashCode =>
-      collection.hashCode ^
-      orderBy.hashCode ^
-      descending.hashCode ^
-      const ListEquality().hash(whereFilters);
+  int get hashCode => collection.hashCode ^ limit.hashCode;
 }
 
 // --- CONTROLADOR ---
 class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<T>, PaginationParams<T>> {
   DocumentSnapshot? lastDocument;
-  final int limit = 15;
-  bool isMounted = true; // 🟢 Para evitar setear estado si el provider se destruye
+  bool isMounted = true;
 
   @override
   PaginationState<T> build(PaginationParams<T> arg) {
@@ -100,24 +72,20 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
     return PaginationState<T>();
   }
 
+  Query _getQuery() {
+    Query q = FirebaseFirestore.instance.collection(arg.collection);
+    if (arg.query != null) {
+      q = arg.query!(q);
+    }
+    return q;
+  }
+
   Future<void> loadItems() async {
     try {
       state = state.copyWith(isLoading: true, error: '');
 
-      Query query = FirebaseFirestore.instance.collection(arg.collection).limit(limit);
-
-      if (arg.whereFilters != null) {
-        for (int i = 0; i < arg.whereFilters!.length; i++) {
-          final filter = arg.whereFilters![i];
-          query = query.where(filter.field, isEqualTo: filter.value);
-        }
-      }
-
-      if (arg.orderBy != null) {
-        query = query.orderBy(arg.orderBy!, descending: arg.descending);
-      }
-
-      final snapshot = await query.get();
+      Query q = _getQuery().limit(arg.limit);
+      final snapshot = await q.get();
 
       if (!isMounted) return;
 
@@ -132,7 +100,7 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
         state = state.copyWith(
           items: newItems,
           isLoading: false,
-          hasMore: snapshot.docs.length == limit,
+          hasMore: snapshot.docs.length == arg.limit,
         );
       } else {
         state = state.copyWith(isLoading: false, hasMore: false, items: []);
@@ -143,29 +111,13 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
   }
 
   Future<void> fetchMore() async {
-    // 🟢 Evitamos múltiples llamadas simultáneas que causan LAG
     if (state.isFetchingMore || !state.hasMore || lastDocument == null) return;
 
     try {
       state = state.copyWith(isFetchingMore: true);
 
-      Query query = FirebaseFirestore.instance
-          .collection(arg.collection)
-          .limit(limit)
-          .startAfterDocument(lastDocument!);
-
-      if (arg.whereFilters != null) {
-        for (int i = 0; i < arg.whereFilters!.length; i++) {
-          final filter = arg.whereFilters![i];
-          query = query.where(filter.field, isEqualTo: filter.value);
-        }
-      }
-
-      if (arg.orderBy != null) {
-        query = query.orderBy(arg.orderBy!, descending: arg.descending);
-      }
-
-      final snapshot = await query.get();
+      Query q = _getQuery().startAfterDocument(lastDocument!).limit(arg.limit);
+      final snapshot = await q.get();
 
       if (!isMounted) return;
 
@@ -180,7 +132,7 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
         state = state.copyWith(
           items: moreItems,
           isFetchingMore: false,
-          hasMore: snapshot.docs.length == limit,
+          hasMore: snapshot.docs.length == arg.limit,
         );
       } else {
         state = state.copyWith(isFetchingMore: false, hasMore: false);
@@ -191,7 +143,11 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
   }
 }
 
-// --- PROVIDER ---
-final paginationProvider = NotifierProvider.autoDispose.family<PaginationController, PaginationState, PaginationParams>(() {
+// 🟢 Tipado corregido para que el compilador sea feliz con los genéricos
+final paginationProvider = NotifierProvider.autoDispose.family<
+    PaginationController<dynamic>,
+    PaginationState<dynamic>,
+    PaginationParams<dynamic>
+>(() {
   return PaginationController();
 });

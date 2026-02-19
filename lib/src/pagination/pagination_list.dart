@@ -4,26 +4,30 @@ import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class SliverListCustom<T> extends ConsumerWidget {
+  // Ahora PaginationParams ya lleva internamente la flexibilidad del Query
   final PaginationParams<T> params;
   final Widget Function(T item) itemBuilder;
   final T itemPlaceholder;
   final Widget? emptyWidget;
   final double itemSpacing;
 
-  const SliverListCustom({super.key,
+  const SliverListCustom({
+    super.key,
     required this.params,
     required this.itemBuilder,
     required this.itemPlaceholder,
     this.emptyWidget,
-    this.itemSpacing = SPACE_SMALL, // 👈 Por defecto SPACE_SMALL
+    this.itemSpacing = SPACE_SMALL,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
+    // para que Riverpod sepa exactamente qué controlador buscar.
     final state = ref.watch(paginationProvider(params));
     final controller = ref.read(paginationProvider(params).notifier);
 
-    // 1. ESTADO DE CARGA INICIAL (5 Elementos Skeleton)
+    // 1. ESTADO DE CARGA INICIAL
     if (state.isLoading && state.items.isEmpty) {
       return Skeletonizer.sliver(
         enabled: true,
@@ -37,7 +41,7 @@ class SliverListCustom<T> extends ConsumerWidget {
                 ],
               );
             },
-            childCount: 5, // 🟢 Forzamos 5 para que se vea el skeleton al cargar
+            childCount: 5,
           ),
         ),
       );
@@ -73,7 +77,7 @@ class SliverListCustom<T> extends ConsumerWidget {
         SliverList(
           delegate: SliverChildBuilderDelegate(
                 (context, i) {
-              // 🟢 OPTIMIZACIÓN: Pre-fetch cuando faltan 5 elementos para evitar lag
+              // OPTIMIZACIÓN: Pre-fetch
               final fetchThreshold = state.items.length - 5;
               if (i >= fetchThreshold && state.hasMore && !state.isFetchingMore && !state.isLoading) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -85,7 +89,8 @@ class SliverListCustom<T> extends ConsumerWidget {
               return Column(
                 children: [
                   itemBuilder(item),
-                  Space(itemSpacing), // 🟢 Usando el nuevo espaciado
+                  // Solo añadimos espacio si no es el último o según tu preferencia
+                  Space(itemSpacing),
                 ],
               );
             },
@@ -101,7 +106,7 @@ class SliverListCustom<T> extends ConsumerWidget {
               child: Column(
                 children: [
                   itemBuilder(itemPlaceholder),
-                  Space(itemSpacing), // 🟢 Usando el nuevo espaciado
+                  Space(itemSpacing),
                 ],
               ),
             ),
