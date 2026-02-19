@@ -39,13 +39,16 @@ class PaginationParams<T> {
   final String collection;
   final Query Function(Query q)? query;
   final int limit;
-  final T Function(Map<String, dynamic> data, String id) fromJson;
+  final T Function(Map<String, dynamic> data) fromJson;
+  // 🟢 AÑADIMOS ESTO:
+  final String? identifier;
 
   PaginationParams({
     required this.collection,
     required this.fromJson,
     this.query,
     this.limit = 15,
+    this.identifier, // Para diferenciar consultas en la misma colección
   });
 
   @override
@@ -54,10 +57,11 @@ class PaginationParams<T> {
           other is PaginationParams &&
               runtimeType == other.runtimeType &&
               collection == other.collection &&
-              limit == other.limit;
+              limit == other.limit &&
+              identifier == other.identifier; // 🟢 AHORA SÍ COMPARA BIEN
 
   @override
-  int get hashCode => collection.hashCode ^ limit.hashCode;
+  int get hashCode => collection.hashCode ^ limit.hashCode ^ identifier.hashCode;
 }
 
 // --- CONTROLADOR ---
@@ -94,7 +98,7 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
         final List<T> newItems = [];
 
         for (int i = 0; i < snapshot.docs.length; i++) {
-          newItems.add(arg.fromJson(snapshot.docs[i].data() as Map<String, dynamic>, snapshot.docs[i].id));
+          newItems.add(arg.fromJson(snapshot.docs[i].data() as Map<String, dynamic>));
         }
 
         state = state.copyWith(
@@ -126,7 +130,7 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
         final List<T> moreItems = List.from(state.items);
 
         for (int i = 0; i < snapshot.docs.length; i++) {
-          moreItems.add(arg.fromJson(snapshot.docs[i].data() as Map<String, dynamic>, snapshot.docs[i].id));
+          moreItems.add(arg.fromJson(snapshot.docs[i].data() as Map<String, dynamic>));
         }
 
         state = state.copyWith(
