@@ -50,6 +50,7 @@ export 'src/form/timefield.dart';
 
 // icons
 export 'src/icons/svg.dart';
+export 'src/icons/featured_icon.dart';
 
 // images
 export 'src/images/images.dart';
