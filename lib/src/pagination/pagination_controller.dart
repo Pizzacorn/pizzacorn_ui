@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// --- ESTADO ---
+// --- ESTADO --- (Se mantiene igual, impecable)
 class PaginationState<T> {
   final List<T> items;
   final bool isLoading;
@@ -34,13 +34,12 @@ class PaginationState<T> {
   }
 }
 
-// --- PARÁMETROS ---
+// --- PARÁMETROS --- (Se mantiene igual, con tu identifier)
 class PaginationParams<T> {
   final String collection;
   final Query Function(Query q)? query;
   final int limit;
   final T Function(Map<String, dynamic> data) fromJson;
-  // 🟢 AÑADIMOS ESTO:
   final String? identifier;
 
   PaginationParams({
@@ -48,7 +47,7 @@ class PaginationParams<T> {
     required this.fromJson,
     this.query,
     this.limit = 15,
-    this.identifier, // Para diferenciar consultas en la misma colección
+    this.identifier,
   });
 
   @override
@@ -58,23 +57,22 @@ class PaginationParams<T> {
               runtimeType == other.runtimeType &&
               collection == other.collection &&
               limit == other.limit &&
-              identifier == other.identifier; // 🟢 AHORA SÍ COMPARA BIEN
+              identifier == other.identifier;
 
   @override
   int get hashCode => collection.hashCode ^ limit.hashCode ^ identifier.hashCode;
 }
 
-// --- CONTROLADOR ---
+// --- CONTROLADOR AJUSTADO PARA SEÑOR SPUTNIF ---
 class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<T>, PaginationParams<T>> {
   DocumentSnapshot? lastDocument;
   bool isMounted = true;
-
 
   @override
   PaginationState<T> build(PaginationParams<T> arg) {
     ref.onDispose(() => isMounted = false);
 
-    // Usamos Future.microtask para no bloquear el build
+    // Carga inicial
     Future.microtask(() => loadItems());
 
     return PaginationState<T>();
@@ -88,16 +86,17 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
     return q;
   }
 
-  // 🟢 LA CLAVE DEL REFRESH:
-  // Invalida el provider a sí mismo. Esto provoca que se ejecute build() de nuevo,
-  // reseteando TODAS las variables de clase (como lastDocument) y el estado inicial.
+  // 🟢 REFRESH CORREGIDO:
+  // No usamos invalidateSelf para no "matar" el Future que espera el RefreshIndicator.
+  // Limpiamos todo manualmente y esperamos a que cargue.
   Future<void> refresh() async {
-    ref.invalidateSelf();
+    lastDocument = null;
+    await loadItems();
   }
 
   Future<void> loadItems() async {
     try {
-      // Forzamos el estado de carga para que el SliverListCustom muestre skeletons
+      // 1. IMPORTANTE: Limpiamos lista y ponemos loading para que salte el skeleton
       state = state.copyWith(isLoading: true, items: [], error: '');
 
       Query q = _getQuery().limit(arg.limit);
@@ -105,11 +104,12 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
 
       if (!isMounted) return;
 
+      final List<T> newItems = [];
+
       if (snapshot.docs.isNotEmpty) {
         lastDocument = snapshot.docs.last;
-        final List<T> newItems = [];
 
-        // Bucle con índice como le gusta al Señor Sputo
+        // Bucle con índice para Don Sput
         for (int i = 0; i < snapshot.docs.length; i++) {
           final data = snapshot.docs[i].data() as Map<String, dynamic>;
           newItems.add(arg.fromJson(data));
@@ -121,6 +121,7 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
           hasMore: snapshot.docs.length == arg.limit,
         );
       } else {
+        // Caso: No hay documentos
         state = state.copyWith(isLoading: false, hasMore: false, items: []);
       }
     } catch (e) {
@@ -146,7 +147,8 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
         final List<T> moreItems = List.from(state.items);
 
         for (int i = 0; i < snapshot.docs.length; i++) {
-          moreItems.add(arg.fromJson(snapshot.docs[i].data() as Map<String, dynamic>));
+          final data = snapshot.docs[i].data() as Map<String, dynamic>;
+          moreItems.add(arg.fromJson(data));
         }
 
         state = state.copyWith(
@@ -158,12 +160,13 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
         state = state.copyWith(isFetchingMore: false, hasMore: false);
       }
     } catch (e) {
-      if (isMounted) state = state.copyWith(isFetchingMore: false, error: e.toString());
+      if (isMounted) {
+        state = state.copyWith(isFetchingMore: false, error: e.toString());
+      }
     }
   }
 }
 
-// 🟢 Tipado corregido para que el compilador sea feliz con los genéricos
 final paginationProvider = NotifierProvider.autoDispose.family<
     PaginationController<dynamic>,
     PaginationState<dynamic>,
