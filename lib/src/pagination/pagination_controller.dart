@@ -69,10 +69,14 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
   DocumentSnapshot? lastDocument;
   bool isMounted = true;
 
+
   @override
   PaginationState<T> build(PaginationParams<T> arg) {
     ref.onDispose(() => isMounted = false);
+
+    // Usamos Future.microtask para no bloquear el build
     Future.microtask(() => loadItems());
+
     return PaginationState<T>();
   }
 
@@ -84,16 +88,17 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
     return q;
   }
 
+  // 🟢 LA CLAVE DEL REFRESH:
+  // Invalida el provider a sí mismo. Esto provoca que se ejecute build() de nuevo,
+  // reseteando TODAS las variables de clase (como lastDocument) y el estado inicial.
   Future<void> refresh() async {
-    lastDocument = null; // 1. Reseteamos el puntero de Firestore
-    // 2. Llamamos a loadItems, que ya pone el estado en isLoading y sobreescribe la lista
-    await loadItems();
+    ref.invalidateSelf();
   }
 
   Future<void> loadItems() async {
     try {
-      // Importante: al recargar, aseguramos que isLoading sea true para que el Skeleton salte
-      state = state.copyWith(isLoading: true, error: '');
+      // Forzamos el estado de carga para que el SliverListCustom muestre skeletons
+      state = state.copyWith(isLoading: true, items: [], error: '');
 
       Query q = _getQuery().limit(arg.limit);
       final snapshot = await q.get();
@@ -104,8 +109,10 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
         lastDocument = snapshot.docs.last;
         final List<T> newItems = [];
 
+        // Bucle con índice como le gusta al Señor Sputo
         for (int i = 0; i < snapshot.docs.length; i++) {
-          newItems.add(arg.fromJson(snapshot.docs[i].data() as Map<String, dynamic>));
+          final data = snapshot.docs[i].data() as Map<String, dynamic>;
+          newItems.add(arg.fromJson(data));
         }
 
         state = state.copyWith(
@@ -114,11 +121,12 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
           hasMore: snapshot.docs.length == arg.limit,
         );
       } else {
-        // Si no hay nada, lista vacía
         state = state.copyWith(isLoading: false, hasMore: false, items: []);
       }
     } catch (e) {
-      if (isMounted) state = state.copyWith(isLoading: false, error: e.toString());
+      if (isMounted) {
+        state = state.copyWith(isLoading: false, error: e.toString());
+      }
     }
   }
 
