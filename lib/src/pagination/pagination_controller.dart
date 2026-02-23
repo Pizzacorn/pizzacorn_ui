@@ -84,8 +84,15 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
     return q;
   }
 
+  Future<void> refresh() async {
+    lastDocument = null; // 1. Reseteamos el puntero de Firestore
+    // 2. Llamamos a loadItems, que ya pone el estado en isLoading y sobreescribe la lista
+    await loadItems();
+  }
+
   Future<void> loadItems() async {
     try {
+      // Importante: al recargar, aseguramos que isLoading sea true para que el Skeleton salte
       state = state.copyWith(isLoading: true, error: '');
 
       Query q = _getQuery().limit(arg.limit);
@@ -107,6 +114,7 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
           hasMore: snapshot.docs.length == arg.limit,
         );
       } else {
+        // Si no hay nada, lista vacía
         state = state.copyWith(isLoading: false, hasMore: false, items: []);
       }
     } catch (e) {
