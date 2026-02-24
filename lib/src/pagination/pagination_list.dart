@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:easyadmin/config/imports.dart'; // Import global según tus reglas
+import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class SliverListCustom<T> extends ConsumerWidget {
