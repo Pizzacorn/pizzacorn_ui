@@ -3,13 +3,16 @@ import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 
 PreferredSizeWidget AppBarClose({
   required BuildContext context,
-  String title = "",
-  Color? color,
+  String title = "",  Color? color,
+  Color? textColor,
+  Color? iconColor,
   VoidCallback? onClose,
   double height = 60,
   bool showBottomBorder = true,
 }) {
   final Color effectiveColor = color ?? COLOR_BACKGROUND_SECONDARY;
+  final Color effectiveTextColor = textColor ?? COLOR_TEXT;
+  final Color effectiveIconColor = iconColor ?? COLOR_TEXT;
 
   return PreferredSize(
     preferredSize: Size.fromHeight(height),
@@ -25,16 +28,15 @@ PreferredSizeWidget AppBarClose({
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
-        // Si el título está vacío, pasamos null para que no ocupe espacio
         title: title.isNotEmpty
-            ? TextSubtitle(title, fontWeight: FontWeight.normal)
+            ? TextSubtitle(title, fontWeight: FontWeight.normal, color: effectiveTextColor)
             : null,
         leading: IconButton(
           splashColor: COLOR_ACCENT.withValues(alpha: 0.2),
           highlightColor: COLOR_ACCENT.withValues(alpha: 0.2),
           onPressed: onClose ?? () => Navigator.of(context).maybePop(),
           icon: const Icon(Icons.close),
-          color: COLOR_TEXT,
+          color: effectiveIconColor,
           iconSize: 20,
         ),
       ),
