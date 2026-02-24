@@ -94,194 +94,6 @@ double get TEXT_SMALL_SIZE => PizzacornTextConfig.sizes.small;
 FontWeight get WEIGHT_NORMAL => PizzacornTextConfig.weights.normal;
 FontWeight get WEIGHT_BOLD => PizzacornTextConfig.weights.bold;
 
-/// =================== BASES DE ESTILO ===================
-TextStyle getStyleCustom(
-    double size,
-    FontWeight weight,
-    Color color, {
-      double letterspacing = 0,
-      bool shadow = false,
-      bool underlined = false,
-      double height = 1.2,
-    }) {
-  try {
-    return GoogleFonts.getFont(
-      PizzacornTextConfig.primaryFontFamily,
-      fontSize: size,
-      letterSpacing: letterspacing,
-      fontWeight: weight,
-      height: height,
-      color: color,
-      decoration: underlined ? TextDecoration.underline : TextDecoration.none,
-      shadows: shadow ? [Shadow(blurRadius: 70, color: COLOR_SUBTEXT)] : null,
-    );
-  } catch (_) {
-    // Fallback por si la fuente no está disponible
-    return GoogleFonts.leagueGothic(
-      fontSize: size,
-      letterSpacing: letterspacing,
-      fontWeight: weight,
-      height: height,
-      color: color,
-      decoration: underlined ? TextDecoration.underline : TextDecoration.none,
-      shadows: shadow ? [Shadow(blurRadius: 70, color: COLOR_SUBTEXT)] : null,
-    );
-  }
-}
-
-TextStyle getStyleSecondaryCustom(
-    double size,
-    FontWeight weight,
-    Color color, {
-      double letterspacing = 0,
-      bool shadow = false,
-      bool underlined = false,
-      double height = 1.2,
-    }) {
-  try {
-    return GoogleFonts.getFont(
-      PizzacornTextConfig.secondaryFontFamily,
-      fontSize: size,
-      letterSpacing: letterspacing,
-      fontWeight: weight,
-      height: height,
-      color: color,
-      decoration: underlined ? TextDecoration.underline : TextDecoration.none,
-      shadows: shadow ? [Shadow(blurRadius: 70, color: COLOR_SUBTEXT)] : null,
-    );
-  } catch (_) {
-    // Fallback por si la fuente no está disponible
-    return GoogleFonts.raleway(
-      fontSize: size,
-      letterSpacing: letterspacing,
-      fontWeight: weight,
-      height: height,
-      color: color,
-      decoration: underlined ? TextDecoration.underline : TextDecoration.none,
-      shadows: shadow ? [Shadow(blurRadius: 70, color: COLOR_SUBTEXT)] : null,
-    );
-  }
-}
-
-/// =================== ESTILOS ===================
-
-TextStyle styleBig({
-  Color? color,
-  FontWeight? fontWeight,
-  double? fontSize,
-  double letterspacing = 0,
-  bool shadow = false,
-  double height = 1.2,
-}) {
-  final Color effectiveColor = color ?? COLOR_TEXT;
-
-  return getStyleCustom(
-    fontSize ?? TEXT_BIG_SIZE,
-    fontWeight ?? WEIGHT_BOLD,
-    effectiveColor,
-    letterspacing: letterspacing,
-    shadow: shadow,
-    height: height,
-  );
-}
-
-TextStyle styleTitle({
-  Color? color,
-  FontWeight? fontWeight,
-  double? size,
-  double height = 1.2,
-}) {
-  final Color effectiveColor = color ?? COLOR_TEXT;
-
-  return getStyleCustom(
-    size ?? TEXT_TITLE_SIZE,
-    fontWeight ?? WEIGHT_BOLD,
-    effectiveColor,
-    height: height,
-  );
-}
-
-TextStyle styleSubtitle({
-  Color? color,
-  FontWeight? fontWeight,
-  double? size,
-  double height = 1.2,
-}) {
-  final Color effectiveColor = color ?? COLOR_TEXT;
-
-  return getStyleCustom(
-    size ?? TEXT_SUBTITLE_SIZE,
-    fontWeight ?? WEIGHT_BOLD,
-    effectiveColor,
-    height: height,
-  );
-}
-
-TextStyle styleBody({
-  Color? color,
-  FontWeight? fontWeight,
-  double? size,
-  bool shadow = false,
-  double height = 1.2,
-}) {
-  final Color effectiveColor = color ?? COLOR_TEXT;
-
-  return getStyleSecondaryCustom(
-    size ?? TEXT_BODY_SIZE,
-    fontWeight ?? WEIGHT_NORMAL,
-    effectiveColor,
-    shadow: shadow,
-    height: height,
-  );
-}
-
-TextStyle styleButton({
-  Color? color,
-  FontWeight? fontWeight,
-  double? size,
-  double height = 1.2,
-}) {
-  final Color effectiveColor = color ?? COLOR_TEXT;
-
-  return getStyleSecondaryCustom(
-    size ?? TEXT_BUTTON_SIZE,
-    fontWeight ?? WEIGHT_BOLD,
-    effectiveColor,
-    height: height,
-  );
-}
-
-TextStyle styleCaption({
-  Color? color,
-  FontWeight? fontWeight,
-  double? size,
-  double height = 1.2,
-}) {
-  final Color effectiveColor = color ?? COLOR_TEXT;
-
-  return getStyleSecondaryCustom(
-    size ?? TEXT_CAPTION_SIZE,
-    fontWeight ?? WEIGHT_NORMAL,
-    effectiveColor,
-    height: height,
-  );
-}
-
-TextStyle styleSmall({
-  Color? color,
-  FontWeight? fontWeight,
-  double? size,
-  double height = 1.2,
-}) {
-  final Color effectiveColor = color ?? COLOR_TEXT;
-
-  return getStyleSecondaryCustom(
-    size ?? TEXT_SMALL_SIZE,
-    fontWeight ?? WEIGHT_NORMAL,
-    effectiveColor,
-    height: height,
-  );
-}
 
 /// =================== WIDGETS ===================
 
@@ -313,148 +125,136 @@ Widget _buildSemanticsText(
   );
 }
 
-// --- Widgets de Texto ---
 
-Widget TextBig(
-    String text, {
-      double? fontSize,
-      Color? color,
+/// =================== BASES DE ESTILO ===================
+TextStyle getStyleCustom(
+    double size,
+    FontWeight weight,
+    Color color, {
+      double letterspacing = 0,
       bool shadow = false,
-      FontWeight? fontWeight,
-      TextAlign textAlign = TextAlign.start,
-      int maxlines = MAXLINES,
-      TextOverflow textOverflow = TextOverflow.ellipsis,
-      double espacioLetras = 0,
-      bool isUppercase = false,
-    }) {
-  final Color effectiveColor = color ?? COLOR_TEXT;
-
-  return _buildSemanticsText(
-    text,
-    styleBig(
-      fontSize: fontSize,
-      fontWeight: fontWeight,
-      color: effectiveColor,
-      shadow: shadow,
-    ),
-    textAlign: textAlign,
-    maxlines: maxlines,
-    textOverflow: textOverflow,
-    isUppercase: isUppercase,
-    isHeader: true, // TextBig es un header
-  );
-}
-
-Widget TextTitle(
-    String text, {
-      double? fontSize,
-      Color? color,
-      bool shadow = false,
-      FontWeight? fontWeight,
-      TextAlign textAlign = TextAlign.start,
-      int maxlines = MAXLINES,
-      TextOverflow textOverflow = TextOverflow.ellipsis,
-      double espacioLetras = 0,
-      bool isUppercase = false,
+      bool underlined = false,
+      bool strikethrough = false, // 🚀 Nueva opción
       double height = 1.2,
     }) {
-  final Color effectiveColor = color ?? COLOR_TEXT;
 
-  return _buildSemanticsText(
-    text,
-    styleTitle(
-      size: fontSize,
-      fontWeight: fontWeight,
-      color: effectiveColor,
+  // Combinamos decoraciones si es necesario
+  List<TextDecoration> decorations = [];
+  if (underlined) decorations.add(TextDecoration.underline);
+  if (strikethrough) decorations.add(TextDecoration.lineThrough);
+
+  try {
+    return GoogleFonts.getFont(
+      PizzacornTextConfig.primaryFontFamily,
+      fontSize: size,
+      letterSpacing: letterspacing,
+      fontWeight: weight,
       height: height,
-    ),
-    textAlign: textAlign,
-    maxlines: maxlines,
-    textOverflow: textOverflow,
-    isUppercase: isUppercase,
-    isHeader: true, // TextTitle es un header
-  );
+      color: color,
+      decoration: TextDecoration.combine(decorations),
+      shadows: shadow ? [Shadow(blurRadius: 70, color: COLOR_SUBTEXT)] : null,
+    );
+  } catch (_) {
+    return GoogleFonts.leagueGothic(
+      fontSize: size,
+      letterSpacing: letterspacing,
+      fontWeight: weight,
+      height: height,
+      color: color,
+      decoration: TextDecoration.combine(decorations),
+      shadows: shadow ? [Shadow(blurRadius: 70, color: COLOR_SUBTEXT)] : null,
+    );
+  }
 }
 
-Widget TextSubtitle(
-    String text, {
-      double? fontSize,
-      Color? color,
+TextStyle getStyleSecondaryCustom(
+    double size,
+    FontWeight weight,
+    Color color, {
+      double letterspacing = 0,
       bool shadow = false,
-      FontWeight? fontWeight,
-      TextAlign textAlign = TextAlign.start,
-      int maxlines = MAXLINES,
-      TextOverflow textOverflow = TextOverflow.ellipsis,
-      double espacioLetras = 0,
-      bool isUppercase = false,
+      bool underlined = false,
+      bool strikethrough = false, // 🚀 Nueva opción
       double height = 1.2,
     }) {
-  final Color effectiveColor = color ?? COLOR_TEXT;
 
-  return _buildSemanticsText(
-    text,
-    styleSubtitle(
-      size: fontSize,
-      fontWeight: fontWeight,
-      color: effectiveColor,
+  List<TextDecoration> decorations = [];
+  if (underlined) decorations.add(TextDecoration.underline);
+  if (strikethrough) decorations.add(TextDecoration.lineThrough);
+
+  try {
+    return GoogleFonts.getFont(
+      PizzacornTextConfig.secondaryFontFamily,
+      fontSize: size,
+      letterSpacing: letterspacing,
+      fontWeight: weight,
       height: height,
-    ),
-    textAlign: textAlign,
-    maxlines: maxlines,
-    textOverflow: textOverflow,
-    isUppercase: isUppercase,
-    isHeader: true, // TextSubtitle es un header
-  );
+      color: color,
+      decoration: TextDecoration.combine(decorations),
+      shadows: shadow ? [Shadow(blurRadius: 70, color: COLOR_SUBTEXT)] : null,
+    );
+  } catch (_) {
+    return GoogleFonts.raleway(
+      fontSize: size,
+      letterSpacing: letterspacing,
+      fontWeight: weight,
+      height: height,
+      color: color,
+      decoration: TextDecoration.combine(decorations),
+      shadows: shadow ? [Shadow(blurRadius: 70, color: COLOR_SUBTEXT)] : null,
+    );
+  }
 }
 
-Widget TextBody(
-    String texto, {
-      double? fontSize,
-      Color? color,
-      bool shadow = false,
-      FontWeight? fontWeight,
-      TextAlign textAlign = TextAlign.start,
-      int? maxlines,
-      TextOverflow textOverflow = TextOverflow.ellipsis,
-      double espacioLetras = 0,
-      bool isUppercase = false,
-      double height = 1.2,
-    }) {
-  final Color effectiveColor = color ?? COLOR_TEXT;
+/// =================== ESTILOS (Actualizados con strikethrough) ===================
 
-  return _buildSemanticsText(
-    texto,
-    styleBody(
-      size: fontSize,
-      fontWeight: fontWeight,
-      color: effectiveColor,
-      shadow: shadow,
-      height: height,
-    ),
-    textAlign: textAlign,
-    maxlines: maxlines,
-    textOverflow: textOverflow,
-    isUppercase: isUppercase,
-    isHeader: false, // TextBody no es un header por defecto
-  );
+TextStyle styleBig({Color? color, FontWeight? fontWeight, double? fontSize, double letterspacing = 0, bool shadow = false, bool strikethrough = false, double height = 1.2}) {
+  return getStyleCustom(fontSize ?? TEXT_BIG_SIZE, fontWeight ?? WEIGHT_BOLD, color ?? COLOR_TEXT, letterspacing: letterspacing, shadow: shadow, strikethrough: strikethrough, height: height);
 }
 
-Widget TextButtonCustom(
-    String texto, {
-      double? fontSize,
-      bool shadow = false,
-      Color? color,
-      FontWeight? fontWeight,
-      TextAlign textAlign = TextAlign.start,
-      int maxlines = MAXLINES,
-      TextOverflow textOverflow = TextOverflow.ellipsis,
-      double espacioLetras = 0,
-      bool isUppercase = false,
-    }) {
-  final Color effectiveColor = color ?? COLOR_TEXT_BUTTONS;
+TextStyle styleTitle({Color? color, FontWeight? fontWeight, double? size, bool strikethrough = false, double height = 1.2}) {
+  return getStyleCustom(size ?? TEXT_TITLE_SIZE, fontWeight ?? WEIGHT_BOLD, color ?? COLOR_TEXT, strikethrough: strikethrough, height: height);
+}
 
-  // Los botones no suelen ser seleccionables, solo "tappables".
-  // Mantenemos el Semantics para que se identifique como botón.
+TextStyle styleSubtitle({Color? color, FontWeight? fontWeight, double? size, bool strikethrough = false, double height = 1.2}) {
+  return getStyleCustom(size ?? TEXT_SUBTITLE_SIZE, fontWeight ?? WEIGHT_BOLD, color ?? COLOR_TEXT, strikethrough: strikethrough, height: height);
+}
+
+TextStyle styleBody({Color? color, FontWeight? fontWeight, double? size, bool shadow = false, bool strikethrough = false, double height = 1.2}) {
+  return getStyleSecondaryCustom(size ?? TEXT_BODY_SIZE, fontWeight ?? WEIGHT_NORMAL, color ?? COLOR_TEXT, shadow: shadow, strikethrough: strikethrough, height: height);
+}
+
+TextStyle styleButton({Color? color, FontWeight? fontWeight, double? size, bool strikethrough = false, double height = 1.2}) {
+  return getStyleSecondaryCustom(size ?? TEXT_BUTTON_SIZE, fontWeight ?? WEIGHT_BOLD, color ?? COLOR_TEXT, strikethrough: strikethrough, height: height);
+}
+
+TextStyle styleCaption({Color? color, FontWeight? fontWeight, double? size, bool strikethrough = false, double height = 1.2}) {
+  return getStyleSecondaryCustom(size ?? TEXT_CAPTION_SIZE, fontWeight ?? WEIGHT_NORMAL, color ?? COLOR_TEXT, strikethrough: strikethrough, height: height);
+}
+
+TextStyle styleSmall({Color? color, FontWeight? fontWeight, double? size, bool strikethrough = false, double height = 1.2}) {
+  return getStyleSecondaryCustom(size ?? TEXT_SMALL_SIZE, fontWeight ?? WEIGHT_NORMAL, color ?? COLOR_TEXT, strikethrough: strikethrough, height: height);
+}
+
+/// =================== WIDGETS (Actualizados con strikethrough) ===================
+
+Widget TextBig(String text, {double? fontSize, Color? color, bool shadow = false, bool strikethrough = false, FontWeight? fontWeight, TextAlign textAlign = TextAlign.start, int maxlines = MAXLINES, TextOverflow textOverflow = TextOverflow.ellipsis, bool isUppercase = false}) {
+  return _buildSemanticsText(text, styleBig(fontSize: fontSize, fontWeight: fontWeight, color: color, shadow: shadow, strikethrough: strikethrough), textAlign: textAlign, maxlines: maxlines, textOverflow: textOverflow, isUppercase: isUppercase, isHeader: true);
+}
+
+Widget TextTitle(String text, {double? fontSize, Color? color, bool shadow = false, bool strikethrough = false, FontWeight? fontWeight, TextAlign textAlign = TextAlign.start, int maxlines = MAXLINES, TextOverflow textOverflow = TextOverflow.ellipsis, bool isUppercase = false, double height = 1.2}) {
+  return _buildSemanticsText(text, styleTitle(size: fontSize, fontWeight: fontWeight, color: color, strikethrough: strikethrough, height: height), textAlign: textAlign, maxlines: maxlines, textOverflow: textOverflow, isUppercase: isUppercase, isHeader: true);
+}
+
+Widget TextSubtitle(String text, {double? fontSize, Color? color, bool shadow = false, bool strikethrough = false, FontWeight? fontWeight, TextAlign textAlign = TextAlign.start, int maxlines = MAXLINES, TextOverflow textOverflow = TextOverflow.ellipsis, bool isUppercase = false, double height = 1.2}) {
+  return _buildSemanticsText(text, styleSubtitle(size: fontSize, fontWeight: fontWeight, color: color, strikethrough: strikethrough, height: height), textAlign: textAlign, maxlines: maxlines, textOverflow: textOverflow, isUppercase: isUppercase, isHeader: true);
+}
+
+Widget TextBody(String texto, {double? fontSize, Color? color, bool shadow = false, bool strikethrough = false, FontWeight? fontWeight, TextAlign textAlign = TextAlign.start, int? maxlines, TextOverflow textOverflow = TextOverflow.ellipsis, bool isUppercase = false, double height = 1.2}) {
+  return _buildSemanticsText(texto, styleBody(size: fontSize, fontWeight: fontWeight, color: color, shadow: shadow, strikethrough: strikethrough, height: height), textAlign: textAlign, maxlines: maxlines, textOverflow: textOverflow, isUppercase: isUppercase, isHeader: false);
+}
+
+Widget TextButtonCustom(String texto, {double? fontSize, bool shadow = false, bool strikethrough = false, Color? color, FontWeight? fontWeight, TextAlign textAlign = TextAlign.start, int maxlines = MAXLINES, TextOverflow textOverflow = TextOverflow.ellipsis, bool isUppercase = false}) {
   return Semantics(
     label: texto,
     button: true,
@@ -463,99 +263,27 @@ Widget TextButtonCustom(
       overflow: textOverflow,
       textAlign: textAlign,
       maxLines: maxlines,
-      style: styleButton(
-        size: fontSize,
-        fontWeight: fontWeight,
-        color: effectiveColor,
-      ),
+      style: styleButton(size: fontSize, fontWeight: fontWeight, color: color ?? COLOR_TEXT_BUTTONS, strikethrough: strikethrough),
     ),
   );
 }
 
-Widget TextCaption(
-    String texto, {
-      double? fontSize,
-      Color? color,
-      bool shadow = false,
-      FontWeight? fontWeight,
-      TextAlign textAlign = TextAlign.start,
-      int maxlines = MAXLINES,
-      TextOverflow textOverflow = TextOverflow.ellipsis,
-      double espacioLetras = 0,
-      bool isUppercase = false,
-    }) {
-  final Color effectiveColor = color ?? COLOR_SUBTEXT;
-
-  // Ahora TextCaption también es semántico pero no seleccionable.
-  return _buildSemanticsText(
-    texto,
-    styleCaption(size: fontSize, fontWeight: fontWeight, color: effectiveColor),
-    textAlign: textAlign,
-    maxlines: maxlines,
-    textOverflow: textOverflow,
-    isUppercase: isUppercase,
-    isHeader: false, // TextCaption no es un header por defecto
-  );
+Widget TextCaption(String texto, {double? fontSize, Color? color, bool shadow = false, bool strikethrough = false, FontWeight? fontWeight, TextAlign textAlign = TextAlign.start, int maxlines = MAXLINES, TextOverflow textOverflow = TextOverflow.ellipsis, bool isUppercase = false}) {
+  return _buildSemanticsText(texto, styleCaption(size: fontSize, fontWeight: fontWeight, color: color ?? COLOR_SUBTEXT, strikethrough: strikethrough), textAlign: textAlign, maxlines: maxlines, textOverflow: textOverflow, isUppercase: isUppercase, isHeader: false);
 }
 
-Widget TextSmall(
-    String texto, {
-      double? fontSize,
-      Color? color,
-      bool shadow = false,
-      FontWeight? fontWeight,
-      TextAlign textAlign = TextAlign.start,
-      int maxlines = MAXLINES,
-      TextOverflow textOverflow = TextOverflow.ellipsis,
-      double espacioLetras = 0,
-      bool isUppercase = false,
-    }) {
-  final Color effectiveColor = color ?? COLOR_TEXT;
-
-  // Ahora TextSmall también es semántico pero no seleccionable.
-  return _buildSemanticsText(
-    texto,
-    styleSmall(size: fontSize, fontWeight: fontWeight, color: effectiveColor),
-    textAlign: textAlign,
-    maxlines: maxlines,
-    textOverflow: textOverflow,
-    isUppercase: isUppercase,
-    isHeader: false, // TextSmall no es un header por defecto
-  );
+Widget TextSmall(String texto, {double? fontSize, Color? color, bool shadow = false, bool strikethrough = false, FontWeight? fontWeight, TextAlign textAlign = TextAlign.start, int maxlines = MAXLINES, TextOverflow textOverflow = TextOverflow.ellipsis, bool isUppercase = false}) {
+  return _buildSemanticsText(texto, styleSmall(size: fontSize, fontWeight: fontWeight, color: color, strikethrough: strikethrough), textAlign: textAlign, maxlines: maxlines, textOverflow: textOverflow, isUppercase: isUppercase, isHeader: false);
 }
 
-Widget TextCustom(
-    String texto, {
-      double? fontSize,
-      bool shadow = false,
-      Color? color,
-      FontWeight? fontWeight,
-      TextAlign textAlign = TextAlign.start,
-      int maxlines = MAXLINES,
-      TextOverflow textOverflow = TextOverflow.ellipsis,
-      double espacioLetras = 0,
-      double height = 1,
-      bool isUppercase = false,
-    }) {
-  final Color effectiveColor = color ?? COLOR_TEXT;
-
-  // Ahora TextCustom también es semántico pero no seleccionable.
+Widget TextCustom(String texto, {double? fontSize, bool shadow = false, bool strikethrough = false, Color? color, FontWeight? fontWeight, TextAlign textAlign = TextAlign.start, int maxlines = MAXLINES, TextOverflow textOverflow = TextOverflow.ellipsis, double espacioLetras = 0, double height = 1, bool isUppercase = false}) {
   return _buildSemanticsText(
     texto,
-    getStyleCustom(
-      fontSize ??
-          TEXT_BUTTON_SIZE, // Usa TEXT_BUTTON_SIZE como fallback si no se da fontSize
-      fontWeight ??
-          WEIGHT_BOLD, // Usa WEIGHT_BOLD como fallback si no se da fontWeight
-      effectiveColor,
-      letterspacing: espacioLetras,
-      shadow: shadow,
-      height: height,
-    ),
+    getStyleCustom(fontSize ?? TEXT_BUTTON_SIZE, fontWeight ?? WEIGHT_BOLD, color ?? COLOR_TEXT, letterspacing: espacioLetras, shadow: shadow, strikethrough: strikethrough, height: height),
     textAlign: textAlign,
     maxlines: maxlines,
     textOverflow: textOverflow,
     isUppercase: isUppercase,
-    isHeader: false, // TextCustom no es un header por defecto
+    isHeader: false,
   );
 }
