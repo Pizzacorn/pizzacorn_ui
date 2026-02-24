@@ -1,10 +1,9 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pizzacorn_ui/pizzacorn_ui.dart';
+import 'package:easyadmin/config/imports.dart'; // Import global según tus reglas
 import 'package:skeletonizer/skeletonizer.dart';
 
 class SliverListCustom<T> extends ConsumerWidget {
-  // Ahora PaginationParams ya lleva internamente la flexibilidad del Query
   final PaginationParams<T> params;
   final Widget Function(T item) itemBuilder;
   final T itemPlaceholder;
@@ -22,8 +21,7 @@ class SliverListCustom<T> extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
-    // para que Riverpod sepa exactamente qué controlador buscar.
+    // Escuchamos el estado y el controlador de la paginación
     final state = ref.watch(paginationProvider(params));
     final controller = ref.read(paginationProvider(params).notifier);
 
@@ -47,7 +45,7 @@ class SliverListCustom<T> extends ConsumerWidget {
       );
     }
 
-    // 2. ESTADO DE ERROR
+    // 2. ESTADO DE ERROR (Blindado por Don Sputknif)
     if (state.error.isNotEmpty && state.items.isEmpty) {
       return SliverToBoxAdapter(
         child: Center(
@@ -59,16 +57,24 @@ class SliverListCustom<T> extends ConsumerWidget {
       );
     }
 
-    // 3. ESTADO VACÍO
+    // 3. ESTADO VACÍO (Con detección inteligente de Slivers)
     if (state.items.isEmpty) {
-      return SliverToBoxAdapter(
-        child: emptyWidget ?? Center(
-          child: Padding(
-            padding: PADDING_ALL,
-            child: TextBody("No hay resultados"),
+      if (emptyWidget == null) {
+        return SliverToBoxAdapter(
+          child: Center(
+            child: Padding(
+              padding: PADDING_ALL,
+              child: TextBody("No hay resultados"),
+            ),
           ),
-        ),
-      );
+        );
+      }
+
+      // Si Don Sput nos pasa un Sliver, lo soltamos tal cual.
+      // Si nos pasa un Widget normal (Box), lo envolvemos en un adapter.
+      return (emptyWidget is RenderObjectWidget && emptyWidget.runtimeType.toString().contains('Sliver'))
+          ? emptyWidget!
+          : SliverToBoxAdapter(child: emptyWidget);
     }
 
     // 4. LISTA REAL PAGINADA
@@ -77,7 +83,7 @@ class SliverListCustom<T> extends ConsumerWidget {
         SliverList(
           delegate: SliverChildBuilderDelegate(
                 (context, i) {
-              // OPTIMIZACIÓN: Pre-fetch
+              // OPTIMIZACIÓN: Pre-fetch al llegar al final
               final fetchThreshold = state.items.length - 5;
               if (i >= fetchThreshold && state.hasMore && !state.isFetchingMore && !state.isLoading) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -89,7 +95,6 @@ class SliverListCustom<T> extends ConsumerWidget {
               return Column(
                 children: [
                   itemBuilder(item),
-                  // Solo añadimos espacio si no es el último o según tu preferencia
                   Space(itemSpacing),
                 ],
               );
