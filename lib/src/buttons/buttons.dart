@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pizzacorn_ui/pizzacorn_ui.dart';
+import 'package:pizzacorn_ui/pizzacorn_ui.dart'; // Usando el import global que acordamos
 
 class ButtonCustom extends StatelessWidget {
   final void Function()? onPressed;
@@ -23,11 +23,18 @@ class ButtonCustom extends StatelessWidget {
   final Color? borderColor;
   final double borderWidth;
 
-  // ICONS
+  // ICONS (SVG)
   final String iconBegin;
   final String iconFinal;
+
+  // ICONS (IconData / IconsPro)
+  final IconData? prefixIcon; // 🆕 Nuevo
+  final IconData? suffixIcon; // 🆕 Nuevo
+
+  // Ya tenías estos, los mantenemos por compatibilidad
   final IconData? iconBeginData;
   final IconData? iconFinalData;
+
   final double padding;
   final double iconSize;
   final Color iconColor;
@@ -66,6 +73,8 @@ class ButtonCustom extends StatelessWidget {
     this.colorGradientSecondary,
     this.iconBegin = "",
     this.iconFinal = "",
+    this.prefixIcon, // 🆕
+    this.suffixIcon, // 🆕
     this.iconBeginData,
     this.iconFinalData,
     this.iconColor = Colors.white,
@@ -121,7 +130,6 @@ class ButtonCustom extends StatelessWidget {
             child: Ink(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(effectiveBorderRadius),
-                // Lógica de Gradiente: Se quita si es texto simple o richText
                 gradient: !hasGradient || richTexts.isNotEmpty || onlyText
                     ? null
                     : LinearGradient(
@@ -129,7 +137,6 @@ class ButtonCustom extends StatelessWidget {
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                 ),
-                // Lógica de Color: Ahora NO depende de "border", se pinta siempre si no hay gradiente
                 color: hasGradient || richTexts.isNotEmpty || onlyText
                     ? null
                     : effectiveColor,
@@ -139,15 +146,13 @@ class ButtonCustom extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: mainAxisAlignment,
                   children: [
-                    if (iconBegin.isNotEmpty || iconBeginData != null)
+                    // --- ICONO INICIAL ---
+                    if (prefixIcon != null || iconBeginData != null || iconBegin.isNotEmpty)
                       Padding(
                         padding: EdgeInsets.only(right: text.isNotEmpty ? 10 : 0),
-                        child: iconBeginData != null
-                            ? Icon(iconBeginData, size: iconSize, color: iconColor)
-                            : (iconNoColor
-                            ? SvgCustomNoColor(icon: iconBegin, size: iconSize)
-                            : SvgCustom(icon: iconBegin, size: iconSize, color: iconColor)),
+                        child: _buildIcon(prefixIcon ?? iconBeginData, iconBegin),
                       ),
+
                     if (text.isNotEmpty)
                       Flexible(
                         child: TextButtonCustom(
@@ -158,14 +163,12 @@ class ButtonCustom extends StatelessWidget {
                       )
                     else if (richTexts.isNotEmpty)
                       RichText(text: TextSpan(children: buildRichTextChildren())),
-                    if (iconFinal.isNotEmpty || iconFinalData != null)
+
+                    // --- ICONO FINAL ---
+                    if (suffixIcon != null || iconFinalData != null || iconFinal.isNotEmpty)
                       Padding(
                         padding: EdgeInsets.only(left: text.isNotEmpty ? 10 : 0),
-                        child: iconFinalData != null
-                            ? Icon(iconFinalData, size: iconSize, color: iconColor)
-                            : (iconNoColor
-                            ? SvgCustomNoColor(icon: iconFinal, size: iconSize)
-                            : SvgCustom(icon: iconFinal, size: iconSize, color: iconColor)),
+                        child: _buildIcon(suffixIcon ?? iconFinalData, iconFinal),
                       ),
                   ],
                 ),
@@ -175,6 +178,19 @@ class ButtonCustom extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// Helper para decidir si pintar IconData o SVG
+  Widget _buildIcon(IconData? data, String svgPath) {
+    if (data != null) {
+      return Icon(data, size: iconSize, color: iconColor);
+    }
+    if (svgPath.isNotEmpty) {
+      return iconNoColor
+          ? SvgCustomNoColor(icon: svgPath, size: iconSize)
+          : SvgCustom(icon: svgPath, size: iconSize, color: iconColor);
+    }
+    return const SizedBox.shrink();
   }
 
   List<TextSpan> buildRichTextChildren() {
