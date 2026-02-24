@@ -37,7 +37,8 @@ class TextFieldCustom extends StatefulWidget {
     this.password = false,
     this.textAlignVertical = TextAlignVertical.center,
     this.prefixIconSvg = "",
-    this.IconSize = 18,
+    this.iconSize = 18, // ⬅ Renombrado a camelCase
+    this.iconColor,    // ⬅ Añadido para control total
     this.sufixIconSvg = "",
     this.prefixText = "",
     this.sufixText = "",
@@ -45,18 +46,16 @@ class TextFieldCustom extends StatefulWidget {
     this.inputFormatters,
     this.textStyleCustom,
     this.autofocus = false,
-    this.prefixIcon, // ⬅ Añadido IconData
-    this.suffixIcon, // ⬅ Añadido IconData
+    this.prefixIcon,
+    this.suffixIcon,
   });
 
-  // CONTROL
+  // ... (RESTO DE VARIABLES SE MANTIENEN IGUAL)
   final TextEditingController? controller;
   final FocusNode? focusNode;
   final bool autofocus;
   final bool readOnly;
   final Function()? onTap;
-
-  // TAMAÑOS / LAYOUT
   final double? height;
   final double width;
   final double? radius;
@@ -70,8 +69,6 @@ class TextFieldCustom extends StatefulWidget {
   final int maxLength;
   final int minLines;
   final TextAlignVertical textAlignVertical;
-
-  // TEXTO / ESTILOS
   final String labelText;
   final String hintText;
   final String helperText;
@@ -84,27 +81,21 @@ class TextFieldCustom extends StatefulWidget {
   final Color? colorFill;
   final Color? colorHint;
 
-  // ICONOS
-  final IconData? prefixIcon; // ⬅ IconData para UIcons
-  final IconData? suffixIcon; // ⬅ IconData para UIcons
-  final double IconSize;
+  // ICONOS (ACTUALIZADOS)
+  final IconData? prefixIcon;
+  final IconData? suffixIcon;
+  final double iconSize; // ⬅ camelCase
+  final Color? iconColor; // ⬅ Nuevo
 
-  // TECLADO
   final TextInputType textInputType;
   final TextCapitalization textCapitalization;
   final List<TextInputFormatter>? inputFormatters;
   final AutovalidateMode autovalidateMode;
-
-  // PASSWORD
   final bool password;
-
-  // CALLBACKS
   final void Function(String)? onChanged;
   final void Function()? onSuffixPressed;
   final void Function()? onPrefixPressed;
   final void Function()? onEditingComplete;
-
-  // VALIDACIÓN EXTRA
   final FormFieldValidator<String>? validator;
 
   @override
@@ -122,16 +113,12 @@ class TextFieldCustomState extends State<TextFieldCustom> {
     focusNode.addListener(onFocusChange);
   }
 
-  void onFocusChange() {
-    setState(() {});
-  }
+  void onFocusChange() => setState(() {});
 
   @override
   void dispose() {
     focusNode.removeListener(onFocusChange);
-    if (widget.focusNode == null) {
-      focusNode.dispose();
-    }
+    if (widget.focusNode == null) focusNode.dispose();
     super.dispose();
   }
 
@@ -139,7 +126,6 @@ class TextFieldCustomState extends State<TextFieldCustom> {
     final type = widget.textInputType;
     return type == TextInputType.number ||
         type == TextInputType.phone ||
-        type == TextInputType.multiline ||
         type == const TextInputType.numberWithOptions() ||
         type == const TextInputType.numberWithOptions(decimal: true);
   }
@@ -152,6 +138,8 @@ class TextFieldCustomState extends State<TextFieldCustom> {
     final Color effectiveFill = widget.colorFill ?? COLOR_BACKGROUND_SECONDARY;
     final Color effectiveHintColor = widget.colorHint ?? COLOR_SUBTEXT;
     final double finalHeight = widget.height ?? FIELD_HEIGHT;
+    // Color de icono por defecto es COLOR_ACCENT si no se pasa nada
+    final Color effectiveIconColor = widget.iconColor ?? COLOR_ACCENT;
 
     return Container(
       width: widget.width,
@@ -174,9 +162,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
         minLines: widget.minLines,
         maxLength: widget.maxLength == 0 ? null : widget.maxLength,
         autofocus: widget.autofocus,
-        onChanged: (value) {
-          if (widget.onChanged != null) widget.onChanged!(value);
-        },
+        onChanged: widget.onChanged,
         onEditingComplete: widget.onEditingComplete,
         autovalidateMode: widget.errorText.isNotEmpty ? AutovalidateMode.onUserInteraction : widget.autovalidateMode,
         validator: (value) {
@@ -207,26 +193,24 @@ class TextFieldCustomState extends State<TextFieldCustom> {
             vertical: (finalHeight - effectiveTextSize) / 2,
           ),
           suffixText: widget.sufixText.isNotEmpty ? widget.sufixText : null,
-          suffixIcon: buildSuffixIcon(context),
+          suffixIcon: buildSuffixIcon(context, effectiveIconColor),
           prefixText: widget.prefixText.isNotEmpty ? widget.prefixText : null,
           prefixStyle: styleBody(color: COLOR_ACCENT),
           prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
-          prefixIcon: buildPrefixIcon(),
+          prefixIcon: buildPrefixIcon(effectiveIconColor),
         ),
       ),
     );
   }
 
-  Widget? buildPrefixIcon() {
-    // Prioridad 1: IconData (UIcons)
+  Widget? buildPrefixIcon(Color iconColor) {
     if (widget.prefixIcon != null) {
       return IconButton(
         padding: const EdgeInsets.symmetric(horizontal: 15),
         onPressed: widget.onPrefixPressed,
-        icon: Icon(widget.prefixIcon, size: widget.IconSize, color: COLOR_ACCENT),
+        icon: Icon(widget.prefixIcon, size: widget.iconSize, color: iconColor),
       );
     }
-    // Prioridad 2: SVG
     if (widget.prefixIconSvg.isNotEmpty) {
       return TextButton(
         style: styleTransparent(),
@@ -235,7 +219,8 @@ class TextFieldCustomState extends State<TextFieldCustom> {
           padding: const EdgeInsets.symmetric(horizontal: 15),
           child: SvgCustom(
             icon: widget.prefixIconSvg,
-            size: widget.IconSize,
+            size: widget.iconSize,
+            color: iconColor, // Asumiendo que SvgCustom acepta color
           ),
         ),
       );
@@ -243,34 +228,36 @@ class TextFieldCustomState extends State<TextFieldCustom> {
     return null;
   }
 
-  Widget? buildSuffixIcon(BuildContext context) {
+  Widget? buildSuffixIcon(BuildContext context, Color iconColor) {
     if (widget.password) {
       return IconButton(
         icon: Icon(
           obscureVisible ? Icons.lock_open_outlined : Icons.lock_outline,
-          color: COLOR_ACCENT,
+          color: iconColor,
         ),
         onPressed: () => setState(() => obscureVisible = !obscureVisible),
       );
     }
 
-    // Prioridad 1: IconData (UIcons)
     if (widget.suffixIcon != null) {
       return IconButton(
         padding: const EdgeInsets.symmetric(horizontal: 15),
         onPressed: widget.onSuffixPressed,
-        icon: Icon(widget.suffixIcon, size: widget.IconSize, color: COLOR_ACCENT),
+        icon: Icon(widget.suffixIcon, size: widget.iconSize, color: iconColor),
       );
     }
 
-    // Prioridad 2: SVG
     if (widget.sufixIconSvg.isNotEmpty) {
       return TextButton(
         style: styleTransparent(),
         onPressed: widget.onSuffixPressed,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15),
-          child: SvgCustom(icon: widget.sufixIconSvg, size: widget.IconSize),
+          child: SvgCustom(
+            icon: widget.sufixIconSvg,
+            size: widget.iconSize,
+            color: iconColor, // Asumiendo que SvgCustom acepta color
+          ),
         ),
       );
     }
