@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pizzacorn_ui/pizzacorn_ui.dart';
-import 'package:pizzacorn_ui/src/calendars/calendar_style.dart';
-
-import 'package:easyadmin/config/imports.dart';
 import 'package:intl/intl.dart';
 
 class MonthlyCalendar extends StatefulWidget {
