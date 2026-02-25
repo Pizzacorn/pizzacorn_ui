@@ -43,6 +43,7 @@ export 'src/effects/blur.dart';
 
 // form
 export 'src/form/textfield.dart';
+export 'src/form/phonefield.dart';
 export 'src/form/datefield.dart';
 export 'src/form/title_and_textfield.dart';
 export 'src/form/selector_list.dart';
@@ -115,3 +116,4 @@ export 'src/utils/date_formats.dart';
 export 'src/utils/color_utils.dart';
 export 'src/utils/close_keyboard.dart';
 export 'src/utils/uicons_helper.dart';
+export 'src/utils/countries.dart';
