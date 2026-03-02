@@ -9,6 +9,7 @@ import 'package:pizzacorn_ui/pizzacorn_ui.dart'; // Importa todos los componente
 
 // C:/Users/hola/StudioProjects/pizzacorn_ui/lib/src/appbars/appbar_home.dart
 import 'package:flutter/material.dart';
+import 'package:pizzacorn_ui/src/images/profile_image.dart';
 import '../../pizzacorn_ui.dart';
 
 /// PIZZACORN_UI CANDIDATE

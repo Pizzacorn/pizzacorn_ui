@@ -8,20 +8,14 @@ class ImageCustom extends StatelessWidget {
   final double width;
   final double height;
   final BoxFit fit;
-
-  /// Si true, dibuja la imagen como un círculo.
   final bool isCircular;
-
-  /// Radio de esquinas cuando no es circular.
   final double borderRadius;
-
-  /// Ancho del borde.
   final double borderWidth;
-
-  /// Color del borde.
   final Color borderColor;
 
-  /// Widget para pintar encima de la imagen.
+  // Don Sput, aquí está el nuevo parámetro
+  final Color? backgroundColor;
+
   final Widget? overlay;
 
   const ImageCustom({
@@ -35,12 +29,16 @@ class ImageCustom extends StatelessWidget {
     this.borderRadius = 5,
     this.borderWidth = 0,
     this.borderColor = Colors.transparent,
+    this.backgroundColor, // Añadido aquí
     this.overlay,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Si no hay URL válida, mostramos solo el placeholder local
+    // Si no viene color, usamos el secundario por defecto
+    final Color effectiveBgColor = backgroundColor ?? COLOR_BACKGROUND_SECONDARY;
+
+    // Caso: URL vacía
     if (imageUrl.isEmpty) {
       return Container(
         width: width,
@@ -49,14 +47,14 @@ class ImageCustom extends StatelessWidget {
           shape: isCircular ? BoxShape.circle : BoxShape.rectangle,
           borderRadius: isCircular ? null : BorderRadius.circular(borderRadius),
           border: Border.all(color: borderColor, width: borderWidth),
-          color: COLOR_BACKGROUND_SECONDARY,
+          color: effectiveBgColor,
         ),
         clipBehavior: Clip.antiAlias,
         child: Image.asset(placeholder, width: width, height: height, fit: fit),
       );
     }
 
-    // Carga de red con CachedNetworkImage
+    // Carga de red
     final imageWidget = CachedNetworkImage(
       imageUrl: imageUrl,
       width: width,
@@ -73,9 +71,9 @@ class ImageCustom extends StatelessWidget {
     final clippedImage = isCircular
         ? ClipOval(child: imageWidget)
         : ClipRRect(
-            borderRadius: BorderRadius.circular(borderRadius),
-            child: imageWidget,
-          );
+      borderRadius: BorderRadius.circular(borderRadius),
+      child: imageWidget,
+    );
 
     return Container(
       width: width,
@@ -84,86 +82,15 @@ class ImageCustom extends StatelessWidget {
         shape: isCircular ? BoxShape.circle : BoxShape.rectangle,
         borderRadius: isCircular ? null : BorderRadius.circular(borderRadius),
         border: Border.all(color: borderColor, width: borderWidth),
-        color: COLOR_BACKGROUND_SECONDARY,
+        color: effectiveBgColor, // Aplicamos el color aquí
       ),
       clipBehavior: Clip.antiAlias,
       child: Stack(
         fit: StackFit.expand,
-        children: [clippedImage, if (overlay != null) overlay!],
-      ),
-    );
-  }
-}
-
-class ProfileImageCustom extends StatelessWidget {
-  /// La URL de la imagen
-  final String imageUrl;
-
-  /// Tamaño del widget (alto y ancho)
-  final double size;
-
-  /// Borde exterior
-  final Color? outerBorderColor;
-  final double outerBorderWidth;
-
-  /// Borde interior (usado por ImageCustom)
-  final Color? innerBorderColor;
-  final double innerBorderWidth;
-
-  /// Acción al pulsar
-  final VoidCallback? onPressed;
-
-  /// Si es true, se elimina el espacio entre los bordes y solo se ve uno
-  final bool singleBorder;
-
-  const ProfileImageCustom({
-    super.key,
-    required this.imageUrl,
-    this.onPressed,
-    this.size = 55,
-    this.outerBorderColor,
-    this.outerBorderWidth = 2,
-    this.innerBorderColor,
-    this.innerBorderWidth = 2,
-    this.singleBorder = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final double innerSize = size - (singleBorder ? 0 : outerBorderWidth * 2);
-
-    final Color effectiveOuterBorderColor = outerBorderColor ?? COLOR_ACCENT;
-    final Color effectiveInnerBorderColor =
-        innerBorderColor ?? COLOR_BACKGROUND;
-
-    return SizedBox(
-      height: size,
-      width: size,
-      child: Container(
-        padding: EdgeInsets.all(singleBorder ? 0 : outerBorderWidth),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: effectiveOuterBorderColor,
-            width: singleBorder
-                ? outerBorderWidth + innerBorderWidth
-                : outerBorderWidth,
-          ),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: TextButton(
-          style: styleTransparent(),
-          onPressed: onPressed,
-          child: ImageCustom(
-            imageUrl: imageUrl,
-            width: innerSize,
-            height: innerSize,
-            fit: BoxFit.cover,
-            isCircular: true,
-            borderWidth: singleBorder ? 0 : innerBorderWidth,
-            borderColor: effectiveInnerBorderColor,
-          ),
-        ),
+        children: [
+          clippedImage,
+          if (overlay != null) overlay!
+        ],
       ),
     );
   }

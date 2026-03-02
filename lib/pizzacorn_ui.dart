@@ -55,6 +55,7 @@ export 'src/icons/featured_icon.dart';
 
 // images
 export 'src/images/images.dart';
+export 'src/images/profile_image.dart';
 export 'src/images/fullscreen_image.dart';
 
 //inputs
