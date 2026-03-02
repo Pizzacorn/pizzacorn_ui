@@ -7,11 +7,13 @@ class CountryPhone {
   final String code;
   final String prefix;
   final String flag;
+
+  // Don Sput, cumpliendo regla de no required y valores por defecto
   CountryPhone({
-    required this.name,
-    required this.code,
-    required this.prefix,
-    required this.flag,
+    this.name = "",
+    this.code = "",
+    this.prefix = "",
+    this.flag = "",
   });
 }
 
@@ -19,7 +21,7 @@ class TextFieldPhoneCustom extends StatefulWidget {
   const TextFieldPhoneCustom({
     super.key,
     this.controller,
-    this.onChanged,
+    this.onChanged, // Ahora devuelve (prefix, number)
     this.labelText = "Teléfono",
     this.hintText = "600 000 000",
     this.width = double.infinity,
@@ -27,10 +29,12 @@ class TextFieldPhoneCustom extends StatefulWidget {
     this.radius,
     this.colorFill,
     this.favoriteCodes = const ['ES', 'MX', 'CO', 'AR'],
+    this.initialPrefix = "34",
+    this.initialPhoneNumber = "",
   });
 
   final TextEditingController? controller;
-  final void Function(String)? onChanged;
+  final void Function(String prefix, String number)? onChanged;
   final String labelText;
   final String hintText;
   final double width;
@@ -38,6 +42,8 @@ class TextFieldPhoneCustom extends StatefulWidget {
   final double? radius;
   final Color? colorFill;
   final List<String> favoriteCodes;
+  final String initialPrefix;
+  final String initialPhoneNumber;
 
   @override
   State<TextFieldPhoneCustom> createState() => TextFieldPhoneCustomState();
@@ -46,14 +52,22 @@ class TextFieldPhoneCustom extends StatefulWidget {
 class TextFieldPhoneCustomState extends State<TextFieldPhoneCustom> {
   late TextEditingController phoneController;
   late FocusNode focusNode;
-  CountryPhone selectedCountry = CountryPhone(name: "España", code: "ES", prefix: "34", flag: "🇪🇸");
+  late CountryPhone selectedCountry;
 
   @override
   void initState() {
     super.initState();
-    phoneController = widget.controller ?? TextEditingController();
+    phoneController = widget.controller ?? TextEditingController(text: widget.initialPhoneNumber);
     focusNode = FocusNode();
     focusNode.addListener(() => setState(() {}));
+
+    // Buscamos el país inicial por el prefijo (limpiando el + por si acaso)
+    String cleanInitialPrefix = widget.initialPrefix.replaceAll("+", "");
+
+    selectedCountry = countriesData.firstWhere(
+          (c) => c.prefix == cleanInitialPrefix,
+      orElse: () => CountryPhone(name: "España", code: "ES", prefix: "34", flag: "🇪🇸"),
+    );
   }
 
   @override
@@ -66,8 +80,17 @@ class TextFieldPhoneCustomState extends State<TextFieldPhoneCustom> {
   }
 
   void openCountryPicker() {
-    List<CountryPhone> favorites = countriesData.where((c) => widget.favoriteCodes.contains(c.code)).toList();
-    List<CountryPhone> others = countriesData.where((c) => !widget.favoriteCodes.contains(c.code)).toList();
+    List<CountryPhone> favorites = [];
+    List<CountryPhone> others = [];
+
+    // Usando bucles con índice como le gusta al Señor Sputo
+    for (int i = 0; i < countriesData.length; i++) {
+      if (widget.favoriteCodes.contains(countriesData[i].code)) {
+        favorites.add(countriesData[i]);
+      } else {
+        others.add(countriesData[i]);
+      }
+    }
 
     List<CountryPhone> filteredFavorites = List.from(favorites);
     List<CountryPhone> filteredOthers = List.from(others);
@@ -102,33 +125,57 @@ class TextFieldPhoneCustomState extends State<TextFieldPhoneCustom> {
                 prefixIcon: Icons.search,
                 onChanged: (val) {
                   setModalState(() {
-                    filteredFavorites = favorites.where((c) =>
-                    c.name.toLowerCase().contains(val.toLowerCase()) ||
-                        c.prefix.contains(val)).toList();
-                    filteredOthers = others.where((c) =>
-                    c.name.toLowerCase().contains(val.toLowerCase()) ||
-                        c.prefix.contains(val)).toList();
+                    filteredFavorites.clear();
+                    for (int i = 0; i < favorites.length; i++) {
+                      if (favorites[i].name.toLowerCase().contains(val.toLowerCase()) || favorites[i].prefix.contains(val)) {
+                        filteredFavorites.add(favorites[i]);
+                      }
+                    }
+                    filteredOthers.clear();
+                    for (int i = 0; i < others.length; i++) {
+                      if (others[i].name.toLowerCase().contains(val.toLowerCase()) || others[i].prefix.contains(val)) {
+                        filteredOthers.add(others[i]);
+                      }
+                    }
                   });
                 },
               ),
               Space(SPACE_SMALL),
               Expanded(
-                child: ListView(
-                  children: [
-                    Space(SPACE_MEDIUM),
-                    if (filteredFavorites.isNotEmpty) ...[
-                      TextCaption("FAVORITOS", fontWeight: FontWeight.bold, color: COLOR_SUBTEXT),
-                      for (int i = 0; i < filteredFavorites.length; i++)
-                        countryTile(filteredFavorites[i]),
-                      const Divider(height: 1),
-                    ],
-                    Space(SPACE_MEDIUM),
-                    if (filteredOthers.isNotEmpty) ...[
-                      TextCaption("TODOS LOS PAÍSES", fontWeight: FontWeight.bold, color: COLOR_SUBTEXT),
-                      for (int i = 0; i < filteredOthers.length; i++)
-                        countryTile(filteredOthers[i]),
-                    ],
-                  ],
+                child: ListView.builder(
+                  itemCount: (filteredFavorites.isNotEmpty ? filteredFavorites.length + 1 : 0) +
+                      (filteredOthers.isNotEmpty ? filteredOthers.length + 1 : 0),
+                  itemBuilder: (context, i) {
+                    int favSectionLen = filteredFavorites.isNotEmpty ? filteredFavorites.length + 1 : 0;
+
+                    if (filteredFavorites.isNotEmpty && i == 0) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Space(SPACE_MEDIUM),
+                          TextCaption("FAVORITOS", fontWeight: FontWeight.bold, color: COLOR_SUBTEXT),
+                        ],
+                      );
+                    }
+
+                    if (filteredFavorites.isNotEmpty && i < favSectionLen) {
+                      return countryTile(filteredFavorites[i - 1]);
+                    }
+
+                    int otherIdx = i - favSectionLen;
+                    if (filteredOthers.isNotEmpty && otherIdx == 0) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Divider(height: 1),
+                          Space(SPACE_MEDIUM),
+                          TextCaption("TODOS LOS PAÍSES", fontWeight: FontWeight.bold, color: COLOR_SUBTEXT),
+                        ],
+                      );
+                    }
+
+                    return countryTile(filteredOthers[otherIdx - 1]);
+                  },
                 ),
               ),
             ],
@@ -147,7 +194,7 @@ class TextFieldPhoneCustomState extends State<TextFieldPhoneCustom> {
         setState(() => selectedCountry = c);
         Navigator.pop(context);
         if (widget.onChanged != null) {
-          widget.onChanged!("+${c.prefix}${phoneController.text}");
+          widget.onChanged!(c.prefix, phoneController.text);
         }
       },
     );
@@ -179,7 +226,7 @@ class TextFieldPhoneCustomState extends State<TextFieldPhoneCustom> {
             style: styleBody(),
             onChanged: (val) {
               if (widget.onChanged != null) {
-                widget.onChanged!("+${selectedCountry.prefix}$val");
+                widget.onChanged!(selectedCountry.prefix, val);
               }
             },
             decoration: InputDecoration(

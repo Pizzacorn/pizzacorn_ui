@@ -15,19 +15,20 @@ import '../utils/color_utils.dart';
 /// );
 /// ```
 Future<void> openBottomSheet(
-  BuildContext context,
-  Widget widget, {
-  bool noBarrierColor = false,
-  bool disableDrag = false,
-  Function()? onBack,
-}) async {
+    BuildContext context,
+    Widget widget, {
+      bool noBarrierColor = false,
+      bool disableDrag = false,
+      double height = 400,
+      Function()? onBack,
+    }) async {
   final scheme = Theme.of(context).colorScheme;
 
   await showModalBottomSheet(
     context: context,
+    // Obligatorio para que respete el height que le pasamos
     isScrollControlled: true,
-    // Fondo basado en el surface del theme
-    backgroundColor: scheme.surface.withValues(alpha: 0),
+    backgroundColor: Colors.transparent, // Mejor dejarlo transparente aquí
     barrierColor: noBarrierColor
         ? Colors.transparent
         : Colors.black.withValues(alpha: 0.1),
@@ -35,7 +36,21 @@ Future<void> openBottomSheet(
     elevation: 0,
     enableDrag: !disableDrag,
     builder: (context) {
-      return widget;
+      // Señor Sputo, usamos Padding o el Bottom del viewInsets
+      // para que el teclado no tape el contenido
+      return Container(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        decoration: BoxDecoration(
+          color: scheme.surface, // O el color que prefiera de pizzacorn_ui
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        // Sumamos la altura base + el teclado
+        height: height + MediaQuery.of(context).viewInsets.bottom,
+        child: widget,
+      );
     },
   ).then((_) {
     if (onBack != null) {
@@ -58,10 +73,10 @@ Future<void> openBottomSheet(
 /// );
 /// ```
 Future<void> openBottomNoBack(
-  BuildContext context,
-  Widget widget, {
-  Function()? onBack,
-}) async {
+    BuildContext context,
+    Widget widget, {
+      Function()? onBack,
+    }) async {
   await showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -100,10 +115,10 @@ Future<void> openBottomNoBack(
 /// );
 /// ```
 Future<void> openDialog(
-  BuildContext context,
-  Widget widget, {
-  Function()? onBack,
-}) async {
+    BuildContext context,
+    Widget widget, {
+      Function()? onBack,
+    }) async {
   await showDialog(
     context: context,
     barrierDismissible: true,
@@ -133,42 +148,56 @@ Future<void> openDialog(
 void openSnackbar(
     BuildContext context, {
       String text = "",
+      bool isError = true,
+      bool isAlert = false,
+      bool isDone = false,
       Color? color,
-      Color? textColor, // <-- Nuevo parámetro añadido
+      Color? textColor,
     }) {
   final scheme = Theme.of(context).colorScheme;
 
-  // Si no se pasa color, usamos por defecto el color de error del theme
-  final Color effectiveColor = color ?? scheme.error;
+  // 1. Lógica de colores según el tipo de aviso
+  // Prioridad: manual > error > alert > done > default (error)
+  Color effectiveColor = color ?? scheme.error;
+  IconData iconData = Icons.info_outline;
 
-  // Si el usuario no pasa textColor, calculamos el mejor contraste automáticamente
-  final Color effectiveTextColor = COLOR_BACKGROUND;
-
-  // Elegimos un icono base según el tipo de color.
-  IconData iconData = Icons.done;
-
-  if (effectiveColor == scheme.error) {
-    iconData = Icons.clear;
+  if (isError) {
+    effectiveColor = COLOR_ERROR;
+    iconData = Icons.close_rounded;
+  } else if (isAlert) {
+    effectiveColor = COLOR_ALERT;
+    iconData = Icons.warning_amber_rounded;
+  } else if (isDone) {
+    effectiveColor = COLOR_DONE;
+    iconData = Icons.check_circle_outline_rounded;
+  }else {
+    effectiveColor = COLOR_INFO;
+    iconData = Icons.info_outline;
   }
+
+  // 2. Color de texto/iconos (usando el del parámetro o el de pizzacorn_ui)
+  final Color effectiveTextColor = textColor ?? COLOR_BACKGROUND;
 
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       behavior: SnackBarBehavior.fixed,
       backgroundColor: effectiveColor,
-      elevation: 100,
+      elevation: 8,
+      duration: const Duration(seconds: 3),
       content: Row(
         children: [
           Icon(
             iconData,
-            color: effectiveTextColor, // <-- Usamos el color efectivo
-            size: 18,
+            color: effectiveTextColor,
+            size: 20,
           ),
           Space(SPACE_SMALL),
           Expanded(
             child: TextBody(
               text,
               maxlines: 5,
-              color: effectiveTextColor, // <-- Usamos el color efectivo
+              fontWeight: FontWeight.w500,
+              color: effectiveTextColor,
             ),
           ),
         ],
