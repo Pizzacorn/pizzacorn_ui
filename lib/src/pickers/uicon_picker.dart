@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 import 'package:pizzacorn_ui/src/utils/uicons_helper.dart';
-import 'dart:math'; // Necesario para la función min
+import 'dart:math';
 
 /// PIZZACORN_UI CANDIDATE
 /// Widget: IconGalleryPage
-/// Motivo: Un selector visual de iconos UiconsPro con búsqueda y resaltado, ahora con paginación.
+/// Motivo: Un selector visual de iconos UiconsPro con búsqueda y resaltado, ahora con paginación y personalización de grid.
 /// API: IconGalleryPage(initialSelectedIconName: 'home', onIconSelected: (iconName) => ...)
 class IconGalleryPage extends StatefulWidget {
   final String? initialSelectedIconName;
@@ -13,6 +13,7 @@ class IconGalleryPage extends StatefulWidget {
   final int crossAxisCount;
   final bool showAppBar;
   final bool popOnSelect;
+  final bool showIconName;
 
   const IconGalleryPage({
     super.key,
@@ -21,6 +22,7 @@ class IconGalleryPage extends StatefulWidget {
     this.crossAxisCount = 4,
     this.showAppBar = true,
     this.popOnSelect = true,
+    this.showIconName = true,
   });
 
   @override
@@ -29,26 +31,26 @@ class IconGalleryPage extends StatefulWidget {
 
 class IconGalleryPageState extends State<IconGalleryPage> {
   final TextEditingController searchController = TextEditingController();
-  final ScrollController scrollController = ScrollController(); // Para el scroll automático
+  final ScrollController scrollController = ScrollController();
 
-  List<MapEntry<String, IconData>> allIcons = []; // Guarda todos los iconos disponibles (sin filtrar/paginar)
-  List<MapEntry<String, IconData>> filteredAllIcons = []; // Iconos después de la búsqueda (sin paginar)
-  List<MapEntry<String, IconData>> displayedIcons = []; // Iconos actualmente visibles en la UI (paginados)
+  List<MapEntry<String, IconData>> allIcons = [];
+  List<MapEntry<String, IconData>> filteredAllIcons = [];
+  List<MapEntry<String, IconData>> displayedIcons = [];
 
   String? currentSelectedIconName;
   IconData? currentSelectedIconData;
 
-  static const int pageSize = 40; // Número de iconos a cargar por "página"
-  bool hasMore = true; // Indica si hay más iconos disponibles para cargar
-  bool isLoadingMore = false; // Indica si se están cargando más iconos
+  static const int pageSize = 60; 
+  bool hasMore = true;
+  bool isLoadingMore = false;
 
   @override
   void initState() {
     super.initState();
     currentSelectedIconName = widget.initialSelectedIconName;
-    loadAllIcons(); // Carga todos los iconos disponibles
-    applyInitialPaginationAndScroll(); // Aplica la paginación inicial y maneja el scroll
-    scrollController.addListener(scrollListener); // Añade el listener para cargar más al hacer scroll
+    loadAllIcons();
+    applyInitialPaginationAndScroll();
+    scrollController.addListener(scrollListener);
   }
 
   @override
@@ -59,7 +61,6 @@ class IconGalleryPageState extends State<IconGalleryPage> {
     super.dispose();
   }
 
-  // Listener para detectar cuando se llega cerca del final del scroll y cargar más iconos
   void scrollListener() {
     if (scrollController.position.pixels >= scrollController.position.maxScrollExtent * 0.9 &&
         !isLoadingMore &&
@@ -68,14 +69,12 @@ class IconGalleryPageState extends State<IconGalleryPage> {
     }
   }
 
-  // Carga todos los iconos desde la fuente de datos
   void loadAllIcons() {
     allIcons = UIconsMappingHelper.allRegularRoundedIconsMap.entries.toList();
     filteredAllIcons = List.from(allIcons);
     hasMore = filteredAllIcons.length > pageSize;
   }
 
-  // Aplica la paginación inicial y, si un icono está preseleccionado, lo busca y hace scroll
   void applyInitialPaginationAndScroll() {
     setState(() {
       displayedIcons = filteredAllIcons.take(pageSize).toList();
@@ -93,18 +92,16 @@ class IconGalleryPageState extends State<IconGalleryPage> {
     }
   }
 
-  // Filtra los iconos basados en la búsqueda del usuario
   void filterIcons(String query) {
     setState(() {
       filteredAllIcons = allIcons
           .where((entry) => entry.key.toLowerCase().contains(query.toLowerCase()))
           .toList();
       displayedIcons.clear();
-      displayedIcons.addAll(filteredAllIcons.take(pageSize)); // Resetea la paginación al filtrar
+      displayedIcons.addAll(filteredAllIcons.take(pageSize));
       hasMore = filteredAllIcons.length > displayedIcons.length;
-      isLoadingMore = false; // Reinicia el estado de carga
+      isLoadingMore = false;
 
-      // Si el icono actualmente seleccionado es filtrado, se deselecciona
       if (currentSelectedIconName != null && !filteredAllIcons.any((e) => e.key == currentSelectedIconName)) {
         currentSelectedIconName = null;
         currentSelectedIconData = null;
@@ -112,7 +109,6 @@ class IconGalleryPageState extends State<IconGalleryPage> {
     });
   }
 
-  // Selecciona un icono y devuelve solo su nombre
   void selectIcon(MapEntry<String, IconData> selectedItem) {
     setState(() {
       currentSelectedIconName = selectedItem.key;
@@ -122,11 +118,10 @@ class IconGalleryPageState extends State<IconGalleryPage> {
       widget.onIconSelected!(selectedItem.key);
     }
     if (widget.popOnSelect) {
-      Navigator.pop(context, selectedItem.key); // Cierra el picker y devuelve el nombre
+      Navigator.pop(context, selectedItem.key);
     }
   }
 
-  // Carga más iconos al final de la lista
   void loadMoreIcons() {
     if (isLoadingMore || !hasMore) return;
 
@@ -134,7 +129,7 @@ class IconGalleryPageState extends State<IconGalleryPage> {
       isLoadingMore = true;
     });
 
-    Future.delayed(const Duration(milliseconds: 500)).then((_) {
+    Future.delayed(const Duration(milliseconds: 300)).then((_) {
       final int currentLength = displayedIcons.length;
       final int numToLoad = min(pageSize, filteredAllIcons.length - currentLength);
 
@@ -149,7 +144,6 @@ class IconGalleryPageState extends State<IconGalleryPage> {
     });
   }
 
-  // Realiza scroll a un índice específico en la lista de iconos filtrados (no paginados)
   void scrollToIndex(int originalIndexInFilteredAllIcons) {
     if (originalIndexInFilteredAllIcons == -1) return;
 
@@ -177,8 +171,7 @@ class IconGalleryPageState extends State<IconGalleryPage> {
         const double mainAxisSpacing = 10;
 
         final double gridViewWidth = screenWidth - (2 * horizontalPadding);
-        final double itemWidth =
-            (gridViewWidth - (crossAxisCount - 1) * crossAxisSpacing) / crossAxisCount;
+        final double itemWidth = (gridViewWidth - (crossAxisCount - 1) * crossAxisSpacing) / crossAxisCount;
         final double itemHeight = itemWidth;
 
         final int rowIndex = actualDisplayIndex ~/ crossAxisCount;
@@ -229,8 +222,8 @@ class IconGalleryPageState extends State<IconGalleryPage> {
                 if (i == displayedIcons.length) {
                   return const Center(
                     child: SizedBox(
-                      width: 24,
-                      height: 24,
+                      width: 20,
+                      height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     ),
                   );
@@ -242,6 +235,8 @@ class IconGalleryPageState extends State<IconGalleryPage> {
                   icon: item.value,
                   isSelected: isSelected,
                   onTap: () => selectIcon(item),
+                  showIconName: widget.showIconName,
+                  crossAxisCount: widget.crossAxisCount,
                 );
               },
             ),
@@ -257,6 +252,8 @@ class IconCard extends StatelessWidget {
   final IconData icon;
   final bool isSelected;
   final VoidCallback onTap;
+  final bool showIconName;
+  final int crossAxisCount;
 
   const IconCard({
     super.key,
@@ -264,36 +261,57 @@ class IconCard extends StatelessWidget {
     required this.icon,
     required this.isSelected,
     required this.onTap,
+    this.showIconName = true,
+    required this.crossAxisCount,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Si hay más de 8 columnas, forzamos ocultar el nombre porque no cabría
+    final bool effectiveShowName = showIconName && crossAxisCount <= 8;
+    
+    // El padding se ajusta según la densidad del grid para que respire
+    final double dynamicPadding = max(2.0, 8.0 - (crossAxisCount / 3));
+
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
         curve: Curves.easeOut,
+        padding: EdgeInsets.all(dynamicPadding),
         decoration: BoxDecoration(
           color: isSelected ? COLOR_ACCENT.withValues(alpha: 0.1) : Colors.grey.shade50,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(max(4, 12 - (crossAxisCount ~/ 2).toDouble())),
           border: Border.all(
             color: isSelected ? COLOR_ACCENT : Colors.grey.shade200,
-            width: isSelected ? 2 : 1,
+            width: isSelected ? max(1.0, 3.0 - (crossAxisCount / 10)) : 1,
           ),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 28, color: isSelected ? COLOR_ACCENT : Colors.black87),
-            Space(8),
-            Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: TextCaption(
-                name,
-                textAlign: TextAlign.center,
-                color: isSelected ? COLOR_ACCENT : Colors.black87,
+            Expanded(
+              child: Center(
+                child: Icon(
+                  icon, 
+                  // El tamaño ahora es relativo al espacio disponible (FittedBox se encargará de que no rompa)
+                  size: max(12.0, (140 / crossAxisCount)), 
+                  color: isSelected ? COLOR_ACCENT : Colors.black87
+                ),
               ),
             ),
+            if (effectiveShowName) ...[
+              Space(4),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                child: TextCaption(
+                  name,
+                  textAlign: TextAlign.center,
+                  maxlines: 1,
+                  color: isSelected ? COLOR_ACCENT : Colors.black87,
+                ),
+              ),
+            ],
           ],
         ),
       ),
