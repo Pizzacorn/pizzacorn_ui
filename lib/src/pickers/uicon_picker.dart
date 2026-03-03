@@ -10,11 +10,17 @@ import 'dart:math'; // Necesario para la función min
 class IconGalleryPage extends StatefulWidget {
   final String? initialSelectedIconName;
   final ValueChanged<MapEntry<String, IconData>>? onIconSelected;
+  final int crossAxisCount;
+  final bool showAppBar;
+  final bool popOnSelect;
 
   const IconGalleryPage({
     super.key,
     this.initialSelectedIconName,
     this.onIconSelected,
+    this.crossAxisCount = 4,
+    this.showAppBar = true,
+    this.popOnSelect = true,
   });
 
   @override
@@ -116,7 +122,9 @@ class IconGalleryPageState extends State<IconGalleryPage> {
     if (widget.onIconSelected != null) {
       widget.onIconSelected!(selectedItem);
     }
-    Navigator.pop(context, selectedItem); // Cierra el picker y devuelve el icono
+    if (widget.popOnSelect) {
+      Navigator.pop(context, selectedItem); // Cierra el picker y devuelve el icono
+    }
   }
 
   // Carga más iconos al final de la lista
@@ -168,7 +176,7 @@ class IconGalleryPageState extends State<IconGalleryPage> {
       if (actualDisplayIndex != -1) {
         final double screenWidth = MediaQuery.of(context).size.width;
         const double horizontalPadding = 16;
-        const int crossAxisCount = 4;
+        final int crossAxisCount = widget.crossAxisCount;
         const double crossAxisSpacing = 10;
         const double mainAxisSpacing = 10;
 
@@ -200,7 +208,7 @@ class IconGalleryPageState extends State<IconGalleryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBarBack(context: context, title: "Seleccionar Icono"),
+      appBar: widget.showAppBar ? AppBarBack(context: context, title: "Seleccionar Icono") : null,
       body: Column(
         children: [
           Padding(
@@ -216,8 +224,8 @@ class IconGalleryPageState extends State<IconGalleryPage> {
             child: GridView.builder(
               controller: scrollController,
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: widget.crossAxisCount,
                 childAspectRatio: 1,
                 mainAxisSpacing: 10,
                 crossAxisSpacing: 10,
