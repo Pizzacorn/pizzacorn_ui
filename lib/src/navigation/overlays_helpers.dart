@@ -26,24 +26,21 @@ Future<void> openBottomSheet(
     elevation: 0,
     enableDrag: !disableDrag,
     builder: (context) {
-      return Padding(
-        // Este padding es el que empuja el contenido hacia arriba de forma natural
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-        child: Container(
-          // REGLA PIZZACORN: Nada de const en decoraciones reactivas
-          decoration: BoxDecoration(
-            color: backgroundColor,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(RADIUS * 2), // Usando tus constantes
-              topRight: Radius.circular(RADIUS * 2),
-            ),
+      return Container(
+
+        // REGLA PIZZACORN: Nada de const en decoraciones reactivas
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(RADIUS * 2), // Usando tus constantes
+            topRight: Radius.circular(RADIUS * 2),
           ),
-          // Quitamos la suma del viewInsets aquí.
-          // El BoxConstraint del bottomSheet ya se encarga de posicionarlo.
-          height: height,
-          width: MediaQuery.of(context).size.width,
-          child: widget,
         ),
+        // Quitamos la suma del viewInsets aquí.
+        // El BoxConstraint del bottomSheet ya se encarga de posicionarlo.
+        height: height + MediaQuery.of(context).viewInsets.bottom,
+        width: MediaQuery.of(context).size.width,
+        child: widget,
       );
     },
   ).then((value) {
