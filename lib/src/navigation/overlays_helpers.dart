@@ -1,19 +1,8 @@
 import 'package:flutter/material.dart';
-
 import '../../pizzacorn_ui.dart';
 import '../layout/space.dart';
 import '../text/textstyles.dart';
-import '../utils/color_utils.dart';
 
-/// Abre un BottomSheet estándar.
-///
-/// Uso:
-/// ```dart
-/// openBottomSheet(
-///   context,
-///   MiWidgetBottomSheet(),
-/// );
-/// ```
 Future<void> openBottomSheet(
     BuildContext context,
     Widget widget, {
@@ -22,37 +11,42 @@ Future<void> openBottomSheet(
       double height = 400,
       Function()? onBack,
     }) async {
-  final scheme = Theme.of(context).colorScheme;
+  // Don Sput, recuerda que en pizzacorn_ui preferimos usar nuestras constantes
+  // de color si están disponibles en lugar del scheme genérico
+  final Color backgroundColor = COLOR_BACKGROUND;
 
   await showModalBottomSheet(
     context: context,
-    // Obligatorio para que respete el height que le pasamos
     isScrollControlled: true,
-    backgroundColor: Colors.transparent, // Mejor dejarlo transparente aquí
+    backgroundColor: Colors.transparent,
     barrierColor: noBarrierColor
         ? Colors.transparent
-        : Colors.black.withValues(alpha: 0.1),
+        : Colors.black.withOpacity(0.1), // Usamos opacity estándar
     useSafeArea: true,
     elevation: 0,
     enableDrag: !disableDrag,
     builder: (context) {
-      // Señor Sputo, usamos Padding o el Bottom del viewInsets
-      // para que el teclado no tape el contenido
-      return Container(
+      return Padding(
+        // Este padding es el que empuja el contenido hacia arriba de forma natural
         padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-        decoration: BoxDecoration(
-          color: scheme.surface, // O el color que prefiera de pizzacorn_ui
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
+        child: Container(
+          // REGLA PIZZACORN: Nada de const en decoraciones reactivas
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(RADIUS * 2), // Usando tus constantes
+              topRight: Radius.circular(RADIUS * 2),
+            ),
           ),
+          // Quitamos la suma del viewInsets aquí.
+          // El BoxConstraint del bottomSheet ya se encarga de posicionarlo.
+          height: height,
+          width: MediaQuery.of(context).size.width,
+          child: widget,
         ),
-        // Sumamos la altura base + el teclado
-        height: height + MediaQuery.of(context).viewInsets.bottom,
-        child: widget,
       );
     },
-  ).then((_) {
+  ).then((value) {
     if (onBack != null) {
       onBack();
     }
