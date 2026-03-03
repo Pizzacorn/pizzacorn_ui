@@ -6,10 +6,10 @@ import 'dart:math'; // Necesario para la función min
 /// PIZZACORN_UI CANDIDATE
 /// Widget: IconGalleryPage
 /// Motivo: Un selector visual de iconos UiconsPro con búsqueda y resaltado, ahora con paginación.
-/// API: IconGalleryPage(initialSelectedIconName: 'home', onIconSelected: (icon) => ...)
+/// API: IconGalleryPage(initialSelectedIconName: 'home', onIconSelected: (iconName) => ...)
 class IconGalleryPage extends StatefulWidget {
   final String? initialSelectedIconName;
-  final ValueChanged<MapEntry<String, IconData>>? onIconSelected;
+  final ValueChanged<String>? onIconSelected;
   final int crossAxisCount;
   final bool showAppBar;
   final bool popOnSelect;
@@ -24,10 +24,9 @@ class IconGalleryPage extends StatefulWidget {
   });
 
   @override
-  State<IconGalleryPage> createState() => IconGalleryPageState(); // Renombrado de _IconGalleryPageState
+  State<IconGalleryPage> createState() => IconGalleryPageState();
 }
 
-// Renombrado de _IconGalleryPageState a IconGalleryPageState
 class IconGalleryPageState extends State<IconGalleryPage> {
   final TextEditingController searchController = TextEditingController();
   final ScrollController scrollController = ScrollController(); // Para el scroll automático
@@ -113,17 +112,17 @@ class IconGalleryPageState extends State<IconGalleryPage> {
     });
   }
 
-  // Selecciona un icono y cierra el picker
+  // Selecciona un icono y devuelve solo su nombre
   void selectIcon(MapEntry<String, IconData> selectedItem) {
     setState(() {
       currentSelectedIconName = selectedItem.key;
       currentSelectedIconData = selectedItem.value;
     });
     if (widget.onIconSelected != null) {
-      widget.onIconSelected!(selectedItem);
+      widget.onIconSelected!(selectedItem.key);
     }
     if (widget.popOnSelect) {
-      Navigator.pop(context, selectedItem); // Cierra el picker y devuelve el icono
+      Navigator.pop(context, selectedItem.key); // Cierra el picker y devuelve el nombre
     }
   }
 
@@ -154,8 +153,6 @@ class IconGalleryPageState extends State<IconGalleryPage> {
   void scrollToIndex(int originalIndexInFilteredAllIcons) {
     if (originalIndexInFilteredAllIcons == -1) return;
 
-    // Asegurarse de que el icono objetivo esté cargado en `displayedIcons`
-    // Cargamos páginas hasta que el `originalIndexInFilteredAllIcons` esté visible
     while (displayedIcons.length < originalIndexInFilteredAllIcons + 1 && hasMore) {
       final int currentLength = displayedIcons.length;
       final int numToLoad = min(pageSize, filteredAllIcons.length - currentLength);
@@ -163,13 +160,12 @@ class IconGalleryPageState extends State<IconGalleryPage> {
         displayedIcons.addAll(filteredAllIcons.skip(currentLength).take(numToLoad));
         hasMore = filteredAllIcons.length > displayedIcons.length;
       } else {
-        break; // No hay más elementos para cargar
+        break;
       }
     }
-    setState(() {}); // Forzamos una actualización de la UI para mostrar los iconos cargados
+    setState(() {});
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Encontramos el índice real del elemento dentro de la lista de `displayedIcons`
       final int actualDisplayIndex = displayedIcons.indexWhere(
               (entry) => entry.key == filteredAllIcons[originalIndexInFilteredAllIcons].key);
 
@@ -183,11 +179,9 @@ class IconGalleryPageState extends State<IconGalleryPage> {
         final double gridViewWidth = screenWidth - (2 * horizontalPadding);
         final double itemWidth =
             (gridViewWidth - (crossAxisCount - 1) * crossAxisSpacing) / crossAxisCount;
-        final double itemHeight = itemWidth; // childAspectRatio es 1
+        final double itemHeight = itemWidth;
 
         final int rowIndex = actualDisplayIndex ~/ crossAxisCount;
-        // Calculamos el offset de scroll. Se excluye el padding inicial del GridView
-        // porque ya se maneja con la propiedad `padding` del GridView.
         final double scrollOffset = (rowIndex * (itemHeight + mainAxisSpacing));
 
         if (scrollController.hasClients) {
@@ -216,10 +210,10 @@ class IconGalleryPageState extends State<IconGalleryPage> {
             child: TextFieldCustom(
               controller: searchController,
               hintText: 'Busca un icono',
-              onChanged: filterIcons, // Renombrado de _filterIcons
+              onChanged: filterIcons,
             ),
           ),
-          Space(20), // Usando Space con valor directo según el original
+          Space(20),
           Expanded(
             child: GridView.builder(
               controller: scrollController,
@@ -230,10 +224,9 @@ class IconGalleryPageState extends State<IconGalleryPage> {
                 mainAxisSpacing: 10,
                 crossAxisSpacing: 10,
               ),
-              itemCount: displayedIcons.length + (hasMore ? 1 : 0), // Añade un espacio para el indicador de carga
+              itemCount: displayedIcons.length + (hasMore ? 1 : 0),
               itemBuilder: (context, i) {
                 if (i == displayedIcons.length) {
-                  // Muestra un indicador de carga al final si hay más iconos disponibles
                   return const Center(
                     child: SizedBox(
                       width: 24,
@@ -244,11 +237,11 @@ class IconGalleryPageState extends State<IconGalleryPage> {
                 }
                 final item = displayedIcons[i];
                 final bool isSelected = item.key == currentSelectedIconName;
-                return IconCard( // Renombrado de _IconCard
+                return IconCard(
                   name: item.key,
                   icon: item.value,
                   isSelected: isSelected,
-                  onTap: () => selectIcon(item), // Renombrado de _selectIcon
+                  onTap: () => selectIcon(item),
                 );
               },
             ),
@@ -259,7 +252,6 @@ class IconGalleryPageState extends State<IconGalleryPage> {
   }
 }
 
-// Renombrado de _IconCard a IconCard
 class IconCard extends StatelessWidget {
   final String name;
   final IconData icon;
@@ -267,7 +259,7 @@ class IconCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const IconCard({
-    super.key, // Añadido super.key para consistencia
+    super.key,
     required this.name,
     required this.icon,
     required this.isSelected,
@@ -293,7 +285,7 @@ class IconCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, size: 28, color: isSelected ? COLOR_ACCENT : Colors.black87),
-            Space(8), // Usando Space con valor directo según el original
+            Space(8),
             Padding(
               padding: const EdgeInsets.all(4.0),
               child: TextCaption(
