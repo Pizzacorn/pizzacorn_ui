@@ -39,7 +39,7 @@ class SliverListCustom<T> extends ConsumerWidget {
                 ],
               );
             },
-            childCount: 5,
+            childCount: 2,
           ),
         ),
       );
@@ -78,21 +78,23 @@ class SliverListCustom<T> extends ConsumerWidget {
     }
 
     // 4. LISTA REAL PAGINADA
+    // 4. LISTA REAL PAGINADA
     return SliverMainAxisGroup(
       slivers: [
         SliverList(
           delegate: SliverChildBuilderDelegate(
                 (context, i) {
-              // 🟢 SPUTKNIF OPTIMIZATION: Solo disparamos si es EXACTAMENTE el último elemento
-              // y no estamos en medio de ninguna carga.
+              // 🚀 DETECCIÓN MEJORADA:
+              // Si estamos en el último item y hay más por cargar
               if (i == state.items.length - 1 && state.hasMore && !state.isFetchingMore && !state.isLoading) {
-                // Usamos microtask para no interrumpir el build actual
+                // Usamos microtask para no bloquear el renderizado actual
                 Future.microtask(() => controller.fetchMore());
               }
 
               final item = state.items[i];
               return Column(
-                key: ValueKey(i), // Añadimos key para que Flutter no se líe al reciclar
+                // 🔑 IMPORTANTE: Usamos una key única para que Flutter no recicle mal
+                key: ValueKey(item.id ?? i.toString()),
                 children: [
                   itemBuilder(item),
                   Space(itemSpacing),
@@ -104,21 +106,24 @@ class SliverListCustom<T> extends ConsumerWidget {
         ),
 
         // 5. CARGANDO MÁS (Skeleton inferior)
-        if (state.isFetchingMore)
-          Skeletonizer.sliver(
-            enabled: true,
-            child: SliverToBoxAdapter(
-              child: Column(
-                children: [
-                  itemBuilder(itemPlaceholder),
-                  Space(itemSpacing),
-                ],
+        // 💡 TRUCO: Lo envolvemos en un ToBoxAdapter persistente para evitar el parpadeo
+        if (state.hasMore)
+          SliverToBoxAdapter(
+            child: Visibility(
+              visible: state.isFetchingMore,
+              maintainState: true,
+              // Un Shimmer que no desaparece de golpe ayuda a la suavidad
+              child: Skeletonizer(
+                enabled: true,
+                child: Column(
+                  children: [
+                    itemBuilder(itemPlaceholder),
+                    Space(itemSpacing),
+                  ],
+                ),
               ),
             ),
           ),
-
-        // Espacio extra al final para que el scroll no se quede pegado
-        SliverToBoxAdapter(child: Space(100)),
       ],
     );
   }
