@@ -132,9 +132,11 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
   }
 
   Future<void> fetchMore() async {
-    if (state.isFetchingMore || !state.hasMore || lastDocument == null) return;
+    // 🛡️ Doble chequeo para Don Sput: si ya estamos cargando o no hay más, abortamos misión
+    if (state.isFetchingMore || !state.hasMore || lastDocument == null || state.isLoading) return;
 
     try {
+      // Importante: Cambiamos el estado INMEDIATAMENTE para bloquear otras llamadas
       state = state.copyWith(isFetchingMore: true);
 
       Query q = _getQuery().startAfterDocument(lastDocument!).limit(arg.limit);

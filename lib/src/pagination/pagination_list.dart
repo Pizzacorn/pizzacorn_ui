@@ -83,16 +83,16 @@ class SliverListCustom<T> extends ConsumerWidget {
         SliverList(
           delegate: SliverChildBuilderDelegate(
                 (context, i) {
-              // OPTIMIZACIÓN: Pre-fetch al llegar al final
-              final fetchThreshold = state.items.length - 5;
-              if (i >= fetchThreshold && state.hasMore && !state.isFetchingMore && !state.isLoading) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  controller.fetchMore();
-                });
+              // 🟢 SPUTKNIF OPTIMIZATION: Solo disparamos si es EXACTAMENTE el último elemento
+              // y no estamos en medio de ninguna carga.
+              if (i == state.items.length - 1 && state.hasMore && !state.isFetchingMore && !state.isLoading) {
+                // Usamos microtask para no interrumpir el build actual
+                Future.microtask(() => controller.fetchMore());
               }
 
               final item = state.items[i];
               return Column(
+                key: ValueKey(i), // Añadimos key para que Flutter no se líe al reciclar
                 children: [
                   itemBuilder(item),
                   Space(itemSpacing),
@@ -116,6 +116,9 @@ class SliverListCustom<T> extends ConsumerWidget {
               ),
             ),
           ),
+
+        // Espacio extra al final para que el scroll no se quede pegado
+        SliverToBoxAdapter(child: Space(100)),
       ],
     );
   }
