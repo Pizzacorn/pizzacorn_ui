@@ -63,7 +63,7 @@ class PaginationParams<T> {
   int get hashCode => collection.hashCode ^ limit.hashCode ^ identifier.hashCode;
 }
 
-// --- CONTROLADOR AJUSTADO PARA SEÑOR SPUTNIF ---
+
 class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<T>, PaginationParams<T>> {
   DocumentSnapshot? lastDocument;
   bool isMounted = true;
@@ -86,9 +86,6 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
     return q;
   }
 
-  // 🟢 REFRESH CORREGIDO:
-  // No usamos invalidateSelf para no "matar" el Future que espera el RefreshIndicator.
-  // Limpiamos todo manualmente y esperamos a que cargue.
   Future<void> refresh() async {
     lastDocument = null;
     await loadItems();
@@ -96,7 +93,6 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
 
   Future<void> loadItems() async {
     try {
-      // 1. IMPORTANTE: Limpiamos lista y ponemos loading para que salte el skeleton
       state = state.copyWith(isLoading: true, items: [], error: '');
 
       Query q = _getQuery().limit(arg.limit);
@@ -109,7 +105,6 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
       if (snapshot.docs.isNotEmpty) {
         lastDocument = snapshot.docs.last;
 
-        // Bucle con índice para Don Sput
         for (int i = 0; i < snapshot.docs.length; i++) {
           final data = snapshot.docs[i].data() as Map<String, dynamic>;
           newItems.add(arg.fromJson(data));
@@ -121,7 +116,6 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
           hasMore: snapshot.docs.length == arg.limit,
         );
       } else {
-        // Caso: No hay documentos
         state = state.copyWith(isLoading: false, hasMore: false, items: []);
       }
     } catch (e) {
@@ -132,12 +126,11 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
   }
 
   Future<void> fetchMore() async {
-    // 🛡️ Doble chequeo para Don Sput: si ya estamos cargando o no hay más, abortamos misión
     if (state.isFetchingMore || !state.hasMore || lastDocument == null || state.isLoading) return;
 
     try {
-      // Importante: Cambiamos el estado INMEDIATAMENTE para bloquear otras llamadas
-      state = state.copyWith(isFetchingMore: true);
+      // 🛡️ IMPORTANTE: Limpiamos el error aquí para que pueda reintentar de forma limpia
+      state = state.copyWith(isFetchingMore: true, error: '');
 
       Query q = _getQuery().startAfterDocument(lastDocument!).limit(arg.limit);
       final snapshot = await q.get();
@@ -163,6 +156,7 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
       }
     } catch (e) {
       if (isMounted) {
+        // Si hay error, quitamos el loader y guardamos el error
         state = state.copyWith(isFetchingMore: false, error: e.toString());
       }
     }

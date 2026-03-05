@@ -9,6 +9,8 @@ class SliverListCustom<T> extends ConsumerWidget {
   final T itemPlaceholder;
   final Widget? emptyWidget;
   final double itemSpacing;
+  // Añadimos un extractor de ID opcional para que la Key sea 100% segura
+  final String Function(T item)? idExtractor;
 
   const SliverListCustom({
     super.key,
@@ -17,11 +19,11 @@ class SliverListCustom<T> extends ConsumerWidget {
     required this.itemPlaceholder,
     this.emptyWidget,
     this.itemSpacing = SPACE_SMALL,
+    this.idExtractor,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Escuchamos el estado y el controlador de la paginación
     final state = ref.watch(paginationProvider(params));
     final controller = ref.read(paginationProvider(params).notifier);
 
@@ -45,7 +47,7 @@ class SliverListCustom<T> extends ConsumerWidget {
       );
     }
 
-    // 2. ESTADO DE ERROR (Blindado por Don Sputknif)
+    // 2. ESTADO DE ERROR INICIAL
     if (state.error.isNotEmpty && state.items.isEmpty) {
       return SliverToBoxAdapter(
         child: Center(
@@ -57,7 +59,7 @@ class SliverListCustom<T> extends ConsumerWidget {
       );
     }
 
-    // 3. ESTADO VACÍO (Con detección inteligente de Slivers)
+    // 3. ESTADO VACÍO
     if (state.items.isEmpty) {
       if (emptyWidget == null) {
         return SliverToBoxAdapter(
@@ -70,31 +72,33 @@ class SliverListCustom<T> extends ConsumerWidget {
         );
       }
 
-      // Si Don Sput nos pasa un Sliver, lo soltamos tal cual.
-      // Si nos pasa un Widget normal (Box), lo envolvemos en un adapter.
       return (emptyWidget is RenderObjectWidget && emptyWidget.runtimeType.toString().contains('Sliver'))
           ? emptyWidget!
           : SliverToBoxAdapter(child: emptyWidget);
     }
 
     // 4. LISTA REAL PAGINADA
-    // 4. LISTA REAL PAGINADA
     return SliverMainAxisGroup(
       slivers: [
         SliverList(
           delegate: SliverChildBuilderDelegate(
                 (context, i) {
-              // 🚀 DETECCIÓN MEJORADA:
-              // Si estamos en el último item y hay más por cargar
-              if (i == state.items.length - 1 && state.hasMore && !state.isFetchingMore && !state.isLoading) {
-                // Usamos microtask para no bloquear el renderizado actual
+              // 🚀 SOLUCIÓN DEL BUCLE: Añadimos 'state.error.isEmpty'
+              // Si hay un error, dejamos de pedir más automáticamente.
+              if (i == state.items.length - 1 &&
+                  state.hasMore &&
+                  !state.isFetchingMore &&
+                  !state.isLoading &&
+                  state.error.isEmpty) {
                 Future.microtask(() => controller.fetchMore());
               }
 
               final item = state.items[i];
+              // Usamos el idExtractor si nos lo pasas, sino tiramos del índice
+              final itemKey = idExtractor != null ? idExtractor!(item) : i.toString();
+
               return Column(
-                // 🔑 IMPORTANTE: Usamos una key única para que Flutter no recicle mal
-                key: ValueKey(item.id ?? i.toString()),
+                key: ValueKey(itemKey),
                 children: [
                   itemBuilder(item),
                   Space(itemSpacing),
@@ -105,23 +109,39 @@ class SliverListCustom<T> extends ConsumerWidget {
           ),
         ),
 
-        // 5. CARGANDO MÁS (Skeleton inferior)
-        // 💡 TRUCO: Lo envolvemos en un ToBoxAdapter persistente para evitar el parpadeo
-        if (state.hasMore)
+        // 5. ZONA INFERIOR: SKELETON O ERROR DE PAGINACIÓN
+        if (state.hasMore || state.error.isNotEmpty)
           SliverToBoxAdapter(
-            child: Visibility(
-              visible: state.isFetchingMore,
-              maintainState: true,
-              // Un Shimmer que no desaparece de golpe ayuda a la suavidad
-              child: Skeletonizer(
-                enabled: true,
-                child: Column(
-                  children: [
-                    itemBuilder(itemPlaceholder),
-                    Space(itemSpacing),
-                  ],
-                ),
-              ),
+            child: Column(
+              children: [
+                // Skeleton solo si está cargando de verdad
+                if (state.isFetchingMore)
+                  Skeletonizer(
+                    enabled: true,
+                    child: Column(
+                      children: [
+                        itemBuilder(itemPlaceholder),
+                        Space(itemSpacing),
+                      ],
+                    ),
+                  ),
+
+                // Mensaje de error si la paginación falló, con botón para reintentar
+                if (state.error.isNotEmpty && state.items.isNotEmpty)
+                  Padding(
+                    padding: PADDING_ALL,
+                    child: Column(
+                      children: [
+                        TextBody("Error al cargar más: ${state.error}", maxlines: 3),
+                        Space(SPACE_SMALL),
+                        ElevatedButton(
+                          onPressed: () => controller.fetchMore(),
+                          child: TextBody("Reintentar"),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
             ),
           ),
       ],
