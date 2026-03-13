@@ -206,3 +206,67 @@ class ButtonCustom extends StatelessWidget {
     }).toList();
   }
 }
+
+/// PIZZACORN_UI CANDIDATE
+/// Widget: OptionButton
+/// Motivo: Un botón de fila (tipo celda) ideal para menús de opciones, perfiles o configuraciones.
+class OptionButton extends StatelessWidget {
+  final String title;
+  final IconData? prefixIcon;
+  final IconData? suffixIcon;
+  final Color? color;
+  final Color? textColor;
+  final Color? iconColor;
+  final Color? suffixIconColor;
+  final VoidCallback? onTap;
+  final bool hasShadow;
+
+  const OptionButton({
+    super.key,
+    required this.title,
+    this.prefixIcon,
+    this.suffixIcon,
+    this.color,
+    this.textColor,
+    this.iconColor,
+    this.suffixIconColor,
+    this.onTap,
+    this.hasShadow = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final Color effectiveTextColor = textColor ?? COLOR_TEXT;
+    final Color effectiveIconColor = iconColor ?? effectiveTextColor;
+    final Color effectiveSuffixIconColor = suffixIconColor ?? Colors.grey.shade400;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(RADIUS),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: DecorationCustom(
+          color: color ?? COLOR_BACKGROUND, 
+          hasShadow: hasShadow
+        ),
+        child: Row(
+          children: [
+            if (prefixIcon != null) ...[
+              Icon(prefixIcon, size: 20, color: effectiveIconColor),
+              Space(SPACE_SMALL),
+            ],
+            Expanded(
+              child: TextBody(
+                title, 
+                color: effectiveTextColor, 
+                fontWeight: FontWeight.bold
+              ),
+            ),
+            if (suffixIcon != null)
+              Icon(suffixIcon, size: 16, color: effectiveSuffixIconColor),
+          ],
+        ),
+      ),
+    );
+  }
+}
