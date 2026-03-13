@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:stupid_simple_sheet/stupid_simple_sheet.dart';
 import '../../pizzacorn_ui.dart';
 import '../layout/space.dart';
 import '../text/textstyles.dart';
@@ -11,8 +13,6 @@ Future<void> openBottomSheet(
       double height = 400,
       Function()? onBack,
     }) async {
-  // Don Sput, recuerda que en pizzacorn_ui preferimos usar nuestras constantes
-  // de color si están disponibles en lugar del scheme genérico
   final Color backgroundColor = COLOR_BACKGROUND;
 
   await showModalBottomSheet(
@@ -21,23 +21,19 @@ Future<void> openBottomSheet(
     backgroundColor: Colors.transparent,
     barrierColor: noBarrierColor
         ? Colors.transparent
-        : Colors.black.withOpacity(0.1), // Usamos opacity estándar
+        : Colors.black.withValues(alpha: 0.1),
     useSafeArea: true,
     elevation: 0,
     enableDrag: !disableDrag,
     builder: (context) {
       return Container(
-
-        // REGLA PIZZACORN: Nada de const en decoraciones reactivas
         decoration: BoxDecoration(
           color: backgroundColor,
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(RADIUS * 2), // Usando tus constantes
+            topLeft: Radius.circular(RADIUS * 2),
             topRight: Radius.circular(RADIUS * 2),
           ),
         ),
-        // Quitamos la suma del viewInsets aquí.
-        // El BoxConstraint del bottomSheet ya se encarga de posicionarlo.
         height: height + MediaQuery.of(context).viewInsets.bottom,
         width: MediaQuery.of(context).size.width,
         child: widget,
@@ -50,19 +46,68 @@ Future<void> openBottomSheet(
   });
 }
 
+/// PIZZACORN_UI CANDIDATE
+/// Widget: openStupidSheet
+/// Motivo: Abre un BottomSheet "Floating Card" usando StupidSimpleSheetRoute.
+Future<void> openStupidSheet(
+    BuildContext context,
+    Widget widget, {
+      bool isDismissible = true,
+      Color? backgroundColor,
+      Function()? onBack,
+    }) async {
+  await Navigator.of(context).push(
+    StupidSimpleSheetRoute(
+      child: widget,
+    ),
+  ).then((value) {
+    if (onBack != null) {
+      onBack();
+    }
+  });
+}
+
+/// PIZZACORN_UI CANDIDATE
+/// Widget: openStupidCupertinoSheet
+/// Motivo: Abre un BottomSheet estilo Cupertino "Stacking" (iOS 13+) con navegación integrada.
+Future<void> openStupidCupertinoSheet(
+    BuildContext context,
+    Widget widget, {
+      String title = "",
+      Function()? onBack,
+    }) async {
+  await Navigator.of(context).push(
+    StupidSimpleCupertinoSheetRoute(
+      child: CupertinoPageScaffold(
+        backgroundColor: COLOR_BACKGROUND,
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            if (title.isNotEmpty)
+              CupertinoSliverNavigationBar(
+                backgroundColor: COLOR_BACKGROUND.withValues(alpha: 0.9),
+                largeTitle: TextSubtitle(title),
+                border: null,
+                leading: CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  child: TextBody("Cerrar", color: COLOR_ACCENT),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ),
+            SliverToBoxAdapter(child: widget),
+          ],
+        ),
+      ),
+    ),
+  ).then((value) {
+    if (onBack != null) {
+      onBack();
+    }
+  });
+}
+
 /// Abre un BottomSheet que NO se puede cerrar ni arrastrando ni con el
 /// botón de atrás del sistema.
-///
-/// Ideal para procesos críticos (pagos, cargando algo importante, etc.).
-///
-/// Uso:
-/// ```dart
-/// openBottomNoBack(
-///   context,
-///   MiWidgetBottomSheetBloqueado(),
-///   onBack: () { ... },
-/// );
-/// ```
 Future<void> openBottomNoBack(
     BuildContext context,
     Widget widget, {
@@ -73,13 +118,11 @@ Future<void> openBottomNoBack(
     isScrollControlled: true,
     isDismissible: false,
     barrierColor: Colors.black.withValues(alpha: 0.1),
-    // Dejado transparente para que el widget defina su propio fondo
     backgroundColor: Colors.transparent,
     elevation: 50,
     builder: (BuildContext ctx) {
       return PopScope(
-        // Impide que se haga pop con el botón de atrás del sistema
-        onPopInvoked: (didPop) async {
+        onPopInvokedWithResult: (didPop, result) async {
           return;
         },
         child: Builder(
@@ -97,14 +140,6 @@ Future<void> openBottomNoBack(
 }
 
 /// Abre un diálogo estándar usando el [widget] que le pases.
-///
-/// Uso:
-/// ```dart
-/// openDialog(
-///   context,
-///   MiDialogCustom(),
-/// );
-/// ```
 Future<void> openDialog(
     BuildContext context,
     Widget widget, {
@@ -125,17 +160,6 @@ Future<void> openDialog(
 }
 
 /// Muestra un Snackbar Pizzacorn™ con ícono automático.
-///
-/// Uso:
-/// ```dart
-/// openSnackbar(
-///   context,
-///   text: 'Guardado correctamente',
-/// );
-/// ```
-///
-/// [text] → mensaje a mostrar.
-/// [color] → color de fondo del snackbar. Si es null, se usa [ColorScheme.error].
 void openSnackbar(
     BuildContext context, {
       String text = "",
@@ -147,8 +171,6 @@ void openSnackbar(
     }) {
   final scheme = Theme.of(context).colorScheme;
 
-  // 1. Lógica de colores según el tipo de aviso
-  // Prioridad: manual > error > alert > done > default (error)
   Color effectiveColor = color ?? scheme.error;
   IconData iconData = Icons.info_outline;
 
@@ -166,7 +188,6 @@ void openSnackbar(
     iconData = Icons.info_outline;
   }
 
-  // 2. Color de texto/iconos (usando el del parámetro o el de pizzacorn_ui)
   final Color effectiveTextColor = textColor ?? COLOR_BACKGROUND;
 
   ScaffoldMessenger.of(context).showSnackBar(
