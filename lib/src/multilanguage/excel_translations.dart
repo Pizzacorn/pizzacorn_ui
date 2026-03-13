@@ -142,7 +142,7 @@ class _LanguageSelectorState extends State<LanguageSelector> {
     'el': 'Ελληνικά', 'en': 'English', 'es': 'Español', 'et': 'Eesti',
     'eu': 'Euskara', 'fa': 'فارسی', 'fi': 'Suomi', 'fr': 'Français',
     'gl': 'Galego', 'he': 'עברית', 'hi': 'हिन्दी', 'hr': 'Hrvatski',
-    'hu': 'Magyar', 'hy': 'Հայերén', 'id': 'Bahasa Indonesia', 'is': 'Íslenska',
+    'hu': 'Magyar', 'hy': 'Հայერén', 'id': 'Bahasa Indonesia', 'is': 'Íslenska',
     'it': 'Italiano', 'ja': '日本語', 'ka': 'ქართული', 'kk': 'Қазақ тілі',
     'km': 'ខ្មែر', 'ko': '한국어', 'ky': 'Кыргызча', 'lo': 'ລາว',
     'lt': 'Lietuvių', 'lv': 'Latviešu', 'mk': 'Македонски', 'mn': 'Монгол',
@@ -151,7 +151,7 @@ class _LanguageSelectorState extends State<LanguageSelector> {
     'ro': 'Română', 'ru': 'Русский', 'si': 'සිංහල', 'sk': 'Slovenčina',
     'sl': 'Slovenščina', 'sq': 'Shqip', 'sr': 'Српски', 'sv': 'Svenska',
     'sw': 'Kiswahili', 'ta': 'தமிழ்', 'te': 'తెలుగు', 'th': 'ไทย',
-    'tr': 'Türkçe', 'uk': 'Українська', 'ur': 'اردو', 'uz': 'O‘zbekcha',
+    'tr': 'Türkçe', 'uk': 'Українська', 'ur': 'اردu', 'uz': 'O‘zbekcha',
     'vi': 'Tiếng Việt', 'zh': '中文'
   };
 
@@ -197,9 +197,9 @@ class _LanguageSelectorState extends State<LanguageSelector> {
       padding: const EdgeInsets.all(12),
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       decoration: BoxDecoration(
-        color: isCurrent ? COLOR_ACCENT.withOpacity(0.08) : Colors.transparent,
+        color: isCurrent ? COLOR_ACCENT.withValues(alpha: 0.08) : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
-        border: isCurrent ? Border.all(color: COLOR_ACCENT.withOpacity(0.2)) : null,
+        border: isCurrent ? Border.all(color: COLOR_ACCENT.withValues(alpha: 0.2)) : null,
       ),
       child: InkWell(
         onTap: () async {
@@ -216,9 +216,7 @@ class _LanguageSelectorState extends State<LanguageSelector> {
               _getFlagEmoji(code),
               fontSize: 24,
             ),
-
             Space(SPACE_SMALL),
-
             Expanded(
               child: TextBody(
                 _getLanguageName(code),
@@ -228,6 +226,71 @@ class _LanguageSelectorState extends State<LanguageSelector> {
             ),
             if (isCurrent)
               Icon(Icons.check_circle_rounded, color: COLOR_ACCENT, size: 22),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// PIZZACORN_UI CANDIDATE
+/// Widget: LanguageSmallSelector
+/// Motivo: Un selector de idioma compacto, ideal para AppBars o zonas de cabecera.
+class LanguageSmallSelector extends StatelessWidget {
+  final VoidCallback? onLanguageChanged;
+  final Color? backgroundColor;
+  final Color? textColor;
+  final double fontSize;
+
+  const LanguageSmallSelector({
+    super.key,
+    this.onLanguageChanged,
+    this.backgroundColor,
+    this.textColor,
+    this.fontSize = 14,
+  });
+
+  String _getFlagEmoji(String languageCode) {
+    String countryCode = languageCode;
+    if (languageCode == 'en') countryCode = 'us';
+    if (languageCode == 'ar') countryCode = 'sa';
+
+    return countryCode.toUpperCase().split('').map((char) {
+      return String.fromCharCode(char.codeUnitAt(0) + 127397);
+    }).join();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final String currentLang = FlutterLocalization.instance.currentLocale?.languageCode ?? 'es';
+
+    return GestureDetector(
+      onTap: () => openStupidSheet(
+        context, 
+        LanguageSelector(
+          onLanguageChanged: onLanguageChanged,
+        )
+      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: backgroundColor ?? Colors.black.withValues(alpha: 0.3),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: (textColor ?? Colors.white).withValues(alpha: 0.2)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextBody(_getFlagEmoji(currentLang), fontSize: fontSize + 4),
+            const SizedBox(width: 8),
+            TextBody(
+              currentLang.toUpperCase(), 
+              color: textColor ?? Colors.white, 
+              fontWeight: FontWeight.bold,
+              fontSize: fontSize,
+            ),
+            const SizedBox(width: 4),
+            Icon(Icons.keyboard_arrow_down, color: textColor ?? Colors.white, size: fontSize + 4),
           ],
         ),
       ),
