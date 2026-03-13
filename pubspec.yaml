@@ -57,6 +57,7 @@ dependencies:
 
   # --- MULTILANGUAGE ---
   flutter_localization: ^0.3.3
+  shared_preferences: ^2.5.4
   excel: ^4.0.6
 
   #RIVERPODS
