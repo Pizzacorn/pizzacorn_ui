@@ -71,6 +71,9 @@ export 'src/list/inifinite_scroll.dart';
 export 'src/models/file_model.dart';
 export 'src/models/social_model.dart';
 
+//multilanguage
+export 'src/multilanguage/excel_translations.dart';
+
 // navigation
 export 'src/navigation/navigation_helpers.dart';
 export 'src/navigation/overlays_helpers.dart';
