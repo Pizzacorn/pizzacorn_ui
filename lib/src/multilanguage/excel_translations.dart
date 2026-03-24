@@ -144,7 +144,7 @@ class _LanguageSelectorState extends State<LanguageSelector> {
     'gl': 'Galego', 'he': 'עברית', 'hi': 'हिन्दी', 'hr': 'Hrvatski',
     'hu': 'Magyar', 'hy': 'Հայერén', 'id': 'Bahasa Indonesia', 'is': 'Íslenska',
     'it': 'Italiano', 'ja': '日本語', 'ka': 'ქართული', 'kk': 'Қазақ тілі',
-    'km': 'ខ្មែر', 'ko': '한국어', 'ky': 'Кыргызча', 'lo': 'ລາว',
+    'km': 'ខ្មែរ', 'ko': '한국어', 'ky': 'Кыргызча', 'lo': 'ລາว',
     'lt': 'Lietuvių', 'lv': 'Latviešu', 'mk': 'Македонски', 'mn': 'Монгол',
     'ms': 'Bahasa Melayu', 'my': 'မြန်မာ', 'ne': 'नेपाली', 'nl': 'Nederlands',
     'no': 'Norsk', 'pa': 'ਪੰਜਾਬੀ', 'pl': 'Polski', 'pt': 'Português',
@@ -169,23 +169,26 @@ class _LanguageSelectorState extends State<LanguageSelector> {
   Widget build(BuildContext context) {
     final List<Locale> locales = _loc.supportedLocales.toList();
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Center(
-          child: Container(
-            width: 40,
-            height: 4,
-            margin: const EdgeInsets.only(bottom: 20),
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(10),
+    return Material(
+      color: Colors.transparent,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 20),
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
           ),
-        ),
-        for (int i = 0; i < locales.length; i++)
-          _buildLanguageTile(locales[i])
-      ],
+          for (int i = 0; i < locales.length; i++)
+            _buildLanguageTile(locales[i])
+        ],
+      ),
     );
   }
 
