@@ -224,12 +224,13 @@ class LanguageSelectorState extends State<LanguageSelector> {
 
 /// PIZZACORN_UI CANDIDATE
 /// Widget: LanguageSmallSelector
-/// Motivo: Un selector de idioma compacto que se actualiza automáticamente.
+/// Motivo: Un selector de idioma compacto que se actualiza automáticamente. Admite altura personalizada para el bottom sheet.
 class LanguageSmallSelector extends StatefulWidget {
   final VoidCallback? onLanguageChanged;
   final Color? backgroundColor;
   final Color? textColor;
   final double fontSize;
+  final double sheetHeight;
 
   LanguageSmallSelector({
     super.key,
@@ -237,6 +238,7 @@ class LanguageSmallSelector extends StatefulWidget {
     this.backgroundColor,
     this.textColor,
     this.fontSize = 14,
+    this.sheetHeight = 200,
   });
 
   @override
@@ -257,7 +259,7 @@ class LanguageSmallSelectorState extends State<LanguageSmallSelector> {
             widget.onLanguageChanged?.call();
           }
         ),
-        height: 300,
+        height: widget.sheetHeight,
       ),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
