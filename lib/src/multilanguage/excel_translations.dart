@@ -9,55 +9,46 @@ import '../../pizzacorn_ui.dart';
 /// PIZZACORN_UI CANDIDATE
 /// Function: loadExcelTranslations
 /// Motivo: Carga traducciones desde un archivo Excel (.xlsx) y las convierte al formato de flutter_localization.
-/// El Excel debe tener una hoja llamada 'translations' con la columna 0 para las claves (VAR) y las siguientes para cada idioma (ES, EN, etc).
 Future<List<MapLocale>> loadExcelTranslations() async {
-  // 1) Carga el xlsx
   final data = await rootBundle.load('assets/translations/translations.xlsx');
   final bytes = data.buffer.asUint8List();
   final excel = Excel.decodeBytes(bytes);
 
-  // 2) Obtén la hoja correcta
   final sheet = excel.tables['translations'];
   if (sheet == null) {
     throw Exception("No existe la hoja \"translations\" en el Excel");
   }
 
-  // 3) Lee y limpia la cabecera
   final rawHeaders = sheet.row(0)
       .map((cell) => cell?.value.toString().trim() ?? '')
       .toList();
-  // rawHeaders[0] == 'VAR', rawHeaders[1]=='ES', rawHeaders[2]=='EN', etc.
 
-  // 4) Genera sólo los códigos no vacíos (skip la columna VAR)
   final languages = rawHeaders
       .skip(1)
       .map((h) => h.toLowerCase())
       .where((h) => h.isNotEmpty)
       .toList();
 
-  // 5) Prepara un mapa vacío por cada idioma válido
   final perLang = <String, Map<String, String>>{
     for (var lang in languages) lang: <String, String>{},
   };
 
-  // 6) Rellena traducciones
-  for (var i = 1; i < sheet.maxRows; i++) {
+  for (int i = 1; i < sheet.maxRows; i++) {
     final row = sheet.row(i);
     if (row.isEmpty) continue;
     
     final key = row[0]?.value.toString().trim() ?? '';
     if (key.isEmpty) continue;
     
-    for (var j = 0; j < languages.length; j++) {
-      final lang = languages[j]; // e.g. 'es','en','ar',...
+    for (int j = 0; j < languages.length; j++) {
+      final lang = languages[j];
       if (row.length > j + 1) {
-        final cell = row[j + 1]; // +1 porque la columna 0 es la clave
+        final cell = row[j + 1];
         perLang[lang]![key] = cell?.value.toString() ?? '';
       }
     }
   }
 
-  // 7) Construye los MapLocale sin claves vacías
   return perLang.entries
       .map((e) => MapLocale(e.key, e.value))
       .toList();
@@ -65,8 +56,7 @@ Future<List<MapLocale>> loadExcelTranslations() async {
 
 /// PIZZACORN_UI CANDIDATE
 /// Function: initMultilanguage
-/// Motivo: Encapsula toda la lógica de inicialización de multiidioma:
-/// Carga desde Excel, detecta idioma guardado o del dispositivo, e inicializa flutter_localization e intl.
+/// Motivo: Encapsula toda la lógica de inicialización de multiidioma.
 Future<void> initMultilanguage({String defaultLang = 'es'}) async {
   final prefs = await SharedPreferences.getInstance();
   final String? savedLang = prefs.getString('language_code');
@@ -74,7 +64,6 @@ Future<void> initMultilanguage({String defaultLang = 'es'}) async {
   final deviceLocale = WidgetsBinding.instance.platformDispatcher.locale;
   final String deviceLang = deviceLocale.languageCode;
 
-  // Carga los locales desde el Excel
   final List<MapLocale> locales = await loadExcelTranslations();
 
   bool hasLang(String langCode) {
@@ -83,7 +72,6 @@ Future<void> initMultilanguage({String defaultLang = 'es'}) async {
 
   String initialLangCode = defaultLang;
 
-  // Prioridad: 1. Guardado en Prefs, 2. Idioma dispositivo, 3. Inglés, 4. Primero del Excel
   if (savedLang != null && hasLang(savedLang)) {
     initialLangCode = savedLang;
   } else if (hasLang(deviceLang)) {
@@ -102,7 +90,6 @@ Future<void> initMultilanguage({String defaultLang = 'es'}) async {
     initLanguageCode: initialLangCode,
   );
 
-  // Inicializa el formato de fechas de intl
   await initializeDateFormatting(initialLangCode, null);
 }
 
@@ -113,91 +100,90 @@ extension StringTrans on String {
   String translate(BuildContext context) => getString(context);
 }
 
-/// PIZZACORN_UI CANDIDATE
-/// Widget: LanguageSelector
-/// Motivo: Un selector de idiomas visual wrapped en Material para evitar errores de InkWell.
-class LanguageSelector extends StatefulWidget {
-  final VoidCallback? onLanguageChanged;
-  const LanguageSelector({super.key, this.onLanguageChanged});
+/// Helper global para obtener el emoji de la bandera
+String getFlagEmoji(String languageCode) {
+  String countryCode = languageCode;
+  if (languageCode == 'en') countryCode = 'us';
+  if (languageCode == 'ar') countryCode = 'sa';
 
-  @override
-  State<LanguageSelector> createState() => _LanguageSelectorState();
+  return countryCode.toUpperCase().split('').map((char) {
+    return String.fromCharCode(char.codeUnitAt(0) + 127397);
+  }).join();
 }
 
-class _LanguageSelectorState extends State<LanguageSelector> {
-  final _loc = FlutterLocalization.instance;
+/// Mapeo nativo de idiomas
+const Map<String, String> nativeNames = {
+  'af': 'Afrikaans', 'ar': 'العربية', 'az': 'Azərbaycanca', 'be': 'Беларуская',
+  'bg': 'Български', 'bn': 'বাংলা', 'bs': 'Bosanski', 'ca': 'Català',
+  'cs': 'Čeština', 'cy': 'Cymraeg', 'da': 'Dansk', 'de': 'Deutsch',
+  'el': 'Ελληνικά', 'en': 'English', 'es': 'Español', 'et': 'Eesti',
+  'eu': 'Euskara', 'fa': 'فارسی', 'fi': 'Suomi', 'fr': 'Français',
+  'gl': 'Galego', 'he': 'עברית', 'hi': 'हिन्दी', 'hr': 'Hrvatski',
+  'hu': 'Magyar', 'hy': 'Հայերén', 'id': 'Bahasa Indonesia', 'is': 'Íslenska',
+  'it': 'Italiano', 'ja': '日本語', 'ka': 'ქართული', 'kk': 'Қазақ тілі',
+  'km': 'ខ្មែر', 'ko': '한국어', 'ky': 'Кыргызча', 'lo': 'ລາว',
+  'lt': 'Lietuvių', 'lv': 'Latviešu', 'mk': 'Македонски', 'mn': 'Монгол',
+  'ms': 'Bahasa Melayu', 'my': 'မြန်မာ', 'ne': 'नेपाली', 'nl': 'Nederlands',
+  'no': 'Norsk', 'pa': 'ਪੰਜਾਬੀ', 'pl': 'Polski', 'pt': 'Português',
+  'ro': 'Română', 'ru': 'Русский', 'si': 'සිංහල', 'sk': 'Slovenčina',
+  'sl': 'Slovenščina', 'sq': 'Shqip', 'sr': 'Српски', 'sv': 'Svenska',
+  'sw': 'Kiswahili', 'ta': 'தமிழ்', 'te': 'తెలుగు', 'th': 'ไทย',
+  'tr': 'Türkçe', 'uk': 'Українська', 'ur': 'اردu', 'uz': 'O‘zbekcha',
+  'vi': 'Tiếng Việt', 'zh': '中文'
+};
 
-  String _getLanguageName(String code) {
+/// PIZZACORN_UI CANDIDATE
+/// Widget: LanguageSelector
+/// Motivo: Un selector de idiomas visual wrapped en Material.
+class LanguageSelector extends StatefulWidget {
+  final VoidCallback? onLanguageChanged;
+  LanguageSelector({super.key, this.onLanguageChanged});
+
+  @override
+  State<LanguageSelector> createState() => LanguageSelectorState();
+}
+
+class LanguageSelectorState extends State<LanguageSelector> {
+  final localization = FlutterLocalization.instance;
+
+  String getLanguageName(String code) {
     try {
-      return _nativeNames[code] ?? code.toUpperCase();
+      return nativeNames[code] ?? code.toUpperCase();
     } catch (e) {
       return code.toUpperCase();
     }
   }
 
-  static const Map<String, String> _nativeNames = {
-    'af': 'Afrikaans', 'ar': 'العربية', 'az': 'Azərbaycanca', 'be': 'Беларуская',
-    'bg': 'Български', 'bn': 'বাংলা', 'bs': 'Bosanski', 'ca': 'Català',
-    'cs': 'Čeština', 'cy': 'Cymraeg', 'da': 'Dansk', 'de': 'Deutsch',
-    'el': 'Ελληνικά', 'en': 'English', 'es': 'Español', 'et': 'Eesti',
-    'eu': 'Euskara', 'fa': 'فارسی', 'fi': 'Suomi', 'fr': 'Français',
-    'gl': 'Galego', 'he': 'עברית', 'hi': 'हिन्दी', 'hr': 'Hrvatski',
-    'hu': 'Magyar', 'hy': 'Հայერén', 'id': 'Bahasa Indonesia', 'is': 'Íslenska',
-    'it': 'Italiano', 'ja': '日本語', 'ka': 'ქართული', 'kk': 'Қазақ тілі',
-    'km': 'ខ្មែر', 'ko': '한국어', 'ky': 'Кыргызча', 'lo': 'ລາว',
-    'lt': 'Lietuvių', 'lv': 'Latviešu', 'mk': 'Македонски', 'mn': 'Монгол',
-    'ms': 'Bahasa Melayu', 'my': 'မြန်မာ', 'ne': 'नेपाली', 'nl': 'Nederlands',
-    'no': 'Norsk', 'pa': 'ਪੰਜਾਬੀ', 'pl': 'Polski', 'pt': 'Português',
-    'ro': 'Română', 'ru': 'Русский', 'si': 'සිංහල', 'sk': 'Slovenčina',
-    'sl': 'Slovenščina', 'sq': 'Shqip', 'sr': 'Српски', 'sv': 'Svenska',
-    'sw': 'Kiswahili', 'ta': 'தமிழ்', 'te': 'తెలుగు', 'th': 'ไทย',
-    'tr': 'Türkçe', 'uk': 'Українська', 'ur': 'اردu', 'uz': 'O‘zbekcha',
-    'vi': 'Tiếng Việt', 'zh': '中文'
-  };
-
-  String _getFlagEmoji(String languageCode) {
-    String countryCode = languageCode;
-    if (languageCode == 'en') countryCode = 'us';
-    if (languageCode == 'ar') countryCode = 'sa';
-
-    return countryCode.toUpperCase().split('').map((char) {
-      return String.fromCharCode(char.codeUnitAt(0) + 127397);
-    }).join();
-  }
-
   @override
   Widget build(BuildContext context) {
-    final List<Locale> locales = _loc.supportedLocales.toList();
+    final List<Locale> locales = localization.supportedLocales.toList();
 
     return Material(
-      color: Colors.transparent,
-      child: Container(
-        color: COLOR_BACKGROUND,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 20),
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(10),
-                ),
+      color: COLOR_BACKGROUND,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 20),
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
-            for (int i = 0; i < locales.length; i++)
-              _buildLanguageTile(locales[i])
-          ],
-        ),
+          ),
+          for (int i = 0; i < locales.length; i++)
+            buildLanguageTile(locales[i])
+        ],
       ),
     );
   }
 
-  Widget _buildLanguageTile(Locale locale) {
+  Widget buildLanguageTile(Locale locale) {
     final code = locale.languageCode;
-    final isCurrent = _loc.currentLocale?.languageCode == code;
+    final isCurrent = localization.currentLocale?.languageCode == code;
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -209,7 +195,7 @@ class _LanguageSelectorState extends State<LanguageSelector> {
       ),
       child: InkWell(
         onTap: () async {
-          _loc.translate(code);
+          localization.translate(code);
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('language_code', code);
 
@@ -218,14 +204,11 @@ class _LanguageSelectorState extends State<LanguageSelector> {
         },
         child: Row(
           children: [
-            TextBody(
-              _getFlagEmoji(code),
-              fontSize: 24,
-            ),
+            TextBody(getFlagEmoji(code), fontSize: 24),
             Space(SPACE_SMALL),
             Expanded(
               child: TextBody(
-                _getLanguageName(code),
+                getLanguageName(code),
                 fontWeight: isCurrent ? FontWeight.bold : FontWeight.w500,
                 color: isCurrent ? COLOR_ACCENT : COLOR_TEXT,
               ),
@@ -241,14 +224,14 @@ class _LanguageSelectorState extends State<LanguageSelector> {
 
 /// PIZZACORN_UI CANDIDATE
 /// Widget: LanguageSmallSelector
-/// Motivo: Un selector de idioma compacto que abre el selector completo al pulsar.
-class LanguageSmallSelector extends StatelessWidget {
+/// Motivo: Un selector de idioma compacto que se actualiza automáticamente.
+class LanguageSmallSelector extends StatefulWidget {
   final VoidCallback? onLanguageChanged;
   final Color? backgroundColor;
   final Color? textColor;
   final double fontSize;
 
-  const LanguageSmallSelector({
+  LanguageSmallSelector({
     super.key,
     this.onLanguageChanged,
     this.backgroundColor,
@@ -256,16 +239,11 @@ class LanguageSmallSelector extends StatelessWidget {
     this.fontSize = 14,
   });
 
-  String _getFlagEmoji(String languageCode) {
-    String countryCode = languageCode;
-    if (languageCode == 'en') countryCode = 'us';
-    if (languageCode == 'ar') countryCode = 'sa';
+  @override
+  State<LanguageSmallSelector> createState() => LanguageSmallSelectorState();
+}
 
-    return countryCode.toUpperCase().split('').map((char) {
-      return String.fromCharCode(char.codeUnitAt(0) + 127397);
-    }).join();
-  }
-
+class LanguageSmallSelectorState extends State<LanguageSmallSelector> {
   @override
   Widget build(BuildContext context) {
     final String currentLang = FlutterLocalization.instance.currentLocale?.languageCode ?? 'es';
@@ -273,29 +251,34 @@ class LanguageSmallSelector extends StatelessWidget {
     return GestureDetector(
       onTap: () => openBottomSheet(
         context, 
-        LanguageSelector(onLanguageChanged: onLanguageChanged),
+        LanguageSelector(
+          onLanguageChanged: () {
+            if (mounted) setState(() {});
+            widget.onLanguageChanged?.call();
+          }
+        ),
         height: 300,
       ),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: backgroundColor ?? Colors.black.withValues(alpha: 0.3),
+          color: widget.backgroundColor ?? Colors.black.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: (textColor ?? Colors.white).withValues(alpha: 0.2)),
+          border: Border.all(color: (widget.textColor ?? Colors.white).withValues(alpha: 0.2)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextBody(_getFlagEmoji(currentLang), fontSize: fontSize + 4),
-            const SizedBox(width: 8),
+            TextBody(getFlagEmoji(currentLang), fontSize: widget.fontSize + 4),
+            Space(8),
             TextBody(
               currentLang.toUpperCase(), 
-              color: textColor ?? Colors.white, 
+              color: widget.textColor ?? Colors.white, 
               fontWeight: FontWeight.bold,
-              fontSize: fontSize,
+              fontSize: widget.fontSize,
             ),
-            const SizedBox(width: 4),
-            Icon(Icons.keyboard_arrow_down, color: textColor ?? Colors.white, size: fontSize + 4),
+            Space(4),
+            Icon(Icons.keyboard_arrow_down, color: widget.textColor ?? Colors.white, size: widget.fontSize + 4),
           ],
         ),
       ),
