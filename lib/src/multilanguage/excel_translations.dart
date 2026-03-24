@@ -115,7 +115,7 @@ extension StringTrans on String {
 
 /// PIZZACORN_UI CANDIDATE
 /// Widget: LanguageSelector
-/// Motivo: Un selector de idiomas visual (para usar en BottomSheets o Modales) que detecta automáticamente los idiomas soportados.
+/// Motivo: Un selector de idiomas visual wrapped en Material para evitar errores de InkWell.
 class LanguageSelector extends StatefulWidget {
   final VoidCallback? onLanguageChanged;
   const LanguageSelector({super.key, this.onLanguageChanged});
@@ -144,7 +144,7 @@ class _LanguageSelectorState extends State<LanguageSelector> {
     'gl': 'Galego', 'he': 'עברית', 'hi': 'हिन्दी', 'hr': 'Hrvatski',
     'hu': 'Magyar', 'hy': 'Հայერén', 'id': 'Bahasa Indonesia', 'is': 'Íslenska',
     'it': 'Italiano', 'ja': '日本語', 'ka': 'ქართული', 'kk': 'Қазақ тілі',
-    'km': 'ខ្មែរ', 'ko': '한국어', 'ky': 'Кыргызча', 'lo': 'ລາว',
+    'km': 'ខ្មែر', 'ko': '한국어', 'ky': 'Кыргызча', 'lo': 'ລາว',
     'lt': 'Lietuvių', 'lv': 'Latviešu', 'mk': 'Македонски', 'mn': 'Монгол',
     'ms': 'Bahasa Melayu', 'my': 'မြန်မာ', 'ne': 'नेपाली', 'nl': 'Nederlands',
     'no': 'Norsk', 'pa': 'ਪੰਜਾਬੀ', 'pl': 'Polski', 'pt': 'Português',
@@ -171,23 +171,26 @@ class _LanguageSelectorState extends State<LanguageSelector> {
 
     return Material(
       color: Colors.transparent,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 20),
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(10),
+      child: Container(
+        color: COLOR_BACKGROUND,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 20),
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             ),
-          ),
-          for (int i = 0; i < locales.length; i++)
-            _buildLanguageTile(locales[i])
-        ],
+            for (int i = 0; i < locales.length; i++)
+              _buildLanguageTile(locales[i])
+          ],
+        ),
       ),
     );
   }
@@ -238,7 +241,7 @@ class _LanguageSelectorState extends State<LanguageSelector> {
 
 /// PIZZACORN_UI CANDIDATE
 /// Widget: LanguageSmallSelector
-/// Motivo: Un selector de idioma compacto, ideal para AppBars o zonas de cabecera.
+/// Motivo: Un selector de idioma compacto que abre el selector completo al pulsar.
 class LanguageSmallSelector extends StatelessWidget {
   final VoidCallback? onLanguageChanged;
   final Color? backgroundColor;
@@ -268,11 +271,10 @@ class LanguageSmallSelector extends StatelessWidget {
     final String currentLang = FlutterLocalization.instance.currentLocale?.languageCode ?? 'es';
 
     return GestureDetector(
-      onTap: () => openStupidSheet(
+      onTap: () => openBottomSheet(
         context, 
-        LanguageSelector(
-          onLanguageChanged: onLanguageChanged,
-        )
+        LanguageSelector(onLanguageChanged: onLanguageChanged),
+        height: 300,
       ),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
