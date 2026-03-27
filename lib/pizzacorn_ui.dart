@@ -5,6 +5,7 @@ export 'src/adapters/web_popup.dart';
 // appbar
 export 'src/appbars/appbar_back.dart';
 export 'src/appbars/appbar_close.dart';
+export 'src/appbars/appbar_drag.dart';
 export 'src/appbars/appbar_home.dart';
 export 'src/appbars/appbar_back_withoptions.dart';
 
@@ -101,9 +102,6 @@ export 'src/pickers/uicon_picker.dart';
 export 'src/segmented/segmented.dart';
 export 'src/segmented/segmented_cupertino.dart';
 export 'src/segmented/segmented_subtitles.dart';
-
-//services
-export 'src/services/firebase_pagination.dart';
 
 //Socials
 export 'src/socials/socials.dart';
