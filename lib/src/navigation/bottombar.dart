@@ -6,7 +6,6 @@ import '../../pizzacorn_ui.dart';
 /// Widget: BottomBarCustom
 /// Motivo: Navegación principal estandarizada con soporte para UIconsPro y SVGs.
 /// API: BottomBarCustom(currentIndex: index, onTap: (i) => ..., icons: [UIconsPro.regularRounded.home, "assets/svg/map.svg"], titles: ["Inicio", "Mapa"])
-
 class BottomBarCustom extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
@@ -15,6 +14,19 @@ class BottomBarCustom extends StatelessWidget {
   final Color? backgroundColor;
   final Color? activeColor;
   final Color? inactiveColor;
+
+  /// Decide si los títulos son siempre visibles o solo en la pestaña activa.
+  final bool alwaysShowTitles;
+
+  /// Si es true, la barra aparece flotando con márgenes y bordes redondeados.
+  /// Si es false, se pega al fondo sin márgenes laterales.
+  final bool isFloating;
+
+  /// Altura del cuerpo de la barra (donde están los iconos).
+  final double height;
+
+  /// Padding inferior adicional (útil para el efecto flotante o safe area manual).
+  final double paddingBottom;
 
   const BottomBarCustom({
     super.key,
@@ -25,6 +37,10 @@ class BottomBarCustom extends StatelessWidget {
     this.backgroundColor,
     this.activeColor,
     this.inactiveColor,
+    this.alwaysShowTitles = false,
+    this.isFloating = true,
+    this.height = 75,
+    this.paddingBottom = 20,
   }) : assert(
          icons.length == titles.length,
          "La lista de iconos y títulos debe tener el mismo tamaño, Don Sput.",
@@ -40,54 +56,55 @@ class BottomBarCustom extends StatelessWidget {
     return Semantics(
       explicitChildNodes: true,
       child: Container(
-        height: 125,
         width: double.infinity,
-        padding: const EdgeInsets.only(bottom: 20),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              COLOR_BACKGROUND_SECONDARY.withValues(alpha: 0),
-              effectiveBg,
-              effectiveBg,
+        padding: EdgeInsets.only(bottom: paddingBottom),
+        decoration: isFloating
+            ? BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    COLOR_BACKGROUND_SECONDARY.withValues(alpha: 0),
+                    effectiveBg.withValues(alpha: 0.8),
+                    effectiveBg,
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              )
+            : null,
+        child: Container(
+          height: height,
+          margin: isFloating
+              ? const EdgeInsets.symmetric(horizontal: 20, vertical: 10)
+              : EdgeInsets.zero,
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          decoration: BoxDecoration(
+            color: effectiveBg,
+            borderRadius: isFloating ? BorderRadius.circular(RADIUS) : null,
+            border: !isFloating
+                ? Border(top: BorderSide(color: COLOR_BORDER, width: 0.5))
+                : null,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isFloating ? 0.1 : 0.05),
+                blurRadius: 10,
+                offset: Offset(0, isFloating ? 4 : -2),
+              ),
             ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
           ),
-        ),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Container(
-              height: 75,
-              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: effectiveBg,
-                borderRadius: BorderRadius.circular(RADIUS),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: List.generate(titles.length, (index) {
-                  return BottomItem(
-                    title: titles[index],
-                    iconData: icons[index],
-                    isSelected: currentIndex == index,
-                    onTap: () => onTap(index),
-                    activeColor: effectiveActiveColor,
-                    inactiveColor: effectiveInactiveColor,
-                  );
-                }),
-              ),
-            ),
-          ],
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: List.generate(titles.length, (index) {
+              return BottomItem(
+                title: titles[index],
+                iconData: icons[index],
+                isSelected: currentIndex == index,
+                onTap: () => onTap(index),
+                activeColor: effectiveActiveColor,
+                inactiveColor: effectiveInactiveColor,
+                alwaysShowTitles: alwaysShowTitles,
+              );
+            }),
+          ),
         ),
       ),
     );
@@ -101,6 +118,7 @@ class BottomItem extends StatelessWidget {
   final VoidCallback onTap;
   final Color activeColor;
   final Color inactiveColor;
+  final bool alwaysShowTitles;
 
   const BottomItem({
     super.key,
@@ -110,6 +128,7 @@ class BottomItem extends StatelessWidget {
     required this.onTap,
     required this.activeColor,
     required this.inactiveColor,
+    required this.alwaysShowTitles,
   });
 
   @override
@@ -120,33 +139,28 @@ class BottomItem extends StatelessWidget {
         selected: isSelected,
         button: true,
         onTap: onTap,
-        child: Container(
-          height: double.infinity,
-          alignment: Alignment.topCenter,
-          child: TextButton(
-            style: styleTransparent(),
-            onPressed: onTap,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Spacer(),
-                AnimatedContainer(
-                  padding: const EdgeInsets.all(5),
-                  duration: const Duration(milliseconds: 200),
-                  child: buildIconContent(),
+        child: InkWell(
+          onTap: onTap,
+          splashColor: activeColor.withValues(alpha: 0.1),
+          highlightColor: Colors.transparent,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Spacer(),
+              buildIconContent(),
+              if (isSelected || alwaysShowTitles) ...[
+                const SizedBox(height: 4),
+                TextSmall(
+                  title,
+                  maxlines: 1,
+                  textAlign: TextAlign.center,
+                  fontWeight: isSelected ? WEIGHT_BOLD : WEIGHT_NORMAL,
+                  color: isSelected ? activeColor : inactiveColor,
                 ),
-                if (isSelected)
-                  TextSmall(
-                    title,
-                    maxlines: 1,
-                    textAlign: TextAlign.center,
-                    fontWeight: WEIGHT_BOLD,
-                    color: activeColor,
-                  ),
-                const Spacer(),
               ],
-            ),
+              const Spacer(),
+            ],
           ),
         ),
       ),
@@ -157,15 +171,15 @@ class BottomItem extends StatelessWidget {
     final Color color = isSelected ? activeColor : inactiveColor;
 
     if (iconData is IconData) {
-      return Icon(iconData, size: 20, color: color);
+      return Icon(iconData, size: 22, color: color);
     } else if (iconData is String) {
       return SvgPicture.asset(
         iconData,
-        height: 20,
+        height: 22,
         colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
       );
     }
 
-    return const SizedBox(width: 20, height: 20);
+    return const SizedBox(width: 22, height: 22);
   }
 }
