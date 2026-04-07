@@ -1,41 +1,52 @@
-import 'package:duels/config/imports.dart';
+import 'dart:async';
 
-class LoginState {
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pizzacorn_ui/pizzacorn_ui.dart';
+
+class LoginCustomState {
   final bool loading;
-  final bool isEmailVerifying; // Para saber si mostramos el aviso de verificar email
+  final bool isEmailVerifying;
   final TextEditingController controllerEmail;
   final TextEditingController controllerPassword;
 
-  LoginState({
+  LoginCustomState({
     this.loading = false,
     this.isEmailVerifying = false,
     required this.controllerEmail,
     required this.controllerPassword,
   });
 
-  LoginState copyWith({
-    bool? loading,
-    bool? isEmailVerifying,
-  }) => LoginState(
-    loading: loading ?? this.loading,
-    isEmailVerifying: isEmailVerifying ?? this.isEmailVerifying,
-    controllerEmail: controllerEmail,
-    controllerPassword: controllerPassword,
-  );
+  LoginCustomState copyWith({bool? loading, bool? isEmailVerifying}) {
+    return LoginCustomState(
+      loading: loading ?? this.loading,
+      isEmailVerifying: isEmailVerifying ?? this.isEmailVerifying,
+      controllerEmail: controllerEmail,
+      controllerPassword: controllerPassword,
+    );
+  }
 }
 
+final loginCustomControllerProvider =
+    StateNotifierProvider.autoDispose<LoginCustomController, LoginCustomState>((
+      ref,
+    ) {
+      return LoginCustomController();
+    });
 
-final loginControllerProvider = StateNotifierProvider.autoDispose<LoginController, LoginState>((ref) {
-  return LoginController();
-});
-
-class LoginController extends StateNotifier<LoginState> {
+class LoginCustomController extends StateNotifier<LoginCustomState> {
   Timer? timer;
+  final LoginCustomAuthRepository loginAuthRepository =
+      LoginCustomAuthRepository();
 
-  LoginController() : super(LoginState(
-    controllerEmail: TextEditingController(),
-    controllerPassword: TextEditingController(),
-  ));
+  LoginCustomController()
+    : super(
+        LoginCustomState(
+          controllerEmail: TextEditingController(),
+          controllerPassword: TextEditingController(),
+        ),
+      );
 
   @override
   void dispose() {
@@ -45,22 +56,38 @@ class LoginController extends StateNotifier<LoginState> {
     super.dispose();
   }
 
-  setLoading(bool value) => state = state.copyWith(loading: value);
-  setVerifying(bool value) => state = state.copyWith(isEmailVerifying: value);
+  void setLoading(bool value) => state = state.copyWith(loading: value);
 
-  login(BuildContext context, {bool google = false, bool password = false, bool apple = false}) async {
+  void setVerifying(bool value) {
+    state = state.copyWith(isEmailVerifying: value);
+  }
+
+  Future<void> login(
+    BuildContext context, {
+    bool google = false,
+    bool password = false,
+    bool apple = false,
+    LoginCustomSuccessCallback? onAuthSuccess,
+  }) async {
     UserCredential? userCredential;
     setLoading(true);
 
     try {
       if (google) {
-        userCredential = await AuthRepository().firebaseGoogleLogin(context);
+        userCredential = await loginAuthRepository.loginWithGoogle(context);
       } else if (apple) {
-        userCredential = await AuthRepository().firebaseAppleLogin(context);
+        userCredential = await loginAuthRepository.loginWithApple();
       } else if (password) {
-        if (state.controllerEmail.text.isNotEmpty && state.controllerPassword.text.isNotEmpty) {
-          userCredential = await AuthRepository().firebaseLogin(context, state.controllerEmail.text, state.controllerPassword.text);
+        if (state.controllerEmail.text.isEmpty ||
+            state.controllerPassword.text.isEmpty) {
+          setLoading(false);
+          return;
         }
+
+        userCredential = await loginAuthRepository.loginWithEmail(
+          email: state.controllerEmail.text,
+          password: state.controllerPassword.text,
+        );
       }
 
       if (userCredential == null) {
@@ -68,51 +95,85 @@ class LoginController extends StateNotifier<LoginState> {
         return;
       }
 
-      // 🛡️ VERIFICACIÓN DE EMAIL
-      final user = FirebaseAuth.instance.currentUser;
+      final User? user = FirebaseAuth.instance.currentUser;
       if (user != null && !user.emailVerified) {
         setLoading(false);
         setVerifying(true);
 
-        // Enviamos el correo de verificación por si acaso no le llegó
-        await user.sendEmailVerification();
+        // 📩 Enviamos el correo de verificacion por si no le llego.
+        await loginAuthRepository.sendVerificationEmail();
+        if (!context.mounted) {
+          return;
+        }
 
-        // Abrimos el aviso (BottomSheet)
-        openBottomSheet(context, VerifyEmailPage(), height: 300);
+        // 🍕 Mostramos el aviso mientras esperamos la verificacion.
+        openBottomSheet(context, VerifyEmailCustomPage(), height: 300);
 
-        // Iniciamos el "listener" manual con Timer
-        startVerificationTimer(context);
+        // ⏱️ Comprobamos cada pocos segundos si ya esta verificado.
+        startVerificationTimer(context, onAuthSuccess: onAuthSuccess);
         return;
       }
 
-      // Si ya está verificado o es social login (que suelen venir verificados)
-      await AuthRepository().checkUser(context, user: userCredential.user);
+      if (!context.mounted) {
+        return;
+      }
+      await finishAuth(
+        context,
+        userCredential.user,
+        onAuthSuccess: onAuthSuccess,
+      );
       setLoading(false);
-
-    } catch (e) {
-      debugPrint(e.toString());
+    } catch (error) {
+      if (context.mounted) {
+        loginAuthRepository.showError(context, error);
+      }
       setLoading(false);
     }
   }
 
-  void startVerificationTimer(BuildContext context) {
-    timer?.cancel();
-    timer = Timer.periodic(const Duration(seconds: 3), (t) async {
-      final user = FirebaseAuth.instance.currentUser;
-      await user?.reload(); // Crucial: refresca el estado del usuario
+  Future<void> finishAuth(
+    BuildContext context,
+    User? user, {
+    LoginCustomSuccessCallback? onAuthSuccess,
+  }) async {
+    if (onAuthSuccess != null) {
+      // ignore: use_build_context_synchronously
+      await onAuthSuccess(context, user);
+      return;
+    }
 
-      if (user != null && user.emailVerified) {
-        t.cancel();
+    openSnackbar(
+      context,
+      text: "Sesion iniciada correctamente",
+      isError: false,
+      isDone: true,
+    );
+  }
+
+  void startVerificationTimer(
+    BuildContext context, {
+    LoginCustomSuccessCallback? onAuthSuccess,
+  }) {
+    timer?.cancel();
+    timer = Timer.periodic(Duration(seconds: 3), (timer) async {
+      final User? user = FirebaseAuth.instance.currentUser;
+      final bool isVerified = await loginAuthRepository
+          .reloadAndCheckEmailVerified();
+      if (!context.mounted) {
+        return;
+      }
+
+      if (user != null && isVerified) {
+        timer.cancel();
         setVerifying(false);
 
-        // Cerramos el BottomSheet si sigue abierto
-        if (Navigator.canPop(context)) goBack(context);
+        // ✅ Cerramos el bottom sheet si sigue abierto.
+        if (Navigator.canPop(context)) {
+          goBack(context);
+        }
 
-        // Al Onboarding!
-        await AuthRepository().checkUser(context, user: user);
+        await finishAuth(context, user, onAuthSuccess: onAuthSuccess);
       }
     });
   }
-
 }
-

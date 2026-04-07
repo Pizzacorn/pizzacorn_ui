@@ -1,78 +1,71 @@
-import 'package:duels/config/imports.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 
-class LostPassPage extends ConsumerWidget {
-
-  const LostPassPage({super.key});
+class LostPassCustomPage extends ConsumerWidget {
+  // ignore: prefer_const_constructors_in_immutables
+  LostPassCustomPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
-    final state = ref.watch(lostPassProvider);
-    final controller = ref.read(lostPassProvider.notifier);
+    final LostPassCustomState state = ref.watch(lostPassCustomProvider);
+    final LostPassCustomController controller = ref.read(
+      lostPassCustomProvider.notifier,
+    );
 
     return Container(
-
       height: 400,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(RADIUS), topRight: Radius.circular(RADIUS))
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(RADIUS),
+          topRight: Radius.circular(RADIUS),
+        ),
       ),
       clipBehavior: Clip.antiAlias,
-
       child: Scaffold(
-
         backgroundColor: COLOR_BACKGROUND,
-
         extendBody: true,
-
-        appBar: AppBarClose(context: context, color: COLOR_BACKGROUND, showBottomBorder: false,),
-
+        appBar: AppBarClose(
+          context: context,
+          color: COLOR_BACKGROUND,
+          showBottomBorder: false,
+        ),
         body: Loading(
-
           loading: state.loading,
-
           child: ListView(
-
             padding: PADDING_ALL,
             shrinkWrap: true,
-            physics: const BouncingScrollPhysics(),
-
+            physics: BouncingScrollPhysics(),
             children: [
-
-              TextBig("Recuperar contraseña", textAlign: TextAlign.center, maxlines: 5),
-
-              Space(SPACE_MEDIUM),
-
-              TextBody(
-                "Introduce tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.",
+              TextBig(
+                "Recuperar contrasena",
                 textAlign: TextAlign.center,
                 maxlines: 5,
               ),
-
               Space(SPACE_MEDIUM),
-
+              TextBody(
+                "Introduce tu correo electronico y te enviaremos un enlace para restablecer tu contrasena.",
+                textAlign: TextAlign.center,
+                maxlines: 5,
+              ),
+              Space(SPACE_MEDIUM),
               TextFieldCustom(
                 controller: state.controllerEmail,
-                labelText: "Correo electrónico",
+                labelText: "Correo electronico",
                 errorText: "Introduce un email",
                 textInputType: TextInputType.emailAddress,
               ),
-
               Space(SPACE_BIG),
-
             ],
           ),
         ),
-
         bottomSheet: BottomSheetCustomOneButton(
-          title: "Recuperar contraseña",
-          onPressed: (){
+          title: "Recuperar contrasena",
+          onPressed: () {
             controller.recoverPassword(context);
           },
         ),
       ),
-
     );
-
   }
 }
-

@@ -69,6 +69,18 @@ export 'src/layout/space.dart';
 //list
 export 'src/list/inifinite_scroll.dart';
 
+// login
+export 'src/login/login_auth_repository.dart';
+export 'src/login/selector.dart';
+export 'src/login/login/login_controller.dart';
+export 'src/login/login/login_page.dart';
+export 'src/login/lost_pass/lostpass_controller.dart';
+export 'src/login/lost_pass/lostpass_page.dart';
+export 'src/login/signup/signup_controller.dart';
+export 'src/login/signup/signup_page.dart';
+export 'src/login/verify/verify_email.dart';
+export 'src/login/widgets/hero_login.dart';
+
 //models
 export 'src/models/file_model.dart';
 export 'src/models/social_model.dart';
