@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// FORMATOS DE FECHA/HORA PIZZACORN //////////////////////////////////////////
 ///
@@ -23,3 +24,14 @@ final DateFormat FORMAT_DATE_GLOBAL = DateFormat("yyyyMMdd", "es_ES");
 
 final DateFormat FORMAT_HOUR = DateFormat("HH:mm", "es_ES");
 final DateFormat FORMAT_HOUR_GLOBAL = DateFormat("HHmm", "es_ES");
+
+/// PIZZACORN_UI CANDIDATE
+/// Function: parseDate
+/// Motivo: Helper centralizado para parsear fechas que pueden venir como Timestamp (Firestore) o DateTime.
+/// Útil en fábricas fromJson de modelos.
+DateTime? parseDate(dynamic date) {
+  if (date == null) return null;
+  if (date is Timestamp) return date.toDate();
+  if (date is DateTime) return date;
+  return null;
+}
