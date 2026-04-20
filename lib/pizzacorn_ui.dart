@@ -53,7 +53,8 @@ export 'src/form/timefield.dart';
 // icons
 export 'src/icons/svg.dart';
 export 'src/icons/featured_icon.dart';
-export 'src/icons/featured_text.dart';
+export 'src/icons/featured_subtitle.dart';
+export 'src/icons/featured_big.dart';
 
 // images
 export 'src/images/images.dart';
