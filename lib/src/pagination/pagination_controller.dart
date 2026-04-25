@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // --- CONFIGURACIÓN GLOBAL DE PAGINACIÓN ---
@@ -6,16 +7,33 @@ class PizzacornPaginationConfig {
   static String? databaseName;
 
   static FirebaseFirestore get firestore {
-    if (databaseName == null || databaseName!.trim().isEmpty) {
+    return getFirestore(databaseName: databaseName);
+  }
+
+  static FirebaseFirestore getFirestore({String? databaseName}) {
+    final String? cleanDatabaseName = sanitizeDatabaseName(databaseName);
+
+    if (cleanDatabaseName == null) {
       return FirebaseFirestore.instance;
     }
 
-    final FirebaseFirestore defaultFirestore = FirebaseFirestore.instance;
-
+    // 🔥 Usamos Firebase.app() para no inicializar la instancia Firestore `(default)`.
     return FirebaseFirestore.instanceFor(
-      app: defaultFirestore.app,
-      databaseId: databaseName!.trim(),
+      app: Firebase.app(),
+      databaseId: cleanDatabaseName,
     );
+  }
+
+  static String? sanitizeDatabaseName(String? databaseName) {
+    final String? cleanDatabaseName = databaseName?.trim();
+
+    if (cleanDatabaseName == null ||
+        cleanDatabaseName.isEmpty ||
+        cleanDatabaseName == '(default)') {
+      return null;
+    }
+
+    return cleanDatabaseName;
   }
 }
 
@@ -24,16 +42,8 @@ class PizzacornPaginationConfig {
 /// Si no se llama a esta función, o si [databaseName] viene vacío, Firestore usa
 /// la base `(default)` como hasta ahora. 🍕
 void ConfigurePizzacornPagination({String? databaseName}) {
-  final String? cleanDatabaseName = databaseName?.trim();
-
-  if (cleanDatabaseName == null ||
-      cleanDatabaseName.isEmpty ||
-      cleanDatabaseName == '(default)') {
-    PizzacornPaginationConfig.databaseName = null;
-    return;
-  }
-
-  PizzacornPaginationConfig.databaseName = cleanDatabaseName;
+  PizzacornPaginationConfig.databaseName =
+      PizzacornPaginationConfig.sanitizeDatabaseName(databaseName);
 }
 
 // --- ESTADO --- (Se mantiene igual, impecable)
@@ -76,6 +86,7 @@ class PaginationParams<T> {
   final int limit;
   final T Function(Map<String, dynamic> data) fromJson;
   final String? identifier;
+  final String? databaseName;
 
   PaginationParams({
     required this.collection,
@@ -83,7 +94,10 @@ class PaginationParams<T> {
     this.query,
     this.limit = 15,
     this.identifier,
-  });
+    String? databaseName,
+  }) : databaseName = PizzacornPaginationConfig.sanitizeDatabaseName(
+          databaseName ?? PizzacornPaginationConfig.databaseName,
+        );
 
   @override
   bool operator ==(Object other) =>
@@ -92,10 +106,15 @@ class PaginationParams<T> {
               runtimeType == other.runtimeType &&
               collection == other.collection &&
               limit == other.limit &&
+              databaseName == other.databaseName &&
               identifier == other.identifier;
 
   @override
-  int get hashCode => collection.hashCode ^ limit.hashCode ^ identifier.hashCode;
+  int get hashCode =>
+      collection.hashCode ^
+      limit.hashCode ^
+      databaseName.hashCode ^
+      identifier.hashCode;
 }
 
 
@@ -114,7 +133,9 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
   }
 
   Query getQuery() {
-    Query q = PizzacornPaginationConfig.firestore.collection(arg.collection);
+    Query q = PizzacornPaginationConfig.getFirestore(
+      databaseName: arg.databaseName,
+    ).collection(arg.collection);
     if (arg.query != null) {
       q = arg.query!(q);
     }

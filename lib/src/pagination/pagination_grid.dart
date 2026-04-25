@@ -15,7 +15,7 @@ class SliverGridCustom<T> extends ConsumerWidget {
   // Añadimos el extractor de ID opcional igual que en la lista
   final String Function(T item)? idExtractor;
 
-  const SliverGridCustom({
+  SliverGridCustom({
     super.key,
     required this.params,
     required this.itemBuilder,

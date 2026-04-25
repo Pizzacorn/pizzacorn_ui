@@ -12,7 +12,7 @@ class SliverListCustom<T> extends ConsumerWidget {
   // Añadimos un extractor de ID opcional para que la Key sea 100% segura
   final String Function(T item)? idExtractor;
 
-  const SliverListCustom({
+  SliverListCustom({
     super.key,
     required this.params,
     required this.itemBuilder,
