@@ -1,6 +1,41 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// --- CONFIGURACIÓN GLOBAL DE PAGINACIÓN ---
+class PizzacornPaginationConfig {
+  static String? databaseName;
+
+  static FirebaseFirestore get firestore {
+    if (databaseName == null || databaseName!.trim().isEmpty) {
+      return FirebaseFirestore.instance;
+    }
+
+    final FirebaseFirestore defaultFirestore = FirebaseFirestore.instance;
+
+    return FirebaseFirestore.instanceFor(
+      app: defaultFirestore.app,
+      databaseId: databaseName!.trim(),
+    );
+  }
+}
+
+/// Configura la base de datos usada por la paginación Pizzacorn.
+///
+/// Si no se llama a esta función, o si [databaseName] viene vacío, Firestore usa
+/// la base `(default)` como hasta ahora. 🍕
+void ConfigurePizzacornPagination({String? databaseName}) {
+  final String? cleanDatabaseName = databaseName?.trim();
+
+  if (cleanDatabaseName == null ||
+      cleanDatabaseName.isEmpty ||
+      cleanDatabaseName == '(default)') {
+    PizzacornPaginationConfig.databaseName = null;
+    return;
+  }
+
+  PizzacornPaginationConfig.databaseName = cleanDatabaseName;
+}
+
 // --- ESTADO --- (Se mantiene igual, impecable)
 class PaginationState<T> {
   final List<T> items;
@@ -78,8 +113,8 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
     return PaginationState<T>();
   }
 
-  Query _getQuery() {
-    Query q = FirebaseFirestore.instance.collection(arg.collection);
+  Query getQuery() {
+    Query q = PizzacornPaginationConfig.firestore.collection(arg.collection);
     if (arg.query != null) {
       q = arg.query!(q);
     }
@@ -95,7 +130,7 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
     try {
       state = state.copyWith(isLoading: true, items: [], error: '');
 
-      Query q = _getQuery().limit(arg.limit);
+      Query q = getQuery().limit(arg.limit);
       final snapshot = await q.get();
 
       if (!isMounted) return;
@@ -132,7 +167,7 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
       // 🛡️ IMPORTANTE: Limpiamos el error aquí para que pueda reintentar de forma limpia
       state = state.copyWith(isFetchingMore: true, error: '');
 
-      Query q = _getQuery().startAfterDocument(lastDocument!).limit(arg.limit);
+      Query q = getQuery().startAfterDocument(lastDocument!).limit(arg.limit);
       final snapshot = await q.get();
 
       if (!isMounted) return;
