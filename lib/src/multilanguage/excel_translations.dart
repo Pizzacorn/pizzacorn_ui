@@ -231,6 +231,8 @@ class LanguageSmallSelector extends StatefulWidget {
   final Color? textColor;
   final double fontSize;
   final double sheetHeight;
+  final bool onlyFlag;
+  final bool onlyText;
 
   LanguageSmallSelector({
     super.key,
@@ -239,6 +241,8 @@ class LanguageSmallSelector extends StatefulWidget {
     this.textColor,
     this.fontSize = 14,
     this.sheetHeight = 200,
+    this.onlyFlag = false,
+    this.onlyText = false,
   });
 
   @override
@@ -248,16 +252,21 @@ class LanguageSmallSelector extends StatefulWidget {
 class LanguageSmallSelectorState extends State<LanguageSmallSelector> {
   @override
   Widget build(BuildContext context) {
-    final String currentLang = FlutterLocalization.instance.currentLocale?.languageCode ?? 'es';
+    final String currentLang =
+        FlutterLocalization.instance.currentLocale?.languageCode ?? 'es';
+    final bool showNormalContent = widget.onlyFlag == widget.onlyText;
+    final bool showFlag = widget.onlyFlag || showNormalContent;
+    final bool showText = widget.onlyText || showNormalContent;
+    final bool showArrow = showNormalContent;
 
     return GestureDetector(
       onTap: () => openBottomSheet(
-        context, 
+        context,
         LanguageSelector(
           onLanguageChanged: () {
             if (mounted) setState(() {});
             widget.onLanguageChanged?.call();
-          }
+          },
         ),
         height: widget.sheetHeight,
       ),
@@ -266,21 +275,33 @@ class LanguageSmallSelectorState extends State<LanguageSmallSelector> {
         decoration: BoxDecoration(
           color: widget.backgroundColor ?? Colors.black.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: (widget.textColor ?? Colors.white).withValues(alpha: 0.2)),
+          border: Border.all(
+            color: (widget.textColor ?? Colors.white).withValues(alpha: 0.2),
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextBody(getFlagEmoji(currentLang), fontSize: widget.fontSize + 4),
-            Space(8),
-            TextBody(
-              currentLang.toUpperCase(), 
-              color: widget.textColor ?? Colors.white, 
-              fontWeight: FontWeight.bold,
-              fontSize: widget.fontSize,
-            ),
-            Space(4),
-            Icon(Icons.keyboard_arrow_down, color: widget.textColor ?? Colors.white, size: widget.fontSize + 4),
+            if (showFlag)
+              TextBody(
+                getFlagEmoji(currentLang),
+                fontSize: widget.fontSize + 4,
+              ),
+            if (showFlag && showText) Space(8),
+            if (showText)
+              TextBody(
+                currentLang.toUpperCase(),
+                color: widget.textColor ?? Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: widget.fontSize,
+              ),
+            if (showArrow) Space(4),
+            if (showArrow)
+              Icon(
+                Icons.keyboard_arrow_down,
+                color: widget.textColor ?? Colors.white,
+                size: widget.fontSize + 4,
+              ),
           ],
         ),
       ),

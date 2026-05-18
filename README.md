@@ -66,18 +66,35 @@ void main() async {
   PizzacornTextConfig.configure(
     primaryFontFamily: 'Montserrat',
     secondaryFontFamily: 'Inter',
-    sizes: const PizzacornTextSizes(
-      big: 32,
-      title: 22,
-      subtitle: 18,
-      body: 14,
-      button: 14,
-      caption: 12,
-      small: 10,
-    ),
-    weights: const PizzacornTextWeights(
-      normal: FontWeight.w400,
-      bold: FontWeight.w700,
+    textSet: const PizzacornTextSet(
+      big: PizzacornTextStyleSet(
+        size: 32,
+        fontWeight: FontWeight.w700,
+      ),
+      title: PizzacornTextStyleSet(
+        size: 22,
+        fontWeight: FontWeight.w700,
+      ),
+      subtitle: PizzacornTextStyleSet(
+        size: 18,
+        fontWeight: FontWeight.w600,
+      ),
+      body: PizzacornTextStyleSet(
+        size: 14,
+        fontWeight: FontWeight.w400,
+      ),
+      button: PizzacornTextStyleSet(
+        size: 14,
+        fontWeight: FontWeight.w700,
+      ),
+      caption: PizzacornTextStyleSet(
+        size: 12,
+        fontWeight: FontWeight.w400,
+      ),
+      small: PizzacornTextStyleSet(
+        size: 10,
+        fontWeight: FontWeight.w400,
+      ),
     ),
   );
 

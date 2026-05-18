@@ -27,6 +27,123 @@ class PizzacornTextFonts {
   });
 }
 
+class PizzacornTextStyleSet {
+  final double size;
+  final FontWeight fontWeight;
+
+  const PizzacornTextStyleSet({
+    this.size = 12,
+    this.fontWeight = FontWeight.w400,
+  });
+
+  PizzacornTextStyleSet copyWith({double? size, FontWeight? fontWeight}) {
+    return PizzacornTextStyleSet(
+      size: size ?? this.size,
+      fontWeight: fontWeight ?? this.fontWeight,
+    );
+  }
+}
+
+class PizzacornTextSet {
+  final PizzacornTextStyleSet big;
+  final PizzacornTextStyleSet title;
+  final PizzacornTextStyleSet subtitle;
+  final PizzacornTextStyleSet body;
+  final PizzacornTextStyleSet button;
+  final PizzacornTextStyleSet caption;
+  final PizzacornTextStyleSet small;
+
+  const PizzacornTextSet({
+    this.big = const PizzacornTextStyleSet(
+      size: 26,
+      fontWeight: FontWeight.w600,
+    ),
+    this.title = const PizzacornTextStyleSet(
+      size: 18,
+      fontWeight: FontWeight.w600,
+    ),
+    this.subtitle = const PizzacornTextStyleSet(
+      size: 16,
+      fontWeight: FontWeight.w600,
+    ),
+    this.body = const PizzacornTextStyleSet(
+      size: 12,
+      fontWeight: FontWeight.w400,
+    ),
+    this.button = const PizzacornTextStyleSet(
+      size: 12,
+      fontWeight: FontWeight.w600,
+    ),
+    this.caption = const PizzacornTextStyleSet(
+      size: 10,
+      fontWeight: FontWeight.w400,
+    ),
+    this.small = const PizzacornTextStyleSet(
+      size: 8,
+      fontWeight: FontWeight.w400,
+    ),
+  });
+
+  factory PizzacornTextSet.fromSizesAndWeights({
+    required PizzacornTextSizes sizes,
+    required PizzacornTextWeights weights,
+  }) {
+    return PizzacornTextSet(
+      big: PizzacornTextStyleSet(size: sizes.big, fontWeight: weights.bold),
+      title: PizzacornTextStyleSet(size: sizes.title, fontWeight: weights.bold),
+      subtitle: PizzacornTextStyleSet(
+        size: sizes.subtitle,
+        fontWeight: weights.bold,
+      ),
+      body: PizzacornTextStyleSet(size: sizes.body, fontWeight: weights.normal),
+      button: PizzacornTextStyleSet(
+        size: sizes.button,
+        fontWeight: weights.bold,
+      ),
+      caption: PizzacornTextStyleSet(
+        size: sizes.caption,
+        fontWeight: weights.normal,
+      ),
+      small: PizzacornTextStyleSet(
+        size: sizes.small,
+        fontWeight: weights.normal,
+      ),
+    );
+  }
+
+  PizzacornTextSet copyWith({
+    PizzacornTextStyleSet? big,
+    PizzacornTextStyleSet? title,
+    PizzacornTextStyleSet? subtitle,
+    PizzacornTextStyleSet? body,
+    PizzacornTextStyleSet? button,
+    PizzacornTextStyleSet? caption,
+    PizzacornTextStyleSet? small,
+  }) {
+    return PizzacornTextSet(
+      big: big ?? this.big,
+      title: title ?? this.title,
+      subtitle: subtitle ?? this.subtitle,
+      body: body ?? this.body,
+      button: button ?? this.button,
+      caption: caption ?? this.caption,
+      small: small ?? this.small,
+    );
+  }
+
+  PizzacornTextSizes toSizes() {
+    return PizzacornTextSizes(
+      big: big.size,
+      title: title.size,
+      subtitle: subtitle.size,
+      body: body.size,
+      button: button.size,
+      caption: caption.size,
+      small: small.size,
+    );
+  }
+}
+
 /// =================== CONFIG GLOBAL (Fonts, Sizes, Weights) ===================
 class PizzacornTextConfig {
   static String primaryFontFamily = 'Montserrat';
@@ -35,6 +152,10 @@ class PizzacornTextConfig {
   static PizzacornTextSizes sizes = const PizzacornTextSizes();
   static PizzacornTextWeights weights = const PizzacornTextWeights();
   static PizzacornTextFonts fonts = const PizzacornTextFonts();
+  static PizzacornTextSet textSet = PizzacornTextSet.fromSizesAndWeights(
+    sizes: sizes,
+    weights: weights,
+  );
 
   static void configure({
     String? primaryFontFamily,
@@ -42,6 +163,7 @@ class PizzacornTextConfig {
     PizzacornTextSizes? sizes,
     PizzacornTextWeights? weights,
     PizzacornTextFonts? fonts,
+    PizzacornTextSet? textSet,
   }) {
     if (primaryFontFamily != null && primaryFontFamily.trim().isNotEmpty) {
       PizzacornTextConfig.primaryFontFamily = primaryFontFamily.trim();
@@ -52,6 +174,15 @@ class PizzacornTextConfig {
     if (sizes != null) PizzacornTextConfig.sizes = sizes;
     if (weights != null) PizzacornTextConfig.weights = weights;
     if (fonts != null) PizzacornTextConfig.fonts = fonts;
+    if (textSet != null) {
+      PizzacornTextConfig.textSet = textSet;
+      PizzacornTextConfig.sizes = textSet.toSizes();
+    } else if (sizes != null || weights != null) {
+      PizzacornTextConfig.textSet = PizzacornTextSet.fromSizesAndWeights(
+        sizes: PizzacornTextConfig.sizes,
+        weights: PizzacornTextConfig.weights,
+      );
+    }
   }
 }
 
@@ -89,29 +220,41 @@ class PizzacornTextWeights {
 const int MAXLINES = 5;
 
 /// =================== GETTERS DINÁMICOS ===================
-double get TEXT_BIG_SIZE => PizzacornTextConfig.sizes.big;
-double get TEXT_TITLE_SIZE => PizzacornTextConfig.sizes.title;
-double get TEXT_SUBTITLE_SIZE => PizzacornTextConfig.sizes.subtitle;
-double get TEXT_BODY_SIZE => PizzacornTextConfig.sizes.body;
-double get TEXT_BUTTON_SIZE => PizzacornTextConfig.sizes.button;
-double get TEXT_CAPTION_SIZE => PizzacornTextConfig.sizes.caption;
-double get TEXT_SMALL_SIZE => PizzacornTextConfig.sizes.small;
+double get TEXT_BIG_SIZE => PizzacornTextConfig.textSet.big.size;
+double get TEXT_TITLE_SIZE => PizzacornTextConfig.textSet.title.size;
+double get TEXT_SUBTITLE_SIZE => PizzacornTextConfig.textSet.subtitle.size;
+double get TEXT_BODY_SIZE => PizzacornTextConfig.textSet.body.size;
+double get TEXT_BUTTON_SIZE => PizzacornTextConfig.textSet.button.size;
+double get TEXT_CAPTION_SIZE => PizzacornTextConfig.textSet.caption.size;
+double get TEXT_SMALL_SIZE => PizzacornTextConfig.textSet.small.size;
+
+FontWeight get TEXT_BIG_WEIGHT => PizzacornTextConfig.textSet.big.fontWeight;
+FontWeight get TEXT_TITLE_WEIGHT =>
+    PizzacornTextConfig.textSet.title.fontWeight;
+FontWeight get TEXT_SUBTITLE_WEIGHT =>
+    PizzacornTextConfig.textSet.subtitle.fontWeight;
+FontWeight get TEXT_BODY_WEIGHT => PizzacornTextConfig.textSet.body.fontWeight;
+FontWeight get TEXT_BUTTON_WEIGHT =>
+    PizzacornTextConfig.textSet.button.fontWeight;
+FontWeight get TEXT_CAPTION_WEIGHT =>
+    PizzacornTextConfig.textSet.caption.fontWeight;
+FontWeight get TEXT_SMALL_WEIGHT =>
+    PizzacornTextConfig.textSet.small.fontWeight;
 
 FontWeight get WEIGHT_NORMAL => PizzacornTextConfig.weights.normal;
 FontWeight get WEIGHT_BOLD => PizzacornTextConfig.weights.bold;
-
 
 /// =================== WIDGETS ===================
 
 // Helper para construir el texto sin Semantics
 Widget _buildText(
-    String text,
-    TextStyle style, {
-      TextAlign textAlign = TextAlign.start,
-      int? maxlines,
-      TextOverflow textOverflow = TextOverflow.ellipsis,
-      bool isUppercase = false,
-    }) {
+  String text,
+  TextStyle style, {
+  TextAlign textAlign = TextAlign.start,
+  int? maxlines,
+  TextOverflow textOverflow = TextOverflow.ellipsis,
+  bool isUppercase = false,
+}) {
   return Text(
     isUppercase ? text.toUpperCase() : text,
     overflow: textOverflow,
@@ -120,7 +263,6 @@ Widget _buildText(
     style: style,
   );
 }
-
 
 /// =================== BASE DE ESTILO UNIFICADA ===================
 TextStyle getStyle({
@@ -156,36 +298,40 @@ TextStyle getStyle({
   } catch (_) {
     return (fontType == PizzacornFontType.primary)
         ? GoogleFonts.leagueGothic(
-      fontSize: size,
-      letterSpacing: letterspacing,
-      fontWeight: weight,
-      height: height,
-      color: color,
-      decoration: TextDecoration.combine(decorations),
-      shadows: shadow ? [Shadow(blurRadius: 70, color: COLOR_SUBTEXT)] : null,
-    )
+            fontSize: size,
+            letterSpacing: letterspacing,
+            fontWeight: weight,
+            height: height,
+            color: color,
+            decoration: TextDecoration.combine(decorations),
+            shadows: shadow
+                ? [Shadow(blurRadius: 70, color: COLOR_SUBTEXT)]
+                : null,
+          )
         : GoogleFonts.raleway(
-      fontSize: size,
-      letterSpacing: letterspacing,
-      fontWeight: weight,
-      height: height,
-      color: color,
-      decoration: TextDecoration.combine(decorations),
-      shadows: shadow ? [Shadow(blurRadius: 70, color: COLOR_SUBTEXT)] : null,
-    );
+            fontSize: size,
+            letterSpacing: letterspacing,
+            fontWeight: weight,
+            height: height,
+            color: color,
+            decoration: TextDecoration.combine(decorations),
+            shadows: shadow
+                ? [Shadow(blurRadius: 70, color: COLOR_SUBTEXT)]
+                : null,
+          );
   }
 }
 
 TextStyle getStyleCustom(
-    double size,
-    FontWeight weight,
-    Color color, {
-      double letterspacing = 0,
-      bool shadow = false,
-      bool underlined = false,
-      bool strikethrough = false,
-      double height = 1.2,
-    }) {
+  double size,
+  FontWeight weight,
+  Color color, {
+  double letterspacing = 0,
+  bool shadow = false,
+  bool underlined = false,
+  bool strikethrough = false,
+  double height = 1.2,
+}) {
   return getStyle(
     fontType: PizzacornFontType.primary,
     size: size,
@@ -200,15 +346,15 @@ TextStyle getStyleCustom(
 }
 
 TextStyle getStyleSecondaryCustom(
-    double size,
-    FontWeight weight,
-    Color color, {
-      double letterspacing = 0,
-      bool shadow = false,
-      bool underlined = false,
-      bool strikethrough = false,
-      double height = 1.2,
-    }) {
+  double size,
+  FontWeight weight,
+  Color color, {
+  double letterspacing = 0,
+  bool shadow = false,
+  bool underlined = false,
+  bool strikethrough = false,
+  double height = 1.2,
+}) {
   return getStyle(
     fontType: PizzacornFontType.secondary,
     size: size,
@@ -224,74 +370,355 @@ TextStyle getStyleSecondaryCustom(
 
 /// =================== ESTILOS DINÁMICOS ===================
 
-TextStyle styleBig({Color? color, FontWeight? fontWeight, double? fontSize, double letterspacing = 0, bool shadow = false, bool strikethrough = false, double height = 1.2}) {
-  return getStyle(fontType: PizzacornTextConfig.fonts.big, size: fontSize ?? TEXT_BIG_SIZE, weight: fontWeight ?? WEIGHT_BOLD, color: color ?? COLOR_TEXT, letterspacing: letterspacing, shadow: shadow, strikethrough: strikethrough, height: height);
+TextStyle styleBig({
+  Color? color,
+  FontWeight? fontWeight,
+  double? fontSize,
+  double letterspacing = 0,
+  bool shadow = false,
+  bool strikethrough = false,
+  double height = 1.2,
+}) {
+  return getStyle(
+    fontType: PizzacornTextConfig.fonts.big,
+    size: fontSize ?? TEXT_BIG_SIZE,
+    weight: fontWeight ?? TEXT_BIG_WEIGHT,
+    color: color ?? COLOR_TEXT,
+    letterspacing: letterspacing,
+    shadow: shadow,
+    strikethrough: strikethrough,
+    height: height,
+  );
 }
 
-TextStyle styleTitle({Color? color, FontWeight? fontWeight, double? size, bool strikethrough = false, double height = 1.2}) {
-  return getStyle(fontType: PizzacornTextConfig.fonts.title, size: size ?? TEXT_TITLE_SIZE, weight: fontWeight ?? WEIGHT_BOLD, color: color ?? COLOR_TEXT, strikethrough: strikethrough, height: height);
+TextStyle styleTitle({
+  Color? color,
+  FontWeight? fontWeight,
+  double? size,
+  bool strikethrough = false,
+  double height = 1.2,
+}) {
+  return getStyle(
+    fontType: PizzacornTextConfig.fonts.title,
+    size: size ?? TEXT_TITLE_SIZE,
+    weight: fontWeight ?? TEXT_TITLE_WEIGHT,
+    color: color ?? COLOR_TEXT,
+    strikethrough: strikethrough,
+    height: height,
+  );
 }
 
-TextStyle styleSubtitle({Color? color, FontWeight? fontWeight, double? size, bool strikethrough = false, double height = 1.2}) {
-  return getStyle(fontType: PizzacornTextConfig.fonts.subtitle, size: size ?? TEXT_SUBTITLE_SIZE, weight: fontWeight ?? WEIGHT_BOLD, color: color ?? COLOR_TEXT, strikethrough: strikethrough, height: height);
+TextStyle styleSubtitle({
+  Color? color,
+  FontWeight? fontWeight,
+  double? size,
+  bool strikethrough = false,
+  double height = 1.2,
+}) {
+  return getStyle(
+    fontType: PizzacornTextConfig.fonts.subtitle,
+    size: size ?? TEXT_SUBTITLE_SIZE,
+    weight: fontWeight ?? TEXT_SUBTITLE_WEIGHT,
+    color: color ?? COLOR_TEXT,
+    strikethrough: strikethrough,
+    height: height,
+  );
 }
 
-TextStyle styleBody({Color? color, FontWeight? fontWeight, double? size, bool shadow = false, bool strikethrough = false, double height = 1.2}) {
-  return getStyle(fontType: PizzacornTextConfig.fonts.body, size: size ?? TEXT_BODY_SIZE, weight: fontWeight ?? WEIGHT_NORMAL, color: color ?? COLOR_TEXT, shadow: shadow, strikethrough: strikethrough, height: height);
+TextStyle styleBody({
+  Color? color,
+  FontWeight? fontWeight,
+  double? size,
+  bool shadow = false,
+  bool strikethrough = false,
+  double height = 1.2,
+}) {
+  return getStyle(
+    fontType: PizzacornTextConfig.fonts.body,
+    size: size ?? TEXT_BODY_SIZE,
+    weight: fontWeight ?? TEXT_BODY_WEIGHT,
+    color: color ?? COLOR_TEXT,
+    shadow: shadow,
+    strikethrough: strikethrough,
+    height: height,
+  );
 }
 
-TextStyle styleButton({Color? color, FontWeight? fontWeight, double? size, bool strikethrough = false, double height = 1.2}) {
-  return getStyle(fontType: PizzacornTextConfig.fonts.button, size: size ?? TEXT_BUTTON_SIZE, weight: fontWeight ?? WEIGHT_BOLD, color: color ?? COLOR_TEXT, strikethrough: strikethrough, height: height);
+TextStyle styleButton({
+  Color? color,
+  FontWeight? fontWeight,
+  double? size,
+  bool strikethrough = false,
+  double height = 1.2,
+}) {
+  return getStyle(
+    fontType: PizzacornTextConfig.fonts.button,
+    size: size ?? TEXT_BUTTON_SIZE,
+    weight: fontWeight ?? TEXT_BUTTON_WEIGHT,
+    color: color ?? COLOR_TEXT,
+    strikethrough: strikethrough,
+    height: height,
+  );
 }
 
-TextStyle styleCaption({Color? color, FontWeight? fontWeight, double? size, bool strikethrough = false, double height = 1.2}) {
-  return getStyle(fontType: PizzacornTextConfig.fonts.caption, size: size ?? TEXT_CAPTION_SIZE, weight: fontWeight ?? WEIGHT_NORMAL, color: color ?? COLOR_TEXT, strikethrough: strikethrough, height: height);
+TextStyle styleCaption({
+  Color? color,
+  FontWeight? fontWeight,
+  double? size,
+  bool strikethrough = false,
+  double height = 1.2,
+}) {
+  return getStyle(
+    fontType: PizzacornTextConfig.fonts.caption,
+    size: size ?? TEXT_CAPTION_SIZE,
+    weight: fontWeight ?? TEXT_CAPTION_WEIGHT,
+    color: color ?? COLOR_TEXT,
+    strikethrough: strikethrough,
+    height: height,
+  );
 }
 
-TextStyle styleSmall({Color? color, FontWeight? fontWeight, double? size, bool strikethrough = false, double height = 1.2}) {
-  return getStyle(fontType: PizzacornTextConfig.fonts.small, size: size ?? TEXT_SMALL_SIZE, weight: fontWeight ?? WEIGHT_NORMAL, color: color ?? COLOR_TEXT, strikethrough: strikethrough, height: height);
+TextStyle styleSmall({
+  Color? color,
+  FontWeight? fontWeight,
+  double? size,
+  bool strikethrough = false,
+  double height = 1.2,
+}) {
+  return getStyle(
+    fontType: PizzacornTextConfig.fonts.small,
+    size: size ?? TEXT_SMALL_SIZE,
+    weight: fontWeight ?? TEXT_SMALL_WEIGHT,
+    color: color ?? COLOR_TEXT,
+    strikethrough: strikethrough,
+    height: height,
+  );
 }
 
 /// =================== WIDGETS ===================
 
-Widget TextBig(String text, {double? fontSize, Color? color, bool shadow = false, bool strikethrough = false, FontWeight? fontWeight, TextAlign textAlign = TextAlign.start, int maxlines = MAXLINES, TextOverflow textOverflow = TextOverflow.ellipsis, bool isUppercase = false}) {
-  return _buildText(text, styleBig(fontSize: fontSize, fontWeight: fontWeight, color: color, shadow: shadow, strikethrough: strikethrough), textAlign: textAlign, maxlines: maxlines, textOverflow: textOverflow, isUppercase: isUppercase);
+Widget TextBig(
+  String text, {
+  double? fontSize,
+  Color? color,
+  bool shadow = false,
+  bool strikethrough = false,
+  FontWeight? fontWeight,
+  TextAlign textAlign = TextAlign.start,
+  int maxlines = MAXLINES,
+  TextOverflow textOverflow = TextOverflow.ellipsis,
+  bool isUppercase = false,
+}) {
+  return _buildText(
+    text,
+    styleBig(
+      fontSize: fontSize,
+      fontWeight: fontWeight,
+      color: color,
+      shadow: shadow,
+      strikethrough: strikethrough,
+    ),
+    textAlign: textAlign,
+    maxlines: maxlines,
+    textOverflow: textOverflow,
+    isUppercase: isUppercase,
+  );
 }
 
-Widget TextTitle(String text, {double? fontSize, Color? color, bool shadow = false, bool strikethrough = false, FontWeight? fontWeight, TextAlign textAlign = TextAlign.start, int maxlines = MAXLINES, TextOverflow textOverflow = TextOverflow.ellipsis, bool isUppercase = false, double height = 1.2}) {
-  return _buildText(text, styleTitle(size: fontSize, fontWeight: fontWeight, color: color, strikethrough: strikethrough, height: height), textAlign: textAlign, maxlines: maxlines, textOverflow: textOverflow, isUppercase: isUppercase);
+Widget TextTitle(
+  String text, {
+  double? fontSize,
+  Color? color,
+  bool shadow = false,
+  bool strikethrough = false,
+  FontWeight? fontWeight,
+  TextAlign textAlign = TextAlign.start,
+  int maxlines = MAXLINES,
+  TextOverflow textOverflow = TextOverflow.ellipsis,
+  bool isUppercase = false,
+  double height = 1.2,
+}) {
+  return _buildText(
+    text,
+    styleTitle(
+      size: fontSize,
+      fontWeight: fontWeight,
+      color: color,
+      strikethrough: strikethrough,
+      height: height,
+    ),
+    textAlign: textAlign,
+    maxlines: maxlines,
+    textOverflow: textOverflow,
+    isUppercase: isUppercase,
+  );
 }
 
-Widget TextSubtitle(String text, {double? fontSize, Color? color, bool shadow = false, bool strikethrough = false, FontWeight? fontWeight, TextAlign textAlign = TextAlign.start, int maxlines = MAXLINES, TextOverflow textOverflow = TextOverflow.ellipsis, bool isUppercase = false, double height = 1.2}) {
-  return _buildText(text, styleSubtitle(size: fontSize, fontWeight: fontWeight, color: color, strikethrough: strikethrough, height: height), textAlign: textAlign, maxlines: maxlines, textOverflow: textOverflow, isUppercase: isUppercase);
+Widget TextSubtitle(
+  String text, {
+  double? fontSize,
+  Color? color,
+  bool shadow = false,
+  bool strikethrough = false,
+  FontWeight? fontWeight,
+  TextAlign textAlign = TextAlign.start,
+  int maxlines = MAXLINES,
+  TextOverflow textOverflow = TextOverflow.ellipsis,
+  bool isUppercase = false,
+  double height = 1.2,
+}) {
+  return _buildText(
+    text,
+    styleSubtitle(
+      size: fontSize,
+      fontWeight: fontWeight,
+      color: color,
+      strikethrough: strikethrough,
+      height: height,
+    ),
+    textAlign: textAlign,
+    maxlines: maxlines,
+    textOverflow: textOverflow,
+    isUppercase: isUppercase,
+  );
 }
 
-Widget TextBody(String texto, {double? fontSize, Color? color, bool shadow = false, bool strikethrough = false, FontWeight? fontWeight, TextAlign textAlign = TextAlign.start, int? maxlines, TextOverflow textOverflow = TextOverflow.ellipsis, bool isUppercase = false, double height = 1.2}) {
-  return _buildText(texto, styleBody(size: fontSize, fontWeight: fontWeight, color: color, shadow: shadow, strikethrough: strikethrough, height: height), textAlign: textAlign, maxlines: maxlines, textOverflow: textOverflow, isUppercase: isUppercase);
+Widget TextBody(
+  String texto, {
+  double? fontSize,
+  Color? color,
+  bool shadow = false,
+  bool strikethrough = false,
+  FontWeight? fontWeight,
+  TextAlign textAlign = TextAlign.start,
+  int? maxlines,
+  TextOverflow textOverflow = TextOverflow.ellipsis,
+  bool isUppercase = false,
+  double height = 1.2,
+}) {
+  return _buildText(
+    texto,
+    styleBody(
+      size: fontSize,
+      fontWeight: fontWeight,
+      color: color,
+      shadow: shadow,
+      strikethrough: strikethrough,
+      height: height,
+    ),
+    textAlign: textAlign,
+    maxlines: maxlines,
+    textOverflow: textOverflow,
+    isUppercase: isUppercase,
+  );
 }
 
-Widget TextButtonCustom(String texto, {double? fontSize, bool shadow = false, bool strikethrough = false, Color? color, FontWeight? fontWeight, TextAlign textAlign = TextAlign.start, int maxlines = MAXLINES, TextOverflow textOverflow = TextOverflow.ellipsis, bool isUppercase = false}) {
+Widget TextButtonCustom(
+  String texto, {
+  double? fontSize,
+  bool shadow = false,
+  bool strikethrough = false,
+  Color? color,
+  FontWeight? fontWeight,
+  TextAlign textAlign = TextAlign.start,
+  int maxlines = MAXLINES,
+  TextOverflow textOverflow = TextOverflow.ellipsis,
+  bool isUppercase = false,
+}) {
   return Text(
     isUppercase ? texto.toUpperCase() : texto,
     overflow: textOverflow,
     textAlign: textAlign,
     maxLines: maxlines,
-    style: styleButton(size: fontSize, fontWeight: fontWeight, color: color ?? COLOR_TEXT_BUTTONS, strikethrough: strikethrough),
+    style: styleButton(
+      size: fontSize,
+      fontWeight: fontWeight,
+      color: color ?? COLOR_TEXT_BUTTONS,
+      strikethrough: strikethrough,
+    ),
   );
 }
 
-Widget TextCaption(String texto, {double? fontSize, Color? color, bool shadow = false, bool strikethrough = false, FontWeight? fontWeight, TextAlign textAlign = TextAlign.start, int maxlines = MAXLINES, TextOverflow textOverflow = TextOverflow.ellipsis, bool isUppercase = false}) {
-  return _buildText(texto, styleCaption(size: fontSize, fontWeight: fontWeight, color: color ?? COLOR_SUBTEXT, strikethrough: strikethrough), textAlign: textAlign, maxlines: maxlines, textOverflow: textOverflow, isUppercase: isUppercase);
-}
-
-Widget TextSmall(String texto, {double? fontSize, Color? color, bool shadow = false, bool strikethrough = false, FontWeight? fontWeight, TextAlign textAlign = TextAlign.start, int maxlines = MAXLINES, TextOverflow textOverflow = TextOverflow.ellipsis, bool isUppercase = false}) {
-  return _buildText(texto, styleSmall(size: fontSize, fontWeight: fontWeight, color: color, strikethrough: strikethrough), textAlign: textAlign, maxlines: maxlines, textOverflow: textOverflow, isUppercase: isUppercase);
-}
-
-Widget TextCustom(String texto, {double? fontSize, bool shadow = false, bool strikethrough = false, Color? color, FontWeight? fontWeight, TextAlign textAlign = TextAlign.start, int maxlines = MAXLINES, TextOverflow textOverflow = TextOverflow.ellipsis, double espacioLetras = 0, double height = 1, bool isUppercase = false}) {
+Widget TextCaption(
+  String texto, {
+  double? fontSize,
+  Color? color,
+  bool shadow = false,
+  bool strikethrough = false,
+  FontWeight? fontWeight,
+  TextAlign textAlign = TextAlign.start,
+  int maxlines = MAXLINES,
+  TextOverflow textOverflow = TextOverflow.ellipsis,
+  bool isUppercase = false,
+}) {
   return _buildText(
     texto,
-    getStyle(fontType: PizzacornFontType.primary, size: fontSize ?? TEXT_BUTTON_SIZE, weight: fontWeight ?? WEIGHT_BOLD, color: color ?? COLOR_TEXT, letterspacing: espacioLetras, shadow: shadow, strikethrough: strikethrough, height: height),
+    styleCaption(
+      size: fontSize,
+      fontWeight: fontWeight,
+      color: color ?? COLOR_SUBTEXT,
+      strikethrough: strikethrough,
+    ),
+    textAlign: textAlign,
+    maxlines: maxlines,
+    textOverflow: textOverflow,
+    isUppercase: isUppercase,
+  );
+}
+
+Widget TextSmall(
+  String texto, {
+  double? fontSize,
+  Color? color,
+  bool shadow = false,
+  bool strikethrough = false,
+  FontWeight? fontWeight,
+  TextAlign textAlign = TextAlign.start,
+  int maxlines = MAXLINES,
+  TextOverflow textOverflow = TextOverflow.ellipsis,
+  bool isUppercase = false,
+}) {
+  return _buildText(
+    texto,
+    styleSmall(
+      size: fontSize,
+      fontWeight: fontWeight,
+      color: color,
+      strikethrough: strikethrough,
+    ),
+    textAlign: textAlign,
+    maxlines: maxlines,
+    textOverflow: textOverflow,
+    isUppercase: isUppercase,
+  );
+}
+
+Widget TextCustom(
+  String texto, {
+  double? fontSize,
+  bool shadow = false,
+  bool strikethrough = false,
+  Color? color,
+  FontWeight? fontWeight,
+  TextAlign textAlign = TextAlign.start,
+  int maxlines = MAXLINES,
+  TextOverflow textOverflow = TextOverflow.ellipsis,
+  double espacioLetras = 0,
+  double height = 1,
+  bool isUppercase = false,
+}) {
+  return _buildText(
+    texto,
+    getStyle(
+      fontType: PizzacornFontType.primary,
+      size: fontSize ?? TEXT_BUTTON_SIZE,
+      weight: fontWeight ?? WEIGHT_BOLD,
+      color: color ?? COLOR_TEXT,
+      letterspacing: espacioLetras,
+      shadow: shadow,
+      strikethrough: strikethrough,
+      height: height,
+    ),
     textAlign: textAlign,
     maxlines: maxlines,
     textOverflow: textOverflow,

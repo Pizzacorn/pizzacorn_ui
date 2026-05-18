@@ -24,6 +24,13 @@ export 'src/calendars/calendar_style.dart';
 export 'src/calendars/monthly_calendar.dart';
 export 'src/calendars/slider_calendar.dart';
 
+// charts
+export 'src/charts/bar_chart_button.dart';
+export 'src/charts/bar_chart_config.dart';
+export 'src/charts/bar_chart_page.dart';
+export 'src/charts/bar_chart_service.dart';
+export 'src/charts/models/bar_chart_point_model.dart';
+
 // cropper
 export 'src/cropper/crop_page.dart';
 export 'src/cropper/image_picker.dart';
