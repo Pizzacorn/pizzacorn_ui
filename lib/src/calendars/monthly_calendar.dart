@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pizzacorn_ui/pizzacorn_ui.dart';
-import 'package:intl/intl.dart';
 
 class MonthlyCalendar extends StatefulWidget {
   final DateTime startDate;
@@ -18,6 +17,8 @@ class MonthlyCalendar extends StatefulWidget {
   final List<int> blockedWeekdays;
   final CalendarStyle style;
   final double dayBoxSize;
+  final EdgeInsetsGeometry? padding;
+  final Color? backgroundColor;
 
   MonthlyCalendar({
     super.key,
@@ -35,6 +36,8 @@ class MonthlyCalendar extends StatefulWidget {
     this.blockedWeekdays = const [],
     required this.style,
     this.dayBoxSize = 50,
+    this.padding,
+    this.backgroundColor,
   });
 
   @override
@@ -107,7 +110,7 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
       cells.add(DateTime(currentMonth.year, currentMonth.month, i));
     }
 
-    return Column(
+    final calendarContent = Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -155,18 +158,18 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
             final day = cells[idx];
             if (day == null) return Container();
 
-            // Normalizamos la fecha de inicio para comparar solo fechas sin horas
+            // 📅 Normalizamos la fecha de inicio para comparar solo fechas sin horas
             final today = DateTime(
               widget.startDate.year,
               widget.startDate.month,
               widget.startDate.day,
             );
 
-            // Un día es pasado si es estrictamente anterior a widget.startDate (today)
+            // 🚫 Un día es pasado si es estrictamente anterior a widget.startDate (today)
             final bool isPast = day.isBefore(today);
 
             final bool blocked =
-                isPast || // <--- BLOQUEO DE DÍAS PASADOS A STARTDATE
+                isPast || // 🚫 Bloqueo de días pasados a startDate
                     widget.blockedDays.any((d) => isSameDay(d, day)) ||
                     widget.blockedWeekdays.contains(day.weekday) ||
                     (widget.lastDate != null && day.isAfter(widget.lastDate!));
@@ -252,32 +255,33 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
               onTap: blocked
                   ? null
                   : () {
-                if (widget.selectionMode ==
-                    CalendarSelectionMode.single) {
-                  setState(() => selectedDay = day);
-                  if (widget.onDaySelected != null)
-                    widget.onDaySelected!(day);
-                } else {
-                  if (startSelected == null || endSelected != null) {
-                    setState(() {
-                      startSelected = day;
-                      endSelected = null;
-                    });
-                  } else if (day.isBefore(startSelected!)) {
-                    setState(() => startSelected = day);
-                  } else {
-                    setState(() => endSelected = day);
-                    if (widget.onRangeSelected != null) {
-                      widget.onRangeSelected!(
-                        DateTimeRange(
-                          start: startSelected!,
-                          end: endSelected!,
-                        ),
-                      );
-                    }
-                  }
-                }
-              },
+                      if (widget.selectionMode ==
+                          CalendarSelectionMode.single) {
+                        setState(() => selectedDay = day);
+                        if (widget.onDaySelected != null) {
+                          widget.onDaySelected!(day);
+                        }
+                      } else {
+                        if (startSelected == null || endSelected != null) {
+                          setState(() {
+                            startSelected = day;
+                            endSelected = null;
+                          });
+                        } else if (day.isBefore(startSelected!)) {
+                          setState(() => startSelected = day);
+                        } else {
+                          setState(() => endSelected = day);
+                          if (widget.onRangeSelected != null) {
+                            widget.onRangeSelected!(
+                              DateTimeRange(
+                                start: startSelected!,
+                                end: endSelected!,
+                              ),
+                            );
+                          }
+                        }
+                      }
+                    },
               child: Container(
                 decoration: BoxDecoration(
                   color: bg,
@@ -306,9 +310,9 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
                             shape: BoxShape.circle,
                             border: Border.all(
                               color:
-                              widget.style.highlightedCircle.border.color,
+                                  widget.style.highlightedCircle.border.color,
                               width:
-                              widget.style.highlightedCircle.border.width,
+                                  widget.style.highlightedCircle.border.width,
                             ),
                           ),
                           child: Center(
@@ -327,6 +331,16 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
           },
         ),
       ],
+    );
+
+    if (widget.padding == null && widget.backgroundColor == null) {
+      return calendarContent;
+    }
+
+    return Container(
+      padding: widget.padding,
+      color: widget.backgroundColor,
+      child: calendarContent,
     );
   }
 }

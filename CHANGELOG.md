@@ -1,3 +1,7 @@
+## 0.0.109
+
+#### Added optional padding and background color support to MonthlyCalendar.
+
 ## 0.0.108
 
 #### Changed openBottomSheet default height to 700.
