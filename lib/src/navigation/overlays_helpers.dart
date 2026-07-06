@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:stupid_simple_sheet/stupid_simple_sheet.dart';
 import '../../pizzacorn_ui.dart';
-import '../layout/space.dart';
-import '../text/textstyles.dart';
 
 Future<void> openBottomSheet(
-    BuildContext context,
-    Widget widget, {
-      bool noBarrierColor = false,
-      bool disableDrag = false,
-      double height = 400,
-      Function()? onBack,
-    }) async {
-  final Color backgroundColor = COLOR_BACKGROUND;
+  BuildContext context,
+  Widget widget, {
+  bool noBarrierColor = false,
+  bool disableDrag = false,
+  double height = 700,
+  Color? colorBackground,
+  Function()? onBack,
+}) async {
+  final Color effectiveBackground = colorBackground ?? COLOR_BACKGROUND;
+  final bool showBackground = effectiveBackground != Colors.transparent;
 
   await showModalBottomSheet(
     context: context,
@@ -28,11 +28,13 @@ Future<void> openBottomSheet(
     builder: (context) {
       return Container(
         decoration: BoxDecoration(
-          color: backgroundColor,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(RADIUS * 2),
-            topRight: Radius.circular(RADIUS * 2),
-          ),
+          color: showBackground ? effectiveBackground : Colors.transparent,
+          borderRadius: showBackground
+              ? BorderRadius.only(
+                  topLeft: Radius.circular(RADIUS * 2),
+                  topRight: Radius.circular(RADIUS * 2),
+                )
+              : null,
         ),
         height: height + MediaQuery.of(context).viewInsets.bottom,
         width: MediaQuery.of(context).size.width,
@@ -50,17 +52,15 @@ Future<void> openBottomSheet(
 /// Widget: openStupidSheet
 /// Motivo: Abre un BottomSheet "Floating Card" usando StupidSimpleSheetRoute.
 Future<void> openStupidSheet(
-    BuildContext context,
-    Widget widget, {
-      bool isDismissible = true,
-      Color? backgroundColor,
-      Function()? onBack,
-    }) async {
-  await Navigator.of(context).push(
-    StupidSimpleSheetRoute(
-      child: widget,
-    ),
-  ).then((value) {
+  BuildContext context,
+  Widget widget, {
+  bool isDismissible = true,
+  Color? backgroundColor,
+  Function()? onBack,
+}) async {
+  await Navigator.of(context).push(StupidSimpleSheetRoute(child: widget)).then((
+    value,
+  ) {
     if (onBack != null) {
       onBack();
     }
@@ -71,48 +71,50 @@ Future<void> openStupidSheet(
 /// Widget: openStupidCupertinoSheet
 /// Motivo: Abre un BottomSheet estilo Cupertino "Stacking" (iOS 13+) con navegación integrada.
 Future<void> openStupidCupertinoSheet(
-    BuildContext context,
-    Widget widget, {
-      String title = "",
-      Function()? onBack,
-    }) async {
-  await Navigator.of(context).push(
-    StupidSimpleCupertinoSheetRoute(
-      child: CupertinoPageScaffold(
-        backgroundColor: COLOR_BACKGROUND,
-        child: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            if (title.isNotEmpty)
-              CupertinoSliverNavigationBar(
-                backgroundColor: COLOR_BACKGROUND.withValues(alpha: 0.9),
-                largeTitle: TextSubtitle(title),
-                border: null,
-                leading: CupertinoButton(
-                  padding: EdgeInsets.zero,
-                  child: TextBody("Cerrar", color: COLOR_ACCENT),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ),
-            SliverToBoxAdapter(child: widget),
-          ],
+  BuildContext context,
+  Widget widget, {
+  String title = "",
+  Function()? onBack,
+}) async {
+  await Navigator.of(context)
+      .push(
+        StupidSimpleCupertinoSheetRoute(
+          child: CupertinoPageScaffold(
+            backgroundColor: COLOR_BACKGROUND,
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                if (title.isNotEmpty)
+                  CupertinoSliverNavigationBar(
+                    backgroundColor: COLOR_BACKGROUND.withValues(alpha: 0.9),
+                    largeTitle: TextSubtitle(title),
+                    border: null,
+                    leading: CupertinoButton(
+                      padding: EdgeInsets.zero,
+                      child: TextBody("Cerrar", color: COLOR_ACCENT),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ),
+                SliverToBoxAdapter(child: widget),
+              ],
+            ),
+          ),
         ),
-      ),
-    ),
-  ).then((value) {
-    if (onBack != null) {
-      onBack();
-    }
-  });
+      )
+      .then((value) {
+        if (onBack != null) {
+          onBack();
+        }
+      });
 }
 
 /// Abre un BottomSheet que NO se puede cerrar ni arrastrando ni con el
 /// botón de atrás del sistema.
 Future<void> openBottomNoBack(
-    BuildContext context,
-    Widget widget, {
-      Function()? onBack,
-    }) async {
+  BuildContext context,
+  Widget widget, {
+  Function()? onBack,
+}) async {
   await showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -141,10 +143,10 @@ Future<void> openBottomNoBack(
 
 /// Abre un diálogo estándar usando el [widget] que le pases.
 Future<void> openDialog(
-    BuildContext context,
-    Widget widget, {
-      Function()? onBack,
-    }) async {
+  BuildContext context,
+  Widget widget, {
+  Function()? onBack,
+}) async {
   await showDialog(
     context: context,
     barrierDismissible: true,
@@ -161,30 +163,30 @@ Future<void> openDialog(
 
 /// Muestra un Snackbar Pizzacorn™ con ícono automático.
 void openSnackbar(
-    BuildContext context, {
-      String text = "",
-      bool isError = true,
-      bool isAlert = false,
-      bool isDone = false,
-      Color? color,
-      Color? textColor,
-    }) {
+  BuildContext context, {
+  String text = "",
+  bool isError = true,
+  bool isAlert = false,
+  bool isDone = false,
+  Color? color,
+  Color? textColor,
+}) {
   final scheme = Theme.of(context).colorScheme;
 
   Color effectiveColor = color ?? scheme.error;
   IconData iconData = Icons.info_outline;
 
-  if (isError) {
-    effectiveColor = COLOR_ERROR;
-    iconData = Icons.close_rounded;
-  } else if (isAlert) {
-    effectiveColor = COLOR_ALERT;
-    iconData = Icons.warning_amber_rounded;
-  } else if (isDone) {
-    effectiveColor = COLOR_DONE;
+  if (isDone) {
+    effectiveColor = color ?? COLOR_DONE;
     iconData = Icons.check_circle_outline_rounded;
-  }else {
-    effectiveColor = COLOR_INFO;
+  } else if (isAlert) {
+    effectiveColor = color ?? COLOR_ALERT;
+    iconData = Icons.warning_amber_rounded;
+  } else if (isError) {
+    effectiveColor = color ?? COLOR_ERROR;
+    iconData = Icons.close_rounded;
+  } else {
+    effectiveColor = color ?? COLOR_INFO;
     iconData = Icons.info_outline;
   }
 
@@ -198,11 +200,7 @@ void openSnackbar(
       duration: const Duration(seconds: 3),
       content: Row(
         children: [
-          Icon(
-            iconData,
-            color: effectiveTextColor,
-            size: 20,
-          ),
+          Icon(iconData, color: effectiveTextColor, size: 20),
           Space(SPACE_SMALL),
           Expanded(
             child: TextBody(

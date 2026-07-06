@@ -1,11 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pizzacorn_ui/src/cropper/pressed_image.dart';
 import '../../pizzacorn_ui.dart';
-import 'package:pizzacorn_ui/src/models/file_model.dart';
-
-// OJO: aquí debes importar tu FileModel y la función pressedImage
-// import 'package:TU_APP/models/file_model.dart';
-// import 'pressed_image.dart'; // o donde la tengas
 
 class ImagePublish extends StatefulWidget {
   final FileModel imageFile;
@@ -17,6 +11,8 @@ class ImagePublish extends StatefulWidget {
   final bool isCircular;
   final bool hasRadius;
   final BoxFit boxFit;
+  final Widget? placeholder;
+  final Widget? addImageIcon;
 
   final Color backgroundColor;
   final bool hasBorder;
@@ -41,6 +37,8 @@ class ImagePublish extends StatefulWidget {
     this.isCircular = false,
     this.hasRadius = true,
     this.boxFit = BoxFit.cover,
+    this.placeholder,
+    this.addImageIcon,
     this.backgroundColor = Colors.transparent,
     this.hasBorder = true,
     this.borderColor,
@@ -66,6 +64,9 @@ class _ImagePublishState extends State<ImagePublish> {
         widget.deleteButtonBorderColor ?? COLOR_BORDER;
     final Color effectiveDeleteBackgroundColor =
         widget.deleteButtonBackgroundColor ?? COLOR_BACKGROUND;
+    final bool hasImage =
+        widget.imageFile.url.isNotEmpty ||
+        widget.imageFile.dataUint8List != null;
 
     return Align(
       child: SizedBox(
@@ -75,7 +76,7 @@ class _ImagePublishState extends State<ImagePublish> {
           alignment: Alignment.center,
           clipBehavior: Clip.none,
           children: [
-            // Imagen
+            // Imagen y placeholder
             Container(
               width: widget.width,
               height: widget.height,
@@ -92,40 +93,51 @@ class _ImagePublishState extends State<ImagePublish> {
                       )
                     : null,
                 boxShadow: widget.boxShadows,
-                image: DecorationImage(
-                  fit: widget.boxFit,
-                  image: widget.imageFile.dataUint8List != null
-                      ? MemoryImage(widget.imageFile.dataUint8List!)
-                            as ImageProvider
-                      : widget.imageFile.url.isEmpty
-                      ? const AssetImage('assets/image/nada.png')
-                      : NetworkImage(widget.imageFile.url),
-                ),
+                image: hasImage || widget.placeholder == null
+                    ? DecorationImage(
+                        fit: widget.boxFit,
+                        image: widget.imageFile.dataUint8List != null
+                            ? MemoryImage(widget.imageFile.dataUint8List!)
+                                  as ImageProvider
+                            : widget.imageFile.url.isEmpty
+                            ? const AssetImage(
+                                'assets/images/nada.png',
+                                package: 'pizzacorn_ui',
+                              )
+                            : NetworkImage(widget.imageFile.url),
+                      )
+                    : null,
               ),
               clipBehavior: Clip.antiAlias,
-              child: TextButton(
-                style: styleTransparent(),
-                onPressed: () {
-                  onImagePressed(
-                    context,
-                    onFinish: widget.onFinish,
-                    isCircular: widget.isCircular,
-                    cropResolution: widget.width / widget.height,
-                    width: widget.width,
-                    height: widget.height,
-                  );
-                },
-                child: Center(
-                  child:
-                      (widget.imageFile.url.isNotEmpty ||
-                          widget.imageFile.dataUint8List != null)
-                      ? const SizedBox.shrink()
-                      : SvgCustom(
-                          icon: 'anadir-imagen',
-                          color: COLOR_ACCENT.withValues(alpha: 0.5),
-                          size: 30,
-                        ),
-                ),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  if (!hasImage && widget.placeholder != null)
+                    Positioned.fill(child: widget.placeholder!),
+                  TextButton(
+                    style: styleTransparent(),
+                    onPressed: () {
+                      onImagePressed(
+                        context,
+                        onFinish: widget.onFinish,
+                        isCircular: widget.isCircular,
+                        cropResolution: widget.width / widget.height,
+                        width: widget.width,
+                        height: widget.height,
+                      );
+                    },
+                    child: Center(
+                      child: hasImage
+                          ? const SizedBox.shrink()
+                          : widget.addImageIcon ??
+                                SvgCustom(
+                                  icon: 'anadir-imagen',
+                                  color: COLOR_ACCENT.withValues(alpha: 0.5),
+                                  size: 30,
+                                ),
+                    ),
+                  ),
+                ],
               ),
             ),
 
@@ -135,11 +147,7 @@ class _ImagePublishState extends State<ImagePublish> {
               right: 5,
               child: AnimatedOpacity(
                 duration: const Duration(milliseconds: 200),
-                opacity:
-                    (widget.imageFile.url.isNotEmpty ||
-                        widget.imageFile.dataUint8List != null)
-                    ? 1
-                    : 0,
+                opacity: hasImage ? 1 : 0,
                 child: Container(
                   width: widget.deleteButtonSize,
                   height: widget.deleteButtonSize,

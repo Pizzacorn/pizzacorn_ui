@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../pizzacorn_ui.dart';
-import '../layout/space.dart';
 
-/// Bottom sheet sencillo con UN botón totalmente personalizable.
+/// 🍕 Bottom sheet sencillo con UN botón totalmente personalizable.
 class BottomSheetCustomOneButton extends StatelessWidget {
   final String title;
   final VoidCallback? onPressed;
+  final Color? colorBackground;
 
-  // Colores del botón
+  // 🎨 Colores del botón.
   final Color? colorButton;
   final Color? textColor;
   final Color? borderColor;
@@ -19,6 +19,7 @@ class BottomSheetCustomOneButton extends StatelessWidget {
     super.key,
     required this.title,
     this.onPressed,
+    this.colorBackground,
     this.colorButton,
     this.textColor,
     this.borderColor,
@@ -28,8 +29,11 @@ class BottomSheetCustomOneButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Si no se pasa color, usamos ACCENT por defecto
+    // 🎨 Si no se pasa color, usamos ACCENT por defecto.
     final Color effectiveButtonColor = colorButton ?? COLOR_ACCENT;
+    final Color effectiveBackground = colorBackground ?? COLOR_BACKGROUND;
+    final bool showBackground =
+        hasBackground && effectiveBackground != Colors.transparent;
 
     return Container(
       padding: const EdgeInsets.only(
@@ -39,15 +43,15 @@ class BottomSheetCustomOneButton extends StatelessWidget {
         top: SPACE_MEDIUM,
       ),
       decoration: BoxDecoration(
-        color: hasBackground ? COLOR_BACKGROUND : Colors.transparent,
-        boxShadow: hasBackground ? [BoxShadowCustom()] : [],
+        color: showBackground ? effectiveBackground : Colors.transparent,
+        boxShadow: showBackground ? [BoxShadowCustom()] : [],
       ),
       child: ButtonCustom(
         text: title,
         color: effectiveButtonColor,
-        textColor: textColor,      // 🔥 Ahora controlas el texto
-        borderColor: borderColor,  // 🔥 Ahora controlas el borde
-        border: border,            // 🔥 Puedes activar el borde
+        textColor: textColor,
+        borderColor: borderColor,
+        border: border,
         onPressed: () {
           if (onPressed != null) {
             onPressed!();
@@ -58,7 +62,7 @@ class BottomSheetCustomOneButton extends StatelessWidget {
   }
 }
 
-/// Bottom sheet con DOS botones con control total de estilo.
+/// 🍕 Bottom sheet con DOS botones con control total de estilo.
 class BottomSheetCustomTwoButtons extends StatelessWidget {
   final String leftTitle;
   final String rightTitle;
@@ -67,13 +71,13 @@ class BottomSheetCustomTwoButtons extends StatelessWidget {
   final VoidCallback? onRightPressed;
   final bool hasBackground;
 
-  // Personalización Botón Izquierdo
+  // 👈 Personalización botón izquierdo.
   final Color? leftColor;
   final Color? leftTextColor;
   final Color? leftBorderColor;
   final bool leftBorder;
 
-  // Personalización Botón Derecho
+  // 👉 Personalización botón derecho.
   final Color? rightColor;
   final Color? rightTextColor;
   final Color? rightBorderColor;
@@ -87,12 +91,12 @@ class BottomSheetCustomTwoButtons extends StatelessWidget {
     this.onRightPressed,
     this.colorBackground,
     this.hasBackground = true,
-    // Defaults para el izquierdo (Suele ser el de cancelar)
+    // 🍕 Defaults para el izquierdo, suele ser cancelar.
     this.leftColor = Colors.transparent,
     this.leftTextColor,
     this.leftBorderColor,
     this.leftBorder = true,
-    // Defaults para el derecho (Suele ser el de acción)
+    // 🚀 Defaults para el derecho, suele ser la acción principal.
     this.rightColor,
     this.rightTextColor,
     this.rightBorderColor,
@@ -102,6 +106,8 @@ class BottomSheetCustomTwoButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color effectiveBackground = colorBackground ?? COLOR_BACKGROUND;
+    final bool showBackground =
+        hasBackground && effectiveBackground != Colors.transparent;
 
     final bool showLeft = leftTitle.isNotEmpty && onLeftPressed != null;
     final bool showRight = rightTitle.isNotEmpty && onRightPressed != null;
@@ -109,11 +115,11 @@ class BottomSheetCustomTwoButtons extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(SPACE_MEDIUM),
       decoration: BoxDecoration(
-        color: hasBackground ? effectiveBackground : Colors.transparent,
+        color: showBackground ? effectiveBackground : Colors.transparent,
       ),
       child: Row(
         children: [
-          // Botón Izquierdo
+          // 👈 Botón izquierdo.
           if (showLeft)
             Expanded(
               child: ButtonCustom(
@@ -126,10 +132,9 @@ class BottomSheetCustomTwoButtons extends StatelessWidget {
               ),
             ),
 
-          if (showLeft && showRight)
-            Space(SPACE_SMALL),
+          if (showLeft && showRight) Space(SPACE_SMALL),
 
-          // Botón Derecho
+          // 👉 Botón derecho.
           if (showRight)
             Expanded(
               child: ButtonCustom(
@@ -147,7 +152,8 @@ class BottomSheetCustomTwoButtons extends StatelessWidget {
   }
 }
 
-/// Sombras estándar Pizzacorn.
+/// ✨ Sombras estándar Pizzacorn.
+// ignore: non_constant_identifier_names
 BoxShadow BoxShadowCustom() {
   return BoxShadow(
     color: COLOR_SHADOW.withValues(alpha: 0.2),

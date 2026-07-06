@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pizzacorn_ui/pizzacorn_ui.dart'; // Usando el import global que acordamos
+import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 
 class ButtonCustom extends StatelessWidget {
   final void Function()? onPressed;
@@ -28,12 +28,16 @@ class ButtonCustom extends StatelessWidget {
   final String iconFinal;
 
   // ICONS (IconData / IconsPro)
-  final IconData? prefixIcon; // 🆕 Nuevo
-  final IconData? suffixIcon; // 🆕 Nuevo
+  final IconData? prefixIcon;
+  final IconData? suffixIcon;
 
-  // Ya tenías estos, los mantenemos por compatibilidad
+  // Compatibilidad con los nombres antiguos.
   final IconData? iconBeginData;
   final IconData? iconFinalData;
+
+  // SOCIAL ICONS
+  final bool isGoogleButton;
+  final bool isAppleButton;
 
   final double padding;
   final double iconSize;
@@ -50,6 +54,7 @@ class ButtonCustom extends StatelessWidget {
   // ACCESSIBILITY
   final String? semanticLabel;
 
+  // ignore: prefer_const_constructors_in_immutables
   ButtonCustom({
     super.key,
     this.onPressed,
@@ -73,16 +78,21 @@ class ButtonCustom extends StatelessWidget {
     this.colorGradientSecondary,
     this.iconBegin = "",
     this.iconFinal = "",
-    this.prefixIcon, // 🆕
-    this.suffixIcon, // 🆕
+    this.prefixIcon,
+    this.suffixIcon,
     this.iconBeginData,
     this.iconFinalData,
+    this.isGoogleButton = false,
+    this.isAppleButton = false,
     this.iconColor = Colors.white,
     this.iconNoColor = false,
     this.iconSize = 18,
     this.onlyText = false,
     this.semanticLabel,
-  });
+  }) : assert(
+         !(isGoogleButton && isAppleButton),
+         "ButtonCustom no puede ser Google y Apple a la vez.",
+       );
 
   @override
   Widget build(BuildContext context) {
@@ -94,17 +104,26 @@ class ButtonCustom extends StatelessWidget {
         .toColor();
 
     final Color effectiveColorSplash = colorSplash ?? autoDarkenedSplash;
-    final Color effectiveTextColor = textColor ?? (border ? COLOR_TEXT : COLOR_TEXT_BUTTONS);
+    final Color effectiveTextColor =
+        textColor ?? (border ? COLOR_TEXT : COLOR_TEXT_BUTTONS);
     final Color effectiveBorderColor = borderColor ?? COLOR_BORDER;
     final double effectiveBorderRadius = borderRadius ?? RADIUS;
     final Color effectiveGradientPrimary = colorGradientPrimary ?? COLOR_ACCENT;
-    final Color effectiveGradientSecondary = colorGradientSecondary ?? COLOR_ACCENT_SECONDARY;
+    final Color effectiveGradientSecondary =
+        colorGradientSecondary ?? COLOR_ACCENT_SECONDARY;
+    final String socialIcon = isGoogleButton
+        ? "google"
+        : isAppleButton
+        ? "apple"
+        : "";
 
     final double finalHeight = height ?? BUTTON_HEIGHT;
 
     String label = semanticLabel ?? text;
     if (label.isEmpty && richTexts.isNotEmpty) {
-      for (var map in richTexts) { label += "${map.values.first} "; }
+      for (int i = 0; i < richTexts.length; i++) {
+        label += "${richTexts[i].values.first} ";
+      }
     }
 
     return Semantics(
@@ -133,10 +152,13 @@ class ButtonCustom extends StatelessWidget {
                 gradient: !hasGradient || richTexts.isNotEmpty || onlyText
                     ? null
                     : LinearGradient(
-                  colors: [effectiveGradientPrimary, effectiveGradientSecondary],
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                ),
+                        colors: [
+                          effectiveGradientPrimary,
+                          effectiveGradientSecondary,
+                        ],
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                      ),
                 color: hasGradient || richTexts.isNotEmpty || onlyText
                     ? null
                     : effectiveColor,
@@ -146,29 +168,47 @@ class ButtonCustom extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: mainAxisAlignment,
                   children: [
-                    // --- ICONO INICIAL ---
-                    if (prefixIcon != null || iconBeginData != null || iconBegin.isNotEmpty)
+                    if (socialIcon.isNotEmpty ||
+                        prefixIcon != null ||
+                        iconBeginData != null ||
+                        iconBegin.isNotEmpty)
                       Padding(
-                        padding: EdgeInsets.only(right: text.isNotEmpty ? 10 : 0),
-                        child: _buildIcon(prefixIcon ?? iconBeginData, iconBegin),
+                        padding: EdgeInsets.only(
+                          right: text.isNotEmpty ? 10 : 0,
+                        ),
+                        child: socialIcon.isNotEmpty
+                            ? SvgCustomNoColor(
+                                fullIcon:
+                                    "packages/pizzacorn_ui/assets/icons/$socialIcon.svg",
+                                size: iconSize,
+                              )
+                            : buildIcon(prefixIcon ?? iconBeginData, iconBegin),
                       ),
-
                     if (text.isNotEmpty)
                       Flexible(
                         child: TextButtonCustom(
                           text,
                           color: effectiveTextColor,
-                          fontSize: customSizeText != 0 ? customSizeText : TEXT_BUTTON_SIZE,
+                          fontSize: customSizeText != 0
+                              ? customSizeText
+                              : TEXT_BUTTON_SIZE,
                         ),
                       )
                     else if (richTexts.isNotEmpty)
-                      RichText(text: TextSpan(children: buildRichTextChildren())),
-
-                    // --- ICONO FINAL ---
-                    if (suffixIcon != null || iconFinalData != null || iconFinal.isNotEmpty)
+                      RichText(
+                        text: TextSpan(children: buildRichTextChildren()),
+                      ),
+                    if (suffixIcon != null ||
+                        iconFinalData != null ||
+                        iconFinal.isNotEmpty)
                       Padding(
-                        padding: EdgeInsets.only(left: text.isNotEmpty ? 10 : 0),
-                        child: _buildIcon(suffixIcon ?? iconFinalData, iconFinal),
+                        padding: EdgeInsets.only(
+                          left: text.isNotEmpty ? 10 : 0,
+                        ),
+                        child: buildIcon(
+                          suffixIcon ?? iconFinalData,
+                          iconFinal,
+                        ),
                       ),
                   ],
                 ),
@@ -180,8 +220,7 @@ class ButtonCustom extends StatelessWidget {
     );
   }
 
-  /// Helper para decidir si pintar IconData o SVG
-  Widget _buildIcon(IconData? data, String svgPath) {
+  Widget buildIcon(IconData? data, String svgPath) {
     if (data != null) {
       return Icon(data, size: iconSize, color: iconColor);
     }
@@ -194,22 +233,27 @@ class ButtonCustom extends StatelessWidget {
   }
 
   List<TextSpan> buildRichTextChildren() {
-    return richTexts.map((textData) {
+    final List<TextSpan> textSpanList = [];
+    for (int i = 0; i < richTexts.length; i++) {
+      final Map<String, String> textData = richTexts[i];
       final String key = textData.keys.first;
       final String value = textData.values.first;
-      return TextSpan(
-        text: value,
-        style: key == "destacado"
-            ? styleBody(fontWeight: FontWeight.bold, color: COLOR_ACCENT)
-            : styleBody(),
+      textSpanList.add(
+        TextSpan(
+          text: value,
+          style: key == "destacado"
+              ? styleBody(fontWeight: FontWeight.bold, color: COLOR_ACCENT)
+              : styleBody(),
+        ),
       );
-    }).toList();
+    }
+    return textSpanList;
   }
 }
 
 /// PIZZACORN_UI CANDIDATE
 /// Widget: OptionButton
-/// Motivo: Un botón de fila (tipo celda) ideal para menús de opciones, perfiles o configuraciones.
+/// Motivo: Un boton de fila ideal para menus de opciones, perfiles o configuraciones.
 class OptionButton extends StatelessWidget {
   final String title;
   final IconData? prefixIcon;
@@ -238,7 +282,8 @@ class OptionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final Color effectiveTextColor = textColor ?? COLOR_TEXT;
     final Color effectiveIconColor = iconColor ?? effectiveTextColor;
-    final Color effectiveSuffixIconColor = suffixIconColor ?? Colors.grey.shade400;
+    final Color effectiveSuffixIconColor =
+        suffixIconColor ?? Colors.grey.shade400;
 
     return InkWell(
       onTap: onTap,
@@ -246,8 +291,8 @@ class OptionButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: DecorationCustom(
-          color: color ?? COLOR_BACKGROUND, 
-          hasShadow: hasShadow
+          color: color ?? COLOR_BACKGROUND,
+          hasShadow: hasShadow,
         ),
         child: Row(
           children: [
@@ -257,9 +302,9 @@ class OptionButton extends StatelessWidget {
             ],
             Expanded(
               child: TextBody(
-                title, 
-                color: effectiveTextColor, 
-                fontWeight: FontWeight.bold
+                title,
+                color: effectiveTextColor,
+                fontWeight: FontWeight.bold,
               ),
             ),
             if (suffixIcon != null)

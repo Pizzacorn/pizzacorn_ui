@@ -37,6 +37,7 @@ export 'src/cropper/image_picker.dart';
 export 'src/cropper/pressed_image.dart';
 
 //decorations
+export 'src/decorations/container_custom_gradient.dart';
 export 'src/decorations/decorations.dart';
 
 //dropdown
@@ -48,6 +49,8 @@ export 'src/effects/shimmer.dart';
 export 'src/effects/show_up.dart';
 export 'src/effects/hover.dart';
 export 'src/effects/blur.dart';
+export 'src/effects/glass.dart';
+export 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 
 // form
 export 'src/form/textfield.dart';
@@ -73,9 +76,8 @@ export 'src/inputs/checkbox_politics.dart';
 
 // layout
 export 'src/layout/space.dart';
-
-//list
-export 'src/list/inifinite_scroll.dart';
+export 'src/layout/sliver_column.dart';
+export 'src/layout/sliver_space.dart';
 
 // login
 export 'src/login/login_auth_repository.dart';
@@ -104,6 +106,7 @@ export 'src/navigation/bottombar_central.dart';
 
 // overlays
 export 'src/overlays/bottom_sheet.dart';
+export 'src/overlays/drag_indicator.dart';
 export 'src/overlays/loading.dart';
 export 'src/overlays/loading_widget.dart';
 export 'src/overlays/bottom_popups.dart';
@@ -118,11 +121,18 @@ export 'src/pickers/icon_picker.dart';
 export 'src/pickers/date_picker.dart';
 export 'src/pickers/time_picker.dart';
 export 'src/pickers/uicon_picker.dart';
+export 'src/pickers/birth_date_slider.dart';
+export 'src/pickers/measure_picker.dart';
 
 //segmented
 export 'src/segmented/segmented.dart';
 export 'src/segmented/segmented_cupertino.dart';
 export 'src/segmented/segmented_subtitles.dart';
+
+//selectors
+export 'src/selectors/animated_gradient_border_container.dart';
+export 'src/selectors/column_expanded_selector.dart';
+export 'src/selectors/grid_expanded_selector.dart';
 
 //Socials
 export 'src/socials/socials.dart';

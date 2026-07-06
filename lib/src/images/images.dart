@@ -10,12 +10,10 @@ class ImageCustom extends StatelessWidget {
   final BoxFit fit;
   final bool isCircular;
   final double borderRadius;
+  final BorderRadiusGeometry? borderRadiusCustom;
   final double borderWidth;
   final Color borderColor;
-
-  // Don Sput, aquí está el nuevo parámetro
   final Color? backgroundColor;
-
   final Widget? overlay;
 
   const ImageCustom({
@@ -27,25 +25,28 @@ class ImageCustom extends StatelessWidget {
     this.fit = BoxFit.cover,
     this.isCircular = false,
     this.borderRadius = 5,
+    this.borderRadiusCustom,
     this.borderWidth = 0,
     this.borderColor = Colors.transparent,
-    this.backgroundColor, // Añadido aquí
+    this.backgroundColor,
     this.overlay,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Si no viene color, usamos el secundario por defecto
+    // 🎨 Si no viene color, usamos el secundario por defecto.
     final Color effectiveBgColor = backgroundColor ?? COLOR_BACKGROUND_SECONDARY;
+    final BorderRadiusGeometry effectiveBorderRadius =
+        borderRadiusCustom ?? BorderRadius.circular(borderRadius);
 
-    // Caso: URL vacía
+    // 🖼️ Caso: URL vacía.
     if (imageUrl.isEmpty) {
       return Container(
         width: width,
         height: height,
         decoration: BoxDecoration(
           shape: isCircular ? BoxShape.circle : BoxShape.rectangle,
-          borderRadius: isCircular ? null : BorderRadius.circular(borderRadius),
+          borderRadius: isCircular ? null : effectiveBorderRadius,
           border: Border.all(color: borderColor, width: borderWidth),
           color: effectiveBgColor,
         ),
@@ -54,7 +55,7 @@ class ImageCustom extends StatelessWidget {
       );
     }
 
-    // Carga de red
+    // 🌐 Carga de red.
     final imageWidget = CachedNetworkImage(
       imageUrl: imageUrl,
       width: width,
@@ -71,25 +72,25 @@ class ImageCustom extends StatelessWidget {
     final clippedImage = isCircular
         ? ClipOval(child: imageWidget)
         : ClipRRect(
-      borderRadius: BorderRadius.circular(borderRadius),
-      child: imageWidget,
-    );
+            borderRadius: effectiveBorderRadius,
+            child: imageWidget,
+          );
 
     return Container(
       width: width,
       height: height,
       decoration: BoxDecoration(
         shape: isCircular ? BoxShape.circle : BoxShape.rectangle,
-        borderRadius: isCircular ? null : BorderRadius.circular(borderRadius),
+        borderRadius: isCircular ? null : effectiveBorderRadius,
         border: Border.all(color: borderColor, width: borderWidth),
-        color: effectiveBgColor, // Aplicamos el color aquí
+        color: effectiveBgColor,
       ),
       clipBehavior: Clip.antiAlias,
       child: Stack(
         fit: StackFit.expand,
         children: [
           clippedImage,
-          if (overlay != null) overlay!
+          if (overlay != null) overlay!,
         ],
       ),
     );

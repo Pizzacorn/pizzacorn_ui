@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart'; // Necesario para los iconos SVG
 import '../../pizzacorn_ui.dart'; // Importamos la librería principal para tokens y widgets
-import '../utils/color_utils.dart'; // Para el método .withValues(alpha: )
 
 /// PIZZACORN_UI CANDIDATE
 /// Widget: BottomBarCentral
@@ -19,6 +18,7 @@ class BottomBarCentral extends StatelessWidget {
   final Color? activeColor;
   final Color? inactiveColor;
   final Color? centerButtonColor;
+  final double centerCircleSize;
 
   const BottomBarCentral({
     super.key,
@@ -32,25 +32,25 @@ class BottomBarCentral extends StatelessWidget {
     this.activeColor,
     this.inactiveColor,
     this.centerButtonColor,
+    this.centerCircleSize = 75,
   }) : assert(
-  icons.length == 4 && titles.length == 4,
-  "Don Sputknif, esta barra necesita exactamente 4 iconos y 4 títulos para el equilibrio Pizzacorn.",
-  );
+         icons.length == 4 && titles.length == 4,
+         "Don Sputknif, esta barra necesita exactamente 4 iconos y 4 títulos para el equilibrio Pizzacorn.",
+       );
 
   @override
   Widget build(BuildContext context) {
-
     final Color effectiveActiveColor = activeColor ?? COLOR_ACCENT;
-    final Color effectiveInactiveColor = inactiveColor ?? COLOR_TEXT.withValues(alpha: 0.8);
+    final Color effectiveInactiveColor =
+        inactiveColor ?? COLOR_TEXT.withValues(alpha: 0.8);
     final Color effectiveBg = backgroundColor ?? COLOR_BACKGROUND;
     final Color effectiveCenterColor = centerButtonColor ?? COLOR_ACCENT;
+    final double effectiveCenterIconSize = centerCircleSize * 0.37;
 
     return Semantics(
-
       explicitChildNodes: true,
 
       child: Container(
-
         height: 140,
         width: double.infinity,
         padding: const EdgeInsets.only(bottom: 20),
@@ -68,11 +68,9 @@ class BottomBarCentral extends StatelessWidget {
         ),
 
         child: Stack(
-
           alignment: Alignment.bottomCenter,
 
           children: [
-
             Container(
               height: 65,
               margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
@@ -113,12 +111,13 @@ class BottomBarCentral extends StatelessWidget {
                   // Espacio central para el botón circular (Hueco 3 de 5)
                   const Expanded(child: SizedBox.shrink()),
 
-
                   // Lado Derecho
                   _BottomBarCentralItem(
                     title: titles[2],
                     iconData: icons[2],
-                    isSelected: currentIndex == 2, // Nota: el index real de la página suele saltar el centro
+                    isSelected:
+                        currentIndex ==
+                        2, // Nota: el index real de la página suele saltar el centro
                     onTap: () => onTap(2),
                     activeColor: effectiveActiveColor,
                     inactiveColor: effectiveInactiveColor,
@@ -132,7 +131,6 @@ class BottomBarCentral extends StatelessWidget {
                     activeColor: effectiveActiveColor,
                     inactiveColor: effectiveInactiveColor,
                   ),
-
                 ],
               ),
             ),
@@ -147,8 +145,8 @@ class BottomBarCentral extends StatelessWidget {
                 child: GestureDetector(
                   onTap: onCenterTap,
                   child: Container(
-                    height: 75,
-                    width: 75,
+                    height: centerCircleSize,
+                    width: centerCircleSize,
                     decoration: BoxDecoration(
                       color: effectiveCenterColor,
                       shape: BoxShape.circle,
@@ -159,33 +157,41 @@ class BottomBarCentral extends StatelessWidget {
                           offset: const Offset(0, 6),
                         ),
                       ],
-                      border: Border.all(color: currentIndex == 4 ? effectiveActiveColor : effectiveBg, width: 3),
+                      border: Border.all(
+                        color: currentIndex == 4
+                            ? effectiveActiveColor
+                            : effectiveBg,
+                        width: 3,
+                      ),
                     ),
                     child: Center(
-                      child: _buildCenterIcon(centerIcon, Colors.white),
+                      child: _buildCenterIcon(
+                        centerIcon,
+                        Colors.white,
+                        effectiveCenterIconSize,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-
           ],
         ),
       ),
     );
   }
 
-  Widget _buildCenterIcon(dynamic icon, Color color) {
+  Widget _buildCenterIcon(dynamic icon, Color color, double size) {
     if (icon is IconData) {
-      return Icon(icon, size: 28, color: color);
+      return Icon(icon, size: size, color: color);
     } else if (icon is String) {
       return SvgPicture.asset(
         icon,
-        height: 28,
+        height: size,
         colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
       );
     }
-    return const Icon(Icons.add, size: 28, color: Colors.white);
+    return Icon(Icons.add, size: size, color: Colors.white);
   }
 }
 
@@ -199,7 +205,6 @@ class _BottomBarCentralItem extends StatelessWidget {
   final Color inactiveColor;
 
   const _BottomBarCentralItem({
-    super.key, // Añadido super.key para la consistencia
     required this.title,
     required this.iconData,
     required this.isSelected,

@@ -103,7 +103,7 @@ extension StringTrans on String {
 /// Helper global para obtener el emoji de la bandera
 String getFlagEmoji(String languageCode) {
   String countryCode = languageCode;
-  if (languageCode == 'en') countryCode = 'us';
+  if (languageCode == 'en') countryCode = 'gb';
   if (languageCode == 'ar') countryCode = 'sa';
 
   return countryCode.toUpperCase().split('').map((char) {

@@ -148,3 +148,168 @@ class SliverListCustom<T> extends ConsumerWidget {
     );
   }
 }
+
+class PaginationListCustom<T> extends ConsumerWidget {
+  final PaginationParams<T> params;
+  final Widget Function(T item) itemBuilder;
+  final T itemPlaceholder;
+  final Widget? emptyWidget;
+  final double height;
+  final double itemSpacing;
+  final EdgeInsetsGeometry padding;
+  final ScrollPhysics? physics;
+  final String Function(T item)? idExtractor;
+
+  PaginationListCustom({
+    super.key,
+    required this.params,
+    required this.itemBuilder,
+    required this.itemPlaceholder,
+    this.emptyWidget,
+    this.height = 200,
+    this.itemSpacing = SPACE_SMALL,
+    this.padding = EdgeInsets.zero,
+    this.physics,
+    this.idExtractor,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(paginationProvider(params));
+    final controller = ref.read(paginationProvider(params).notifier);
+
+    // 1. ESTADO DE CARGA INICIAL
+    if (state.isLoading && state.items.isEmpty) {
+      return SliverToBoxAdapter(
+        child: SizedBox(
+          height: height,
+          child: Skeletonizer(
+            enabled: true,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: padding,
+              physics: physics,
+              itemCount: 3,
+              separatorBuilder: (context, i) => SizedBox(width: itemSpacing),
+              itemBuilder: (context, i) {
+                return itemBuilder(itemPlaceholder);
+              },
+            ),
+          ),
+        ),
+      );
+    }
+
+    // 2. ESTADO DE ERROR INICIAL
+    if (state.error.isNotEmpty && state.items.isEmpty) {
+      return SliverToBoxAdapter(
+        child: Center(
+          child: Padding(
+            padding: PADDING_ALL,
+            child: TextBody("Error: ${state.error}", maxlines: 50),
+          ),
+        ),
+      );
+    }
+
+    // 3. ESTADO VACÍO
+    if (state.items.isEmpty) {
+      if (emptyWidget == null) {
+        return SliverToBoxAdapter(
+          child: Center(
+            child: Padding(
+              padding: PADDING_ALL,
+              child: TextBody("No hay resultados"),
+            ),
+          ),
+        );
+      }
+
+      return (emptyWidget is RenderObjectWidget && emptyWidget.runtimeType.toString().contains('Sliver'))
+          ? emptyWidget!
+          : SliverToBoxAdapter(child: emptyWidget);
+    }
+
+    // 4. LISTA HORIZONTAL REAL PAGINADA
+    final bool showFooter = state.hasMore || state.error.isNotEmpty;
+    final int itemCount = state.items.length + (showFooter ? 1 : 0);
+
+    return SliverToBoxAdapter(
+      child: SizedBox(
+        height: height,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          padding: padding,
+          physics: physics,
+          itemCount: itemCount,
+          separatorBuilder: (context, i) => SizedBox(width: itemSpacing),
+          itemBuilder: (context, i) {
+            if (i < state.items.length) {
+              // 🚀 Pedimos más datos cuando el usuario alcanza el último item.
+              if (i == state.items.length - 1 &&
+                  state.hasMore &&
+                  !state.isFetchingMore &&
+                  !state.isLoading &&
+                  state.error.isEmpty) {
+                Future.microtask(() => controller.fetchMore());
+              }
+
+              final item = state.items[i];
+              final itemKey = idExtractor != null ? idExtractor!(item) : i.toString();
+
+              return Container(
+                key: ValueKey(itemKey),
+                child: itemBuilder(item),
+              );
+            }
+
+            // 5. ZONA FINAL: SKELETON O ERROR DE PAGINACIÓN
+            if (state.isFetchingMore) {
+              return Skeletonizer(
+                enabled: true,
+                child: itemBuilder(itemPlaceholder),
+              );
+            }
+
+            if (state.error.isNotEmpty && state.items.isNotEmpty) {
+              return SizedBox(
+                width: 220,
+                child: Padding(
+                  padding: PADDING_ALL,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextBody("Error al cargar más: ${state.error}", maxlines: 3),
+                      Space(SPACE_SMALL),
+                      ElevatedButton(
+                        onPressed: () => controller.fetchMore(),
+                        child: TextBody("Reintentar"),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            return SizedBox(width: itemSpacing);
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class SliverListHorizontalCustom<T> extends PaginationListCustom<T> {
+  SliverListHorizontalCustom({
+    super.key,
+    required super.params,
+    required super.itemBuilder,
+    required super.itemPlaceholder,
+    super.emptyWidget,
+    super.height,
+    super.itemSpacing,
+    super.padding,
+    super.physics,
+    super.idExtractor,
+  });
+}
