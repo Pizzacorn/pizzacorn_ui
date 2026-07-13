@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:uicons_pro/uicons_pro.dart';
 import '../../pizzacorn_ui.dart';
 
-/// PIZZACORN_UI CANDIDATE
-/// Widget: SelectorList
-/// Motivo: Selector de opción única con feedback visual vibrante, área de toque total garantizada y soporte de color ACCENT.
+/// 🍕 Selector de opción única con área de toque completa y soporte de color ACCENT.
 /// API: SelectorList(options, selectedIndex: index, onChanged: (i) => ...)
 class SelectorList extends StatelessWidget {
   final List<String> options;
@@ -12,25 +10,28 @@ class SelectorList extends StatelessWidget {
   final ValueChanged<int> onChanged;
   final double spaceSize;
   final Color? selectedColor;
+  final int? maxLines;
 
   const SelectorList(
-      this.options, {
-        super.key,
-        required this.selectedIndex,
-        required this.onChanged,
-        this.spaceSize = SPACE_SMALL,
-        this.selectedColor,
-      });
+    this.options, {
+    super.key,
+    required this.selectedIndex,
+    required this.onChanged,
+    this.spaceSize = SPACE_SMALL,
+    this.selectedColor,
+    this.maxLines,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         for (int i = 0; i < options.length; i++) ...[
-          _SelectorItem(
+          SelectorListItem(
             options[i],
             isSelected: selectedIndex == i,
             selectedColor: selectedColor ?? COLOR_ACCENT,
+            maxLines: maxLines,
             onTap: () => onChanged(i),
           ),
           if (i < options.length - 1) Space(spaceSize),
@@ -40,18 +41,20 @@ class SelectorList extends StatelessWidget {
   }
 }
 
-class _SelectorItem extends StatelessWidget {
+class SelectorListItem extends StatelessWidget {
   final String label;
   final bool isSelected;
   final Color selectedColor;
+  final int? maxLines;
   final VoidCallback onTap;
 
-  const _SelectorItem(
-      this.label, {
-        required this.isSelected,
-        required this.selectedColor,
-        required this.onTap,
-      });
+  const SelectorListItem(
+    this.label, {
+    required this.isSelected,
+    required this.selectedColor,
+    this.maxLines,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -70,8 +73,7 @@ class _SelectorItem extends StatelessWidget {
         color: backgroundColor,
         borderRadius: BorderRadius.circular(RADIUS),
       ),
-      // Material e InkWell VAN DENTRO del container decorado para no perder el radio
-      // y para que el InkWell detecte el área completa.
+      // 🍕 Material e InkWell van dentro del container decorado para respetar el radio.
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -82,19 +84,24 @@ class _SelectorItem extends StatelessWidget {
           child: Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            // El behavior opaque obliga a registrar el click en toda la superficie
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Expanded(
-                  child: IgnorePointer(
-                    child: TextBody(
-                      label,
-                      color: contentColor,
-                      fontWeight: isSelected ? WEIGHT_BOLD : WEIGHT_NORMAL,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: IgnorePointer(
+                      child: TextBody(
+                        label,
+                        color: contentColor,
+                        fontWeight: isSelected ? WEIGHT_BOLD : WEIGHT_NORMAL,
+                        textAlign: TextAlign.left,
+                        maxlines: maxLines,
+                      ),
                     ),
-                  )
+                  ),
                 ),
+                if (isSelected) Space(SPACE_SMALL),
                 if (isSelected)
                   Icon(
                     UIconsPro.regularRounded.check,

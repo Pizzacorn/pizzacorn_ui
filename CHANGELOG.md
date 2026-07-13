@@ -1,3 +1,7 @@
+## 0.0.110
+
+#### Added maxLines support to SelectorList and forced option text alignment to the left.
+
 ## 0.0.109
 
 #### Added optional padding and background color support to MonthlyCalendar.
