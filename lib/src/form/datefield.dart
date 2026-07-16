@@ -77,6 +77,7 @@ class DatePickerFieldState extends State<DatePickerField> {
           }
         },
       ),
+      height: 400,
     );
   }
 

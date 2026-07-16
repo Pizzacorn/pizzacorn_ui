@@ -1,3 +1,7 @@
+## 0.0.111
+
+#### Set DatePickerField bottom sheet height to 400px.
+
 ## 0.0.110
 
 #### Added maxLines support to SelectorList and forced option text alignment to the left.
