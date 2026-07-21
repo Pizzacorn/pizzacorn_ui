@@ -1,3 +1,7 @@
+## 0.0.113
+
+#### Added optional notification dots to SegmentedCupertinoCustom and SegmentedTabCustom.
+
 ## 0.0.112
 
 #### Added typed MonthlyCalendar events with per-type indicator colors and custom widget support.
