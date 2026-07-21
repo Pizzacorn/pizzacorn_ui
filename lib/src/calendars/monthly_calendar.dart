@@ -2,6 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 
+typedef MonthlyCalendarEventIndicatorBuilder =
+    Widget Function(DateTime day, int eventCount);
+typedef MonthlyCalendarEventIndicatorColorBuilder =
+    Color Function(DateTime day, int eventCount);
+typedef MonthlyCalendarTypedEventIndicatorBuilder =
+    Widget Function(
+      DateTime day,
+      List<MonthlyCalendarEvent> eventList,
+      int markedCount,
+    );
+
+class MonthlyCalendarEvent {
+  final DateTime date;
+  final String type;
+  final int count;
+  final Color? backgroundColor;
+  final Color? textColor;
+  final Widget? child;
+
+  MonthlyCalendarEvent({
+    DateTime? date,
+    this.type = '',
+    this.count = 1,
+    this.backgroundColor,
+    this.textColor,
+    this.child,
+  }) : date = date ?? DateTime(2000);
+}
+
 class MonthlyCalendar extends StatefulWidget {
   final DateTime startDate;
   final DateTime? lastDate;
@@ -13,12 +42,23 @@ class MonthlyCalendar extends StatefulWidget {
   final ValueChanged<DateTimeRange>? onRangeSelected;
   final ValueChanged<DateTime>? onMonthChange;
   final List<DateTime> markedDates;
+  final List<MonthlyCalendarEvent> events;
   final List<DateTime> blockedDays;
   final List<int> blockedWeekdays;
   final CalendarStyle style;
   final double dayBoxSize;
   final EdgeInsetsGeometry? padding;
   final Color? backgroundColor;
+  final Color? eventIndicatorBackgroundColor;
+  final Color? eventIndicatorTextColor;
+  final MonthlyCalendarEventIndicatorColorBuilder?
+      eventIndicatorBackgroundColorBuilder;
+  final MonthlyCalendarEventIndicatorColorBuilder?
+      eventIndicatorTextColorBuilder;
+  final MonthlyCalendarEventIndicatorBuilder? eventIndicatorBuilder;
+  final Map<String, Color> eventIndicatorBackgroundColors;
+  final Map<String, Color> eventIndicatorTextColors;
+  final MonthlyCalendarTypedEventIndicatorBuilder? typedEventIndicatorBuilder;
 
   MonthlyCalendar({
     super.key,
@@ -32,12 +72,21 @@ class MonthlyCalendar extends StatefulWidget {
     this.onRangeSelected,
     this.onMonthChange,
     this.markedDates = const [],
+    this.events = const [],
     this.blockedDays = const [],
     this.blockedWeekdays = const [],
     required this.style,
     this.dayBoxSize = 50,
     this.padding,
     this.backgroundColor,
+    this.eventIndicatorBackgroundColor,
+    this.eventIndicatorTextColor,
+    this.eventIndicatorBackgroundColorBuilder,
+    this.eventIndicatorTextColorBuilder,
+    this.eventIndicatorBuilder,
+    this.eventIndicatorBackgroundColors = const {},
+    this.eventIndicatorTextColors = const {},
+    this.typedEventIndicatorBuilder,
   });
 
   @override
@@ -92,6 +141,118 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
 
   bool isSameDay(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
+
+  List<MonthlyCalendarEvent> getEventsForDay(DateTime day) {
+    final List<MonthlyCalendarEvent> eventList = <MonthlyCalendarEvent>[];
+    for (int i = 0; i < widget.events.length; i++) {
+      if (isSameDay(widget.events[i].date, day)) {
+        eventList.add(widget.events[i]);
+      }
+    }
+    return eventList;
+  }
+
+  Widget buildEventIndicator(DateTime day, int eventCount) {
+    if (widget.eventIndicatorBuilder != null) {
+      return widget.eventIndicatorBuilder!(day, eventCount);
+    }
+
+    final Color backgroundColor =
+        widget.eventIndicatorBackgroundColorBuilder?.call(day, eventCount) ??
+        widget.eventIndicatorBackgroundColor ??
+        widget.style.highlightedCircle.background;
+    final Color textColor =
+        widget.eventIndicatorTextColorBuilder?.call(day, eventCount) ??
+        widget.eventIndicatorTextColor ??
+        widget.style.highlightedCircle.textColor;
+
+    return Container(
+      width: widget.style.highlightedCircle.size,
+      height: widget.style.highlightedCircle.size,
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: widget.style.highlightedCircle.border.color,
+          width: widget.style.highlightedCircle.border.width,
+        ),
+      ),
+      child: Center(
+        child: TextSmall(
+          '$eventCount',
+          color: textColor,
+          fontSize: widget.style.highlightedCircle.textSize,
+        ),
+      ),
+    );
+  }
+
+  Widget buildTypedEventIndicator(
+    DateTime day,
+    List<MonthlyCalendarEvent> eventList,
+    int markedCount,
+  ) {
+    if (widget.typedEventIndicatorBuilder != null) {
+      return widget.typedEventIndicatorBuilder!(day, eventList, markedCount);
+    }
+
+    if (eventList.isEmpty && markedCount > 0) {
+      return buildEventIndicator(day, markedCount);
+    }
+
+    final List<Widget> indicatorList = <Widget>[];
+
+    if (markedCount > 0) {
+      indicatorList.add(buildEventIndicator(day, markedCount));
+    }
+
+    for (int i = 0; i < eventList.length; i++) {
+      final MonthlyCalendarEvent event = eventList[i];
+      final int eventCount = event.count < 1 ? 1 : event.count;
+      final Color backgroundColor =
+          event.backgroundColor ??
+          widget.eventIndicatorBackgroundColors[event.type] ??
+          widget.eventIndicatorBackgroundColorBuilder?.call(day, eventCount) ??
+          widget.eventIndicatorBackgroundColor ??
+          widget.style.highlightedCircle.background;
+      final Color textColor =
+          event.textColor ??
+          widget.eventIndicatorTextColors[event.type] ??
+          widget.eventIndicatorTextColorBuilder?.call(day, eventCount) ??
+          widget.eventIndicatorTextColor ??
+          widget.style.highlightedCircle.textColor;
+
+      indicatorList.add(
+        Container(
+          width: widget.style.highlightedCircle.size,
+          height: widget.style.highlightedCircle.size,
+          margin: EdgeInsets.only(left: indicatorList.isEmpty ? 0 : 2),
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: widget.style.highlightedCircle.border.color,
+              width: widget.style.highlightedCircle.border.width,
+            ),
+          ),
+          child: Center(
+            child:
+                event.child ??
+                TextSmall(
+                  '$eventCount',
+                  color: textColor,
+                  fontSize: widget.style.highlightedCircle.textSize,
+                ),
+          ),
+        ),
+      );
+    }
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: indicatorList,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -178,6 +339,9 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
             for (int i = 0; i < widget.markedDates.length; i++) {
               if (isSameDay(widget.markedDates[i], day)) highlightedCount++;
             }
+            final List<MonthlyCalendarEvent> eventList = getEventsForDay(day);
+            final bool hasHighlightedEvents =
+                highlightedCount > 0 || eventList.isNotEmpty;
 
             final bool isSingleSel =
                 widget.selectionMode == CalendarSelectionMode.single &&
@@ -220,7 +384,7 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
               bg = widget.style.backgroundPast;
               txt = widget.style.textPast;
               bc = widget.style.borderPast;
-            } else if (highlightedCount > 0) {
+            } else if (hasHighlightedEvents) {
               if (isPast && widget.style.showPastHighlighted) {
                 bg = widget.style.pastHighlightedBackground;
                 txt = widget.style.pastHighlightedTextColor;
@@ -297,31 +461,15 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
                         color: txt,
                       ),
                     ),
-                    if (highlightedCount > 0 &&
+                    if (hasHighlightedEvents &&
                         widget.style.showHighlightedCircle)
                       Positioned(
                         right: 2,
                         top: 2,
-                        child: Container(
-                          width: widget.style.highlightedCircle.size,
-                          height: widget.style.highlightedCircle.size,
-                          decoration: BoxDecoration(
-                            color: widget.style.highlightedCircle.background,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color:
-                                  widget.style.highlightedCircle.border.color,
-                              width:
-                                  widget.style.highlightedCircle.border.width,
-                            ),
-                          ),
-                          child: Center(
-                            child: TextSmall(
-                              '$highlightedCount',
-                              color: widget.style.highlightedCircle.textColor,
-                              fontSize: widget.style.highlightedCircle.textSize,
-                            ),
-                          ),
+                        child: buildTypedEventIndicator(
+                          day,
+                          eventList,
+                          highlightedCount,
                         ),
                       ),
                   ],

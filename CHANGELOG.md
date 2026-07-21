@@ -1,3 +1,7 @@
+## 0.0.112
+
+#### Added typed MonthlyCalendar events with per-type indicator colors and custom widget support.
+
 ## 0.0.111
 
 #### Set DatePickerField bottom sheet height to 400px.
