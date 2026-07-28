@@ -1,3 +1,7 @@
+## 0.0.114
+
+#### Added optional notification dots to BottomBarCustom and BottomBarCentral.
+
 ## 0.0.113
 
 #### Added optional notification dots to SegmentedCupertinoCustom and SegmentedTabCustom.

@@ -17,6 +17,10 @@ class BottomBarCentral extends StatelessWidget {
   final Color? backgroundColor;
   final Color? activeColor;
   final Color? inactiveColor;
+  final Color? notificationColor;
+  final List<bool>? notifications;
+  final bool centerNotification;
+  final double notificationSize;
   final Color? centerButtonColor;
   final double centerCircleSize;
 
@@ -31,12 +35,17 @@ class BottomBarCentral extends StatelessWidget {
     this.backgroundColor,
     this.activeColor,
     this.inactiveColor,
+    this.notificationColor,
+    this.notifications,
+    this.centerNotification = false,
+    this.notificationSize = 8,
     this.centerButtonColor,
     this.centerCircleSize = 75,
   }) : assert(
          icons.length == 4 && titles.length == 4,
          "Don Sputknif, esta barra necesita exactamente 4 iconos y 4 títulos para el equilibrio Pizzacorn.",
-       );
+       ),
+       assert(notifications == null || notifications.length == 4);
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +54,7 @@ class BottomBarCentral extends StatelessWidget {
         inactiveColor ?? COLOR_TEXT.withValues(alpha: 0.8);
     final Color effectiveBg = backgroundColor ?? COLOR_BACKGROUND;
     final Color effectiveCenterColor = centerButtonColor ?? COLOR_ACCENT;
+    final Color effectiveNotificationColor = notificationColor ?? COLOR_ERROR;
     final double effectiveCenterIconSize = centerCircleSize * 0.37;
 
     return Semantics(
@@ -97,6 +107,9 @@ class BottomBarCentral extends StatelessWidget {
                     onTap: () => onTap(0),
                     activeColor: effectiveActiveColor,
                     inactiveColor: effectiveInactiveColor,
+                    hasNotification: notifications != null && notifications![0],
+                    notificationColor: effectiveNotificationColor,
+                    notificationSize: notificationSize,
                   ),
 
                   _BottomBarCentralItem(
@@ -106,6 +119,9 @@ class BottomBarCentral extends StatelessWidget {
                     onTap: () => onTap(1),
                     activeColor: effectiveActiveColor,
                     inactiveColor: effectiveInactiveColor,
+                    hasNotification: notifications != null && notifications![1],
+                    notificationColor: effectiveNotificationColor,
+                    notificationSize: notificationSize,
                   ),
 
                   // Espacio central para el botón circular (Hueco 3 de 5)
@@ -121,6 +137,9 @@ class BottomBarCentral extends StatelessWidget {
                     onTap: () => onTap(2),
                     activeColor: effectiveActiveColor,
                     inactiveColor: effectiveInactiveColor,
+                    hasNotification: notifications != null && notifications![2],
+                    notificationColor: effectiveNotificationColor,
+                    notificationSize: notificationSize,
                   ),
 
                   _BottomBarCentralItem(
@@ -130,6 +149,9 @@ class BottomBarCentral extends StatelessWidget {
                     onTap: () => onTap(3),
                     activeColor: effectiveActiveColor,
                     inactiveColor: effectiveInactiveColor,
+                    hasNotification: notifications != null && notifications![3],
+                    notificationColor: effectiveNotificationColor,
+                    notificationSize: notificationSize,
                   ),
                 ],
               ),
@@ -165,10 +187,32 @@ class BottomBarCentral extends StatelessWidget {
                       ),
                     ),
                     child: Center(
-                      child: _buildCenterIcon(
-                        centerIcon,
-                        Colors.white,
-                        effectiveCenterIconSize,
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          _buildCenterIcon(
+                            centerIcon,
+                            Colors.white,
+                            effectiveCenterIconSize,
+                          ),
+                          if (centerNotification)
+                            Positioned(
+                              top: -3,
+                              right: -5,
+                              child: Container(
+                                width: notificationSize,
+                                height: notificationSize,
+                                decoration: BoxDecoration(
+                                  color: effectiveNotificationColor,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: effectiveBg,
+                                    width: 1.5,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                   ),
@@ -203,6 +247,9 @@ class _BottomBarCentralItem extends StatelessWidget {
   final VoidCallback onTap;
   final Color activeColor;
   final Color inactiveColor;
+  final bool hasNotification;
+  final Color notificationColor;
+  final double notificationSize;
 
   const _BottomBarCentralItem({
     required this.title,
@@ -211,6 +258,9 @@ class _BottomBarCentralItem extends StatelessWidget {
     required this.onTap,
     required this.activeColor,
     required this.inactiveColor,
+    this.hasNotification = false,
+    required this.notificationColor,
+    required this.notificationSize,
   });
 
   @override
@@ -235,7 +285,29 @@ class _BottomBarCentralItem extends StatelessWidget {
                 AnimatedContainer(
                   padding: const EdgeInsets.all(5),
                   duration: const Duration(milliseconds: 200),
-                  child: _buildIconContent(),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      _buildIconContent(),
+                      if (hasNotification)
+                        Positioned(
+                          top: -2,
+                          right: -4,
+                          child: Container(
+                            width: notificationSize,
+                            height: notificationSize,
+                            decoration: BoxDecoration(
+                              color: notificationColor,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: COLOR_BACKGROUND,
+                                width: 1.5,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
                 if (isSelected)
                   TextSmall(

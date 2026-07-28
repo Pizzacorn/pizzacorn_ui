@@ -14,6 +14,9 @@ class BottomBarCustom extends StatelessWidget {
   final Color? backgroundColor;
   final Color? activeColor;
   final Color? inactiveColor;
+  final Color? notificationColor;
+  final List<bool>? notifications;
+  final double notificationSize;
 
   /// Decide si los títulos son siempre visibles o solo en la pestaña activa.
   final bool alwaysShowTitles;
@@ -37,6 +40,9 @@ class BottomBarCustom extends StatelessWidget {
     this.backgroundColor,
     this.activeColor,
     this.inactiveColor,
+    this.notificationColor,
+    this.notifications,
+    this.notificationSize = 8,
     this.alwaysShowTitles = false,
     this.isFloating = true,
     this.height = 75,
@@ -44,7 +50,8 @@ class BottomBarCustom extends StatelessWidget {
   }) : assert(
          icons.length == titles.length,
          "La lista de iconos y títulos debe tener el mismo tamaño, Don Sput.",
-       );
+       ),
+       assert(notifications == null || notifications.length == titles.length);
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +59,7 @@ class BottomBarCustom extends StatelessWidget {
     final Color effectiveInactiveColor =
         inactiveColor ?? COLOR_TEXT.withValues(alpha: 0.8);
     final Color effectiveBg = backgroundColor ?? COLOR_BACKGROUND;
+    final Color effectiveNotificationColor = notificationColor ?? COLOR_ERROR;
 
     return Semantics(
       explicitChildNodes: true,
@@ -101,6 +109,9 @@ class BottomBarCustom extends StatelessWidget {
                 onTap: () => onTap(index),
                 activeColor: effectiveActiveColor,
                 inactiveColor: effectiveInactiveColor,
+                hasNotification: notifications != null && notifications![index],
+                notificationColor: effectiveNotificationColor,
+                notificationSize: notificationSize,
                 alwaysShowTitles: alwaysShowTitles,
               );
             }),
@@ -118,6 +129,9 @@ class BottomItem extends StatelessWidget {
   final VoidCallback onTap;
   final Color activeColor;
   final Color inactiveColor;
+  final bool hasNotification;
+  final Color? notificationColor;
+  final double notificationSize;
   final bool alwaysShowTitles;
 
   const BottomItem({
@@ -128,11 +142,16 @@ class BottomItem extends StatelessWidget {
     required this.onTap,
     required this.activeColor,
     required this.inactiveColor,
+    this.hasNotification = false,
+    this.notificationColor,
+    this.notificationSize = 8,
     required this.alwaysShowTitles,
   });
 
   @override
   Widget build(BuildContext context) {
+    final Color effectiveNotificationColor = notificationColor ?? COLOR_ERROR;
+
     return Expanded(
       child: Semantics(
         label: "Pestaña $title",
@@ -148,7 +167,29 @@ class BottomItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Spacer(),
-              buildIconContent(),
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  buildIconContent(),
+                  if (hasNotification)
+                    Positioned(
+                      top: -2,
+                      right: -4,
+                      child: Container(
+                        width: notificationSize,
+                        height: notificationSize,
+                        decoration: BoxDecoration(
+                          color: effectiveNotificationColor,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: COLOR_BACKGROUND,
+                            width: 1.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
               if (isSelected || alwaysShowTitles) ...[
                 const SizedBox(height: 4),
                 TextSmall(
