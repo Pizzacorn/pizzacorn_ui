@@ -1,3 +1,8 @@
+## 0.0.115
+
+#### Added AppbarStepper and disclaimerWidget.
+#### Updated appbar titles to use bold TextBody.
+
 ## 0.0.114
 
 #### Added optional notification dots to BottomBarCustom and BottomBarCentral.

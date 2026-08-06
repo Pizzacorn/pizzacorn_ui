@@ -28,7 +28,11 @@ PreferredSizeWidget AppBarBackAction({
     backgroundColor: effectiveColor,
     elevation: 0,
     centerTitle: false,
-    title: TextSubtitle(title, color: effectiveTextColor),
+    title: TextBody(
+      title,
+      color: effectiveTextColor,
+      fontWeight: WEIGHT_BOLD,
+    ),
     leading: IconButton(
       splashColor: COLOR_ACCENT.withValues(alpha: 0.2),
       highlightColor: COLOR_ACCENT.withValues(alpha: 0.2),

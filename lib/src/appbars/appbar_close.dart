@@ -3,7 +3,8 @@ import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 
 PreferredSizeWidget AppBarClose({
   required BuildContext context,
-  String title = "",  Color? color,
+  String title = "",
+  Color? color,
   Color? textColor,
   Color? iconColor,
   VoidCallback? onClose,
@@ -29,7 +30,11 @@ PreferredSizeWidget AppBarClose({
         scrolledUnderElevation: 0,
         centerTitle: true,
         title: title.isNotEmpty
-            ? TextSubtitle(title, fontWeight: FontWeight.normal, color: effectiveTextColor)
+            ? TextBody(
+                title,
+                fontWeight: WEIGHT_BOLD,
+                color: effectiveTextColor,
+              )
             : null,
         leading: IconButton(
           splashColor: COLOR_ACCENT.withValues(alpha: 0.2),
