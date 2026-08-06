@@ -140,6 +140,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
     final double finalHeight = widget.height ?? FIELD_HEIGHT;
     // Color de icono por defecto es COLOR_ACCENT si no se pasa nada
     final Color effectiveIconColor = widget.iconColor ?? COLOR_ACCENT;
+    final bool hasFixedSingleLineHeight = widget.maxLines == 1 && widget.minLines == 1;
 
     return Container(
       width: widget.width,
@@ -180,6 +181,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
           helperText: widget.helperText.isNotEmpty ? widget.helperText : null,
           helperStyle: styleBody(color: effectiveHintColor, size: effectiveHintSize),
           errorStyle: styleCaption(color: COLOR_ERROR),
+          counterText: widget.maxLength == 0 ? null : "",
           border: widget.filled
               ? OutlineInputBorder(
             borderRadius: BorderRadius.circular(effectiveRadius),
@@ -190,7 +192,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
               ? EdgeInsets.zero
               : EdgeInsets.symmetric(
             horizontal: 15,
-            vertical: (finalHeight - effectiveTextSize) / 2,
+            vertical: hasFixedSingleLineHeight ? 0 : 15,
           ),
           suffixText: widget.sufixText.isNotEmpty ? widget.sufixText : null,
           suffixIcon: buildSuffixIcon(context, effectiveIconColor),

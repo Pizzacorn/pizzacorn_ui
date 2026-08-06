@@ -1,3 +1,7 @@
+## 0.0.117
+
+#### Fixed TextFieldCustom maxLength layout and vertical text centering for taller single-line fields.
+
 ## 0.0.116
 
 #### Added TextSubtitle support and visited-step accent state to AppbarStepper.
