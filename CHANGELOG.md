@@ -1,3 +1,7 @@
+## 0.0.116
+
+#### Added TextSubtitle support and visited-step accent state to AppbarStepper.
+
 ## 0.0.115
 
 #### Added AppbarStepper and disclaimerWidget.

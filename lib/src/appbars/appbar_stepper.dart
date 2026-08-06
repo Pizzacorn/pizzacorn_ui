@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pizzacorn_ui/pizzacorn_ui.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 PreferredSizeWidget AppbarStepper({
   required BuildContext context,
@@ -8,6 +7,7 @@ PreferredSizeWidget AppbarStepper({
   Color? color,
   Color? textColor,
   Color? iconColor,
+  bool useTextSubtitle = false,
   PageController? pageController,
   int pageCount = 0,
   bool goToLogin = false,
@@ -50,34 +50,24 @@ PreferredSizeWidget AppbarStepper({
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          TextBody(
-            title,
-            color: effectiveTextColor,
-            fontWeight: WEIGHT_BOLD,
-            textAlign: TextAlign.start,
-          ),
+          useTextSubtitle
+              ? TextSubtitle(
+                  title,
+                  color: effectiveTextColor,
+                  fontWeight: WEIGHT_BOLD,
+                  textAlign: TextAlign.start,
+                )
+              : TextBody(
+                  title,
+                  color: effectiveTextColor,
+                  fontWeight: WEIGHT_BOLD,
+                  textAlign: TextAlign.start,
+                ),
           if (pageController != null && pageCount > 0) ...[
             Space(4),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final int count = pageCount;
-                final double maxWidth = constraints.maxWidth;
-                const double spacing = 8;
-                final double dotWidth =
-                    (maxWidth - (count - 1) * spacing) / count;
-
-                return SmoothPageIndicator(
-                  controller: pageController,
-                  count: pageCount,
-                  effect: WormEffect(
-                    dotHeight: 2,
-                    dotWidth: dotWidth,
-                    spacing: spacing,
-                    activeDotColor: COLOR_ACCENT,
-                    dotColor: COLOR_ACCENT.withValues(alpha: 0.3),
-                  ),
-                );
-              },
+            AppbarStepperIndicator(
+              pageController: pageController,
+              pageCount: pageCount,
             ),
           ],
         ],
@@ -87,4 +77,78 @@ PreferredSizeWidget AppbarStepper({
       Space(SPACE_BIG),
     ],
   );
+}
+
+class AppbarStepperIndicator extends StatelessWidget {
+  final PageController pageController;
+  final int pageCount;
+  final double height;
+  final double spacing;
+
+  AppbarStepperIndicator({
+    super.key,
+    required this.pageController,
+    required this.pageCount,
+    this.height = 2,
+    this.spacing = 8,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (pageCount <= 0) {
+      return const SizedBox.shrink();
+    }
+
+    return AnimatedBuilder(
+      animation: pageController,
+      builder: (context, child) {
+        final int currentPage = getCurrentPage();
+
+        return Row(
+          children: [
+            for (int i = 0; i < pageCount; i++) ...[
+              Expanded(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  height: height,
+                  decoration: BoxDecoration(
+                    color: i <= currentPage
+                        ? COLOR_ACCENT
+                        : COLOR_ACCENT.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(height),
+                  ),
+                ),
+              ),
+              if (i < pageCount - 1)
+                SizedBox(
+                  width: spacing,
+                ),
+            ],
+          ],
+        );
+      },
+    );
+  }
+
+  int getCurrentPage() {
+    if (!pageController.hasClients) {
+      return clampCurrentPage(pageController.initialPage);
+    }
+
+    final double page =
+        pageController.page ?? pageController.initialPage.toDouble();
+    return clampCurrentPage(page.floor());
+  }
+
+  int clampCurrentPage(int page) {
+    if (page < 0) {
+      return 0;
+    }
+
+    if (page >= pageCount) {
+      return pageCount - 1;
+    }
+
+    return page;
+  }
 }
