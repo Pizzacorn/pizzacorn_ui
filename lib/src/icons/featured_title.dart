@@ -48,8 +48,8 @@ class FeaturedTitle extends StatelessWidget {
       children: [
         FeaturedIconCustom(
           icon: icon,
-          size: 20,
-          padding: 11, // Para llegar a los 42px de ancho/alto (20 + 11 + 11)
+          size: 18,
+          padding: 10,
           backgroundColor: effectiveBgColor,
           iconColor: effectiveIconColor,
           onTap: onIconTap,
@@ -64,7 +64,7 @@ class FeaturedTitle extends StatelessWidget {
                 fontWeight: FontWeight.w700,
               ),
               Space(SPACE_SMALLEST),
-              TextCaption(
+              TextBody(
                 subtitle,
                 color: COLOR_SUBTEXT,
               ),

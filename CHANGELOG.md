@@ -1,3 +1,7 @@
+## 0.0.118
+
+#### Reduced default icon sizes and softened secondary text color for FeaturedTitle and FeaturedSubtitle.
+
 ## 0.0.117
 
 #### Fixed TextFieldCustom maxLength layout and vertical text centering for taller single-line fields.

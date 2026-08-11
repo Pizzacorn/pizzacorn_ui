@@ -30,7 +30,7 @@ class FeaturedSubtitle extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.body,
-    this.iconSize = 28,
+    this.iconSize = 22,
     this.iconBackgroundColor,
     this.iconColor,
     this.onIconTap,
@@ -54,7 +54,13 @@ class FeaturedSubtitle extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [TextSubtitle(title), TextBody(body)],
+            children: [
+              TextSubtitle(title),
+              TextBody(
+                body,
+                color: COLOR_SUBTEXT,
+              ),
+            ],
           ),
         ),
       ],
