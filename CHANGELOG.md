@@ -1,3 +1,7 @@
+## 0.0.121
+
+#### Added locale and weekday label customization to MonthlyCalendar.
+
 ## 0.0.120
 
 #### Added ImagePublish and onImagePressed appBarTitle/saveButtonTitle aliases for cropper labels.

@@ -47,6 +47,8 @@ class MonthlyCalendar extends StatefulWidget {
   final List<int> blockedWeekdays;
   final CalendarStyle style;
   final double dayBoxSize;
+  final String locale;
+  final List<String>? weekdayLabels;
   final EdgeInsetsGeometry? padding;
   final Color? backgroundColor;
   final Color? eventIndicatorBackgroundColor;
@@ -77,6 +79,8 @@ class MonthlyCalendar extends StatefulWidget {
     this.blockedWeekdays = const [],
     required this.style,
     this.dayBoxSize = 50,
+    this.locale = 'es_ES',
+    this.weekdayLabels,
     this.padding,
     this.backgroundColor,
     this.eventIndicatorBackgroundColor,
@@ -99,8 +103,8 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
   DateTime? startSelected;
   DateTime? endSelected;
 
-  DateFormat formatMonthText = DateFormat("MMMM", "es_ES");
-  DateFormat formatYear = DateFormat("yyyy", "es_ES");
+  DateFormat get formatMonthText => DateFormat("MMMM", widget.locale);
+  DateFormat get formatYear => DateFormat("yyyy", widget.locale);
 
   @override
   void initState() {
@@ -150,6 +154,18 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
       }
     }
     return eventList;
+  }
+
+  List<String> getWeekdayLabels() {
+    if (widget.weekdayLabels != null && widget.weekdayLabels!.length == 7) {
+      return widget.weekdayLabels!;
+    }
+
+    if (widget.locale.toLowerCase().startsWith('en')) {
+      return <String>['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    }
+
+    return <String>['L', 'M', 'X', 'J', 'V', 'S', 'D'];
   }
 
   Widget buildEventIndicator(DateTime day, int eventCount) {
@@ -263,6 +279,7 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
     ).day;
     final offset = currentMonth.weekday - 1;
     final List<DateTime?> cells = <DateTime?>[];
+    final List<String> weekdayLabelList = getWeekdayLabels();
 
     for (int i = 0; i < offset; i++) {
       cells.add(null);
@@ -299,7 +316,7 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
             for (int i = 0; i < 7; i++)
               Expanded(
                 child: Center(
-                  child: TextCaption(['L', 'M', 'X', 'J', 'V', 'S', 'D'][i]),
+                  child: TextCaption(weekdayLabelList[i]),
                 ),
               ),
           ],
