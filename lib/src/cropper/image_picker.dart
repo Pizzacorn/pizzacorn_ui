@@ -13,6 +13,8 @@ class ImagePublish extends StatefulWidget {
   final BoxFit boxFit;
   final Widget? placeholder;
   final Widget? addImageIcon;
+  final String cropAppBarTitle;
+  final String cropSaveButtonTitle;
 
   final Color backgroundColor;
   final bool hasBorder;
@@ -39,6 +41,8 @@ class ImagePublish extends StatefulWidget {
     this.boxFit = BoxFit.cover,
     this.placeholder,
     this.addImageIcon,
+    this.cropAppBarTitle = "Recortar imagen",
+    this.cropSaveButtonTitle = "Guardar cambios",
     this.backgroundColor = Colors.transparent,
     this.hasBorder = true,
     this.borderColor,
@@ -121,6 +125,8 @@ class _ImagePublishState extends State<ImagePublish> {
                         context,
                         onFinish: widget.onFinish,
                         isCircular: widget.isCircular,
+                        cropAppBarTitle: widget.cropAppBarTitle,
+                        cropSaveButtonTitle: widget.cropSaveButtonTitle,
                         cropResolution: widget.width / widget.height,
                         width: widget.width,
                         height: widget.height,

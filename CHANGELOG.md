@@ -1,3 +1,7 @@
+## 0.0.119
+
+#### Added configurable cropper app bar and save button titles.
+
 ## 0.0.118
 
 #### Reduced default icon sizes and softened secondary text color for FeaturedTitle and FeaturedSubtitle.

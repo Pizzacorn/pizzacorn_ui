@@ -12,6 +12,8 @@ class CropPage extends StatefulWidget {
   final double width;
   final double height;
   final bool isCircular;
+  final String appBarTitle;
+  final String saveButtonTitle;
   final Function(Uint8List, String) onFinish;
 
   const CropPage({
@@ -20,6 +22,8 @@ class CropPage extends StatefulWidget {
     required this.onFinish,
     this.resolution = 1,
     this.isCircular = false,
+    this.appBarTitle = "Recortar imagen",
+    this.saveButtonTitle = "Guardar cambios",
     required this.width,
     required this.height,
   });
@@ -36,7 +40,7 @@ class _CropPageState extends State<CropPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: COLOR_BACKGROUND,
-      appBar: AppBarBack(context: context, title: "Recortar imagen"),
+      appBar: AppBarBack(context: context, title: widget.appBarTitle),
       body: Loading(
         loading: loading,
         child: Stack(
@@ -78,7 +82,7 @@ class _CropPageState extends State<CropPage> {
         ),
       ),
       bottomNavigationBar: BottomSheetCustomOneButton(
-        title: 'Guardar cambios',
+        title: widget.saveButtonTitle,
         onPressed: () {
           setState(() => loading = true);
           controllerCrop.crop();
