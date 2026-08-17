@@ -12,15 +12,18 @@ import 'package:pizzacorn_ui/src/models/file_model.dart';
 /// - [galeria]: si true, abre galería; si false, cámara (depende de tu getImage()).
 /// - [isCircular]: si true, el recorte será circular.
 /// - [width]/[height]: tamaño objetivo del recorte (orientativo, para el cropper).
-/// - [cropAppBarTitle]/[cropSaveButtonTitle]: textos traducibles del cropper.
+/// - [appBarTitle]/[saveButtonTitle]: textos traducibles del cropper.
+/// - [cropAppBarTitle]/[cropSaveButtonTitle]: alias anteriores del cropper.
 Future<void> onImagePressed(
   BuildContext context, {
   bool needCrop = true,
   double cropResolution = 16 / 9,
   bool galeria = true,
   bool isCircular = false,
-  String cropAppBarTitle = "Recortar imagen",
-  String cropSaveButtonTitle = "Guardar cambios",
+  String appBarTitle = "Recortar imagen",
+  String saveButtonTitle = "Guardar cambios",
+  String? cropAppBarTitle,
+  String? cropSaveButtonTitle,
   required Function(FileModel) onFinish,
   double width = 250,
   double height = 250,
@@ -39,8 +42,8 @@ Future<void> onImagePressed(
             filemodel: value,
             resolution: isCircular ? 1 : cropResolution,
             isCircular: isCircular,
-            appBarTitle: cropAppBarTitle,
-            saveButtonTitle: cropSaveButtonTitle,
+            appBarTitle: cropAppBarTitle ?? appBarTitle,
+            saveButtonTitle: cropSaveButtonTitle ?? saveButtonTitle,
             width: width,
             height: height,
             onFinish: (Uint8List bytes, String path) {

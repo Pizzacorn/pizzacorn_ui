@@ -1,3 +1,7 @@
+## 0.0.120
+
+#### Added ImagePublish and onImagePressed appBarTitle/saveButtonTitle aliases for cropper labels.
+
 ## 0.0.119
 
 #### Added configurable cropper app bar and save button titles.
