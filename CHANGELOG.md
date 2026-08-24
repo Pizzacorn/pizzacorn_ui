@@ -1,3 +1,7 @@
+## 0.0.122
+
+#### Added two-line body support to FeaturedTitle and FeaturedSubtitle.
+
 ## 0.0.121
 
 #### Added locale and weekday label customization to MonthlyCalendar.

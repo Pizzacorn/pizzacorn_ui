@@ -12,6 +12,9 @@ class FeaturedSubtitle extends StatelessWidget {
   /// Texto descriptivo del bloque.
   final String body;
 
+  /// Lineas maximas del texto descriptivo.
+  final int bodyMaxlines;
+
   /// Tamano del icono.
   final double iconSize;
 
@@ -30,6 +33,7 @@ class FeaturedSubtitle extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.body,
+    this.bodyMaxlines = 2,
     this.iconSize = 22,
     this.iconBackgroundColor,
     this.iconColor,
@@ -59,6 +63,7 @@ class FeaturedSubtitle extends StatelessWidget {
               TextBody(
                 body,
                 color: COLOR_SUBTEXT,
+                maxlines: bodyMaxlines,
               ),
             ],
           ),

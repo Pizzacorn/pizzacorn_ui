@@ -15,6 +15,9 @@ class FeaturedTitle extends StatelessWidget {
   /// El texto secundario o descripción.
   final String subtitle;
 
+  /// Lineas maximas del texto descriptivo.
+  final int bodyMaxlines;
+
   /// Color de acento general. Por defecto usa [COLOR_ACCENT].
   final Color? color;
 
@@ -32,6 +35,7 @@ class FeaturedTitle extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.subtitle,
+    this.bodyMaxlines = 2,
     this.color,
     this.iconColor,
     this.iconBackgroundColor,
@@ -67,6 +71,7 @@ class FeaturedTitle extends StatelessWidget {
               TextBody(
                 subtitle,
                 color: COLOR_SUBTEXT,
+                maxlines: bodyMaxlines,
               ),
             ],
           ),
