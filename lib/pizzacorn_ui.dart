@@ -93,6 +93,7 @@ export 'src/login/verify/verify_email.dart';
 export 'src/login/widgets/hero_login.dart';
 
 //models
+export 'src/models/address_model.dart';
 export 'src/models/file_model.dart';
 export 'src/models/social_model.dart';
 

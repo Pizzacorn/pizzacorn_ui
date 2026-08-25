@@ -1,3 +1,7 @@
+## 0.0.123
+
+#### Added AddressModel with street/name and province/state compatibility.
+
 ## 0.0.122
 
 #### Added two-line body support to FeaturedTitle and FeaturedSubtitle.
