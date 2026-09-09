@@ -1,3 +1,7 @@
+## 0.0.124
+
+#### Added configurable language selector sheet backgrounds, text, selected border and drag handle colors.
+
 ## 0.0.123
 
 #### Added AddressModel with street/name and province/state compatibility.

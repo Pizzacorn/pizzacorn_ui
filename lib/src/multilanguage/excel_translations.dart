@@ -137,7 +137,25 @@ const Map<String, String> nativeNames = {
 /// Motivo: Un selector de idiomas visual wrapped en Material.
 class LanguageSelector extends StatefulWidget {
   final VoidCallback? onLanguageChanged;
-  LanguageSelector({super.key, this.onLanguageChanged});
+  final Color? backgroundColor;
+  final Color? itemBackgroundColor;
+  final Color? selectedBackgroundColor;
+  final Color? textColor;
+  final Color? selectedTextColor;
+  final Color? selectedBorderColor;
+  final Color? dragHandleColor;
+
+  LanguageSelector({
+    super.key,
+    this.onLanguageChanged,
+    this.backgroundColor,
+    this.itemBackgroundColor,
+    this.selectedBackgroundColor,
+    this.textColor,
+    this.selectedTextColor,
+    this.selectedBorderColor,
+    this.dragHandleColor,
+  });
 
   @override
   State<LanguageSelector> createState() => LanguageSelectorState();
@@ -159,7 +177,7 @@ class LanguageSelectorState extends State<LanguageSelector> {
     final List<Locale> locales = localization.supportedLocales.toList();
 
     return Material(
-      color: COLOR_BACKGROUND,
+      color: widget.backgroundColor ?? COLOR_BACKGROUND,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -169,7 +187,7 @@ class LanguageSelectorState extends State<LanguageSelector> {
               height: 4,
               margin: const EdgeInsets.only(bottom: 20),
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: widget.dragHandleColor ?? Colors.grey[300],
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
@@ -189,9 +207,15 @@ class LanguageSelectorState extends State<LanguageSelector> {
       padding: const EdgeInsets.all(12),
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
       decoration: BoxDecoration(
-        color: isCurrent ? COLOR_ACCENT.withValues(alpha: 0.08) : Colors.transparent,
+        color: isCurrent
+            ? widget.selectedBackgroundColor ?? COLOR_ACCENT.withValues(alpha: 0.08)
+            : widget.itemBackgroundColor ?? Colors.transparent,
         borderRadius: BorderRadius.circular(12),
-        border: isCurrent ? Border.all(color: COLOR_ACCENT.withValues(alpha: 0.2)) : null,
+        border: isCurrent
+            ? Border.all(
+                color: widget.selectedBorderColor ?? COLOR_ACCENT.withValues(alpha: 0.2),
+              )
+            : null,
       ),
       child: InkWell(
         onTap: () async {
@@ -210,11 +234,17 @@ class LanguageSelectorState extends State<LanguageSelector> {
               child: TextBody(
                 getLanguageName(code),
                 fontWeight: isCurrent ? FontWeight.bold : FontWeight.w500,
-                color: isCurrent ? COLOR_ACCENT : COLOR_TEXT,
+                color: isCurrent
+                    ? widget.selectedTextColor ?? COLOR_ACCENT
+                    : widget.textColor ?? COLOR_TEXT,
               ),
             ),
             if (isCurrent)
-              Icon(Icons.check_circle_rounded, color: COLOR_ACCENT, size: 22),
+              Icon(
+                Icons.check_circle_rounded,
+                color: widget.selectedTextColor ?? COLOR_ACCENT,
+                size: 22,
+              ),
           ],
         ),
       ),
@@ -229,6 +259,14 @@ class LanguageSmallSelector extends StatefulWidget {
   final VoidCallback? onLanguageChanged;
   final Color? backgroundColor;
   final Color? textColor;
+  // 🎨 Colores del panel de idiomas, independientes del selector compacto.
+  final Color? sheetBackgroundColor;
+  final Color? sheetItemBackgroundColor;
+  final Color? sheetSelectedBackgroundColor;
+  final Color? sheetTextColor;
+  final Color? sheetSelectedTextColor;
+  final Color? sheetSelectedBorderColor;
+  final Color? sheetDragHandleColor;
   final double fontSize;
   final double sheetHeight;
   final bool onlyFlag;
@@ -239,6 +277,13 @@ class LanguageSmallSelector extends StatefulWidget {
     this.onLanguageChanged,
     this.backgroundColor,
     this.textColor,
+    this.sheetBackgroundColor,
+    this.sheetItemBackgroundColor,
+    this.sheetSelectedBackgroundColor,
+    this.sheetTextColor,
+    this.sheetSelectedTextColor,
+    this.sheetSelectedBorderColor,
+    this.sheetDragHandleColor,
     this.fontSize = 14,
     this.sheetHeight = 200,
     this.onlyFlag = false,
@@ -263,12 +308,20 @@ class LanguageSmallSelectorState extends State<LanguageSmallSelector> {
       onTap: () => openBottomSheet(
         context,
         LanguageSelector(
+          backgroundColor: widget.sheetBackgroundColor,
+          itemBackgroundColor: widget.sheetItemBackgroundColor,
+          selectedBackgroundColor: widget.sheetSelectedBackgroundColor,
+          textColor: widget.sheetTextColor,
+          selectedTextColor: widget.sheetSelectedTextColor,
+          selectedBorderColor: widget.sheetSelectedBorderColor,
+          dragHandleColor: widget.sheetDragHandleColor,
           onLanguageChanged: () {
             if (mounted) setState(() {});
             widget.onLanguageChanged?.call();
           },
         ),
         height: widget.sheetHeight,
+        colorBackground: widget.sheetBackgroundColor,
       ),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),

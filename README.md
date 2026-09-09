@@ -798,6 +798,26 @@ await initMultilanguage(defaultLang: 'es');
 | `initMultilanguage` | Inicializa localización |
 | `LanguageSelector` | Selector completo de idioma |
 | `LanguageSmallSelector` | Selector compacto |
+
+Los colores del panel se configuran por separado de los del selector compacto:
+
+```dart
+LanguageSmallSelector(
+  sheetBackgroundColor: Color(0xFF181818),
+  sheetItemBackgroundColor: Color(0xFF242424),
+  sheetSelectedBackgroundColor: Color(0xFF343454),
+  sheetTextColor: Colors.white,
+  sheetSelectedTextColor: Color(0xFFB9BAFF),
+  sheetSelectedBorderColor: Color(0xFF7779DD),
+  sheetDragHandleColor: Colors.white38,
+)
+```
+
+En `LanguageSelector` directamente, los parámetros equivalentes son
+`backgroundColor`, `itemBackgroundColor`, `selectedBackgroundColor`, `textColor`,
+`selectedTextColor`, `selectedBorderColor` y `dragHandleColor`.
+Si se omiten, se mantienen los colores actuales del tema. El indicador de selección
+usa también `selectedTextColor`.
 | `getFlagEmoji` | Devuelve bandera por código |
 
 ---
