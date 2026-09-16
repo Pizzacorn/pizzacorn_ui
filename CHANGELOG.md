@@ -1,3 +1,12 @@
+## 0.0.125
+
+#### Added BottomSheetInfo and ContainerHelp reusable information widgets.
+#### Added reusable disclaimerWidget support to BottomSheetInfo.
+#### Simplified disclaimerWidget by reusing ContainerHelp without breaking its API.
+#### Completed the MIT license and cleaned duplicated internal imports.
+#### Fixed ImageCustom's missing default placeholder and AppBarHome's missing default logo.
+#### Removed four unused direct dependencies to reduce package maintenance and resolution weight.
+
 ## 0.0.124
 
 #### Added configurable language selector sheet backgrounds, text, selected border and drag handle colors.

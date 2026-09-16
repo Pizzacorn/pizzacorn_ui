@@ -1,15 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pizzacorn_ui/pizzacorn_ui.dart'; // Importa todos los componentes de la lib
-
-// NOTA IMPORTANTE, DON SPUTKNIF:
-// Los widgets `ShimmerCustom`, `SvgCustom` y `ProfileImageCustom`
-// se asumen que YA EXISTEN y están EXPORTADOS desde 'pizzacorn_ui.dart'.
-// Si no es así, deberá definirlos o importarlos desde donde correspondan.
-// Para que este ejemplo compile, puedes usar stubs simples si aún no los tienes:
-
-// C:/Users/hola/StudioProjects/pizzacorn_ui/lib/src/appbars/appbar_home.dart
-import 'package:flutter/material.dart';
-import 'package:pizzacorn_ui/src/images/profile_image.dart';
 import '../../pizzacorn_ui.dart';
 
 /// PIZZACORN_UI CANDIDATE
@@ -19,7 +8,7 @@ import '../../pizzacorn_ui.dart';
 PreferredSizeWidget AppBarHome({
   required BuildContext context,
   required GlobalKey<ScaffoldState> scaffoldKey,
-  String logoAsset = "assets/image/logobar.png",
+  String logoAsset = "",
   String userImage = "",
   IconData? iconMenu,
   bool hasIconMenu = true,
@@ -63,16 +52,18 @@ PreferredSizeWidget AppBarHome({
         if (hasIconMenu) Space(SPACE_SMALL),
 
         // Logo de la App
-        Semantics(
-          label: "Logo de la aplicación",
-          image: true,
-          child: Image.asset(
-            logoAsset,
-            width: logoWidth,
-            fit: BoxFit.contain,
-            errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
+        if (logoAsset.isNotEmpty)
+          Semantics(
+            label: "Logo de la aplicación",
+            image: true,
+            child: Image.asset(
+              logoAsset,
+              width: logoWidth,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) =>
+                  const SizedBox.shrink(),
+            ),
           ),
-        ),
       ],
     ),
 

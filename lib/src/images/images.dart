@@ -19,7 +19,7 @@ class ImageCustom extends StatelessWidget {
   const ImageCustom({
     super.key,
     required this.imageUrl,
-    this.placeholder = 'assets/image/placeholder.jpg',
+    this.placeholder = 'packages/pizzacorn_ui/assets/images/nada.png',
     this.width = double.infinity,
     this.height = 200,
     this.fit = BoxFit.cover,

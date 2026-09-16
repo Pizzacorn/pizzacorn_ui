@@ -23,10 +23,11 @@ Añade la dependencia en tu `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  pizzacorn_ui:
-    git:
-      url: https://github.com/Pizzacorn/pizzacorn_ui
+  pizzacorn_ui: ^0.0.125
 ```
+
+Para consumir cambios todavía no publicados, también puedes apuntar temporalmente
+al repositorio GitHub.
 
 Importa la librería en tus archivos Dart:
 
@@ -603,6 +604,38 @@ openBottomSheet(
 );
 ```
 
+### `BottomSheetInfo`
+
+Panel informativo con icono, imagen, Lottie o cabecera personalizada. Muestra
+cero, uno o dos botones según las acciones configuradas; el izquierdo es
+secundario con borde y el derecho es la acción principal rellena.
+
+```dart
+BottomSheetInfo(
+  icon: Icons.groups_rounded,
+  title: "No hay deportistas disponibles",
+  body: "Añade primero al deportista como miembro de la entidad.",
+  infoText: "Members → Entidad → Miembros → Añadir deportista",
+  disclaimer: "La app adapta las opciones según tus permisos.",
+  leftButtonTitle: "Cancelar",
+  onLeftButtonPressed: () => goBack(context),
+  rightButtonTitle: "Ir a Members",
+  rightButtonIcon: Icons.open_in_new_rounded,
+  onRightButtonPressed: () => controller.openMembers(),
+)
+```
+
+### `ContainerHelp`
+
+Ayuda contextual compacta para explicar permisos, estados o pasos sin abrir
+otro panel.
+
+```dart
+ContainerHelp(
+  text: "La app adapta las opciones según el tipo de certificación.",
+)
+```
+
 ### `BottomSheetPopUps`
 
 Barra inferior de acciones para popups o editores con acción principal y eliminación opcional.
@@ -628,7 +661,9 @@ Widgets disponibles:
 | `LoadingCustomWidget` | Loader compacto reutilizable |
 | `BottomSheetCustomOneButton` | Sheet inferior con un botón |
 | `BottomSheetCustomTwoButtons` | Sheet inferior con dos botones |
+| `BottomSheetInfo` | Sheet informativo con cabecera visual y hasta dos acciones |
 | `BottomSheetPopUps` | Barra inferior para guardar/eliminar en popups |
+| `ContainerHelp` | Ayuda contextual con icono y texto |
 | `openBottomSheet` | Abre bottom sheet estándar con altura configurable |
 | `openStupidSheet` | Abre sheet flotante usando `stupid_simple_sheet` |
 | `openStupidCupertinoSheet` | Abre sheet Cupertino con navegación integrada |
@@ -798,6 +833,7 @@ await initMultilanguage(defaultLang: 'es');
 | `initMultilanguage` | Inicializa localización |
 | `LanguageSelector` | Selector completo de idioma |
 | `LanguageSmallSelector` | Selector compacto |
+| `getFlagEmoji` | Devuelve bandera por código |
 
 Los colores del panel se configuran por separado de los del selector compacto:
 
@@ -818,7 +854,6 @@ En `LanguageSelector` directamente, los parámetros equivalentes son
 `selectedTextColor`, `selectedBorderColor` y `dragHandleColor`.
 Si se omiten, se mantienen los colores actuales del tema. El indicador de selección
 usa también `selectedTextColor`.
-| `getFlagEmoji` | Devuelve bandera por código |
 
 ---
 
@@ -833,7 +868,7 @@ usa también `selectedTextColor`.
 | Formularios | `TextFieldCustom`, `TextFieldPhoneCustom`, `DatePickerField`, `TimePickerField`, `TitleAndTextField`, `SelectorList`, `CheckboxPolitics` |
 | Dropdowns | `DropdownCustom`, `DropdownSearch` |
 | AppBars | `AppBarBack`, `AppBarBackAction`, `AppBarClose`, `AppBarDrag`, `AppBarHome` |
-| Overlays | `Loading`, `LoadingWithText`, `LoadingCustomWidget`, `BottomSheetCustomOneButton`, `BottomSheetCustomTwoButtons`, `BottomSheetPopUps`, `openBottomSheet`, `openStupidSheet`, `openStupidCupertinoSheet`, `openBottomNoBack`, `openDialog`, `openSnackbar` |
+| Overlays | `Loading`, `LoadingWithText`, `LoadingCustomWidget`, `BottomSheetCustomOneButton`, `BottomSheetCustomTwoButtons`, `BottomSheetInfo`, `BottomSheetPopUps`, `ContainerHelp`, `openBottomSheet`, `openStupidSheet`, `openStupidCupertinoSheet`, `openBottomNoBack`, `openDialog`, `openSnackbar` |
 | Imágenes | `ImageCustom`, `ProfileImageCustom`, `FullScreenImagePage`, `ImagePublish`, `CropPage` |
 | Iconos | `SvgCustom`, `SvgCustomNoColor`, `FeaturedIconCustom`, `FeaturedTitle`, `FeaturedSubtitle`, `IconPickerCustom`, `IconGalleryPage` |
 | Calendarios y pickers | `MonthlyCalendar`, `SliderCalendar`, `DatePickerCustom`, `TimePickerCustom`, `IconPickerCustom`, `IconGalleryPage`, `DatePickerField`, `TimePickerField` |

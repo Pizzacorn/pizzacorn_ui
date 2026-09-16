@@ -108,6 +108,7 @@ export 'src/navigation/bottombar_central.dart';
 
 // overlays
 export 'src/overlays/bottom_sheet.dart';
+export 'src/overlays/bottom_sheet_info.dart';
 export 'src/overlays/drag_indicator.dart';
 export 'src/overlays/loading.dart';
 export 'src/overlays/loading_widget.dart';
@@ -154,4 +155,5 @@ export 'src/utils/uicons_helper.dart';
 export 'src/utils/countries.dart';
 
 // widgets
+export 'src/widgets/container_help.dart';
 export 'src/widgets/disclaimer_widget.dart';

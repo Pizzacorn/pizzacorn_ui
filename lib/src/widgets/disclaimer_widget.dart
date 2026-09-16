@@ -10,32 +10,15 @@ Widget disclaimerWidget({
 }) {
   final Color accentColor = color ?? COLOR_INFO;
 
-  return Container(
-    padding: PADDING_ALL_SMALL,
-    decoration: BoxDecoration(
-      color: accentColor.withValues(alpha: 0.10),
-      borderRadius: BorderRadius.circular(RADIUS),
-      border: Border.all(
-        color: accentColor.withValues(alpha: 0.25),
-      ),
-    ),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(
-          icon,
-          color: accentColor,
-          size: 18,
-        ),
-        Space(SPACE_SMALL),
-        Expanded(
-          child: TextCaption(
-            text,
-            color: textColor ?? COLOR_TEXT,
-            maxlines: maxlines,
-          ),
-        ),
-      ],
-    ),
+  return ContainerHelp(
+    text: text,
+    icon: icon,
+    color: accentColor,
+    backgroundColor: accentColor.withValues(alpha: 0.10),
+    textColor: textColor ?? COLOR_TEXT,
+    borderColor: accentColor.withValues(alpha: 0.25),
+    iconSize: 18,
+    maxlines: maxlines,
+    compact: true,
   );
 }
