@@ -148,6 +148,8 @@ class PizzacornTextSet {
 class PizzacornTextConfig {
   static String primaryFontFamily = 'Montserrat';
   static String secondaryFontFamily = 'Montserrat';
+  static bool primaryUppercase = false;
+  static bool secondaryUppercase = false;
 
   static PizzacornTextSizes sizes = const PizzacornTextSizes();
   static PizzacornTextWeights weights = const PizzacornTextWeights();
@@ -160,6 +162,8 @@ class PizzacornTextConfig {
   static void configure({
     String? primaryFontFamily,
     String? secondaryFontFamily,
+    bool? primaryUppercase,
+    bool? secondaryUppercase,
     PizzacornTextSizes? sizes,
     PizzacornTextWeights? weights,
     PizzacornTextFonts? fonts,
@@ -170,6 +174,12 @@ class PizzacornTextConfig {
     }
     if (secondaryFontFamily != null && secondaryFontFamily.trim().isNotEmpty) {
       PizzacornTextConfig.secondaryFontFamily = secondaryFontFamily.trim();
+    }
+    if (primaryUppercase != null) {
+      PizzacornTextConfig.primaryUppercase = primaryUppercase;
+    }
+    if (secondaryUppercase != null) {
+      PizzacornTextConfig.secondaryUppercase = secondaryUppercase;
     }
     if (sizes != null) PizzacornTextConfig.sizes = sizes;
     if (weights != null) PizzacornTextConfig.weights = weights;
@@ -250,13 +260,18 @@ FontWeight get WEIGHT_BOLD => PizzacornTextConfig.weights.bold;
 Widget _buildText(
   String text,
   TextStyle style, {
+  required PizzacornFontType fontType,
   TextAlign textAlign = TextAlign.start,
   int? maxlines,
   TextOverflow textOverflow = TextOverflow.ellipsis,
   bool isUppercase = false,
 }) {
+  final bool configuredUppercase = fontType == PizzacornFontType.primary
+      ? PizzacornTextConfig.primaryUppercase
+      : PizzacornTextConfig.secondaryUppercase;
+
   return Text(
-    isUppercase ? text.toUpperCase() : text,
+    isUppercase || configuredUppercase ? text.toUpperCase() : text,
     overflow: textOverflow,
     textAlign: textAlign,
     maxLines: maxlines == 0 ? null : maxlines,
@@ -518,6 +533,7 @@ Widget TextBig(
       shadow: shadow,
       strikethrough: strikethrough,
     ),
+    fontType: PizzacornTextConfig.fonts.big,
     textAlign: textAlign,
     maxlines: maxlines,
     textOverflow: textOverflow,
@@ -547,6 +563,7 @@ Widget TextTitle(
       strikethrough: strikethrough,
       height: height,
     ),
+    fontType: PizzacornTextConfig.fonts.title,
     textAlign: textAlign,
     maxlines: maxlines,
     textOverflow: textOverflow,
@@ -576,6 +593,7 @@ Widget TextSubtitle(
       strikethrough: strikethrough,
       height: height,
     ),
+    fontType: PizzacornTextConfig.fonts.subtitle,
     textAlign: textAlign,
     maxlines: maxlines,
     textOverflow: textOverflow,
@@ -606,6 +624,7 @@ Widget TextBody(
       strikethrough: strikethrough,
       height: height,
     ),
+    fontType: PizzacornTextConfig.fonts.body,
     textAlign: textAlign,
     maxlines: maxlines,
     textOverflow: textOverflow,
@@ -625,17 +644,19 @@ Widget TextButtonCustom(
   TextOverflow textOverflow = TextOverflow.ellipsis,
   bool isUppercase = false,
 }) {
-  return Text(
-    isUppercase ? texto.toUpperCase() : texto,
-    overflow: textOverflow,
-    textAlign: textAlign,
-    maxLines: maxlines,
-    style: styleButton(
+  return _buildText(
+    texto,
+    styleButton(
       size: fontSize,
       fontWeight: fontWeight,
       color: color ?? COLOR_TEXT_BUTTONS,
       strikethrough: strikethrough,
     ),
+    fontType: PizzacornTextConfig.fonts.button,
+    textAlign: textAlign,
+    maxlines: maxlines,
+    textOverflow: textOverflow,
+    isUppercase: isUppercase,
   );
 }
 
@@ -659,6 +680,7 @@ Widget TextCaption(
       color: color ?? COLOR_SUBTEXT,
       strikethrough: strikethrough,
     ),
+    fontType: PizzacornTextConfig.fonts.caption,
     textAlign: textAlign,
     maxlines: maxlines,
     textOverflow: textOverflow,
@@ -686,6 +708,7 @@ Widget TextSmall(
       color: color,
       strikethrough: strikethrough,
     ),
+    fontType: PizzacornTextConfig.fonts.small,
     textAlign: textAlign,
     maxlines: maxlines,
     textOverflow: textOverflow,
@@ -719,6 +742,7 @@ Widget TextCustom(
       strikethrough: strikethrough,
       height: height,
     ),
+    fontType: PizzacornFontType.primary,
     textAlign: textAlign,
     maxlines: maxlines,
     textOverflow: textOverflow,

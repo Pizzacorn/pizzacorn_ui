@@ -67,6 +67,8 @@ void main() async {
   PizzacornTextConfig.configure(
     primaryFontFamily: 'Montserrat',
     secondaryFontFamily: 'Inter',
+    primaryUppercase: false,
+    secondaryUppercase: false,
     textSet: const PizzacornTextSet(
       big: PizzacornTextStyleSet(
         size: 32,

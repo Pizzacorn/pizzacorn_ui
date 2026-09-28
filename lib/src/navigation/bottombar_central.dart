@@ -5,7 +5,7 @@ import '../../pizzacorn_ui.dart'; // Importamos la librería principal para toke
 
 /// PIZZACORN_UI CANDIDATE
 /// Widget: BottomBarCentral
-/// Motivo: Barra de navegación inferior con 4 elementos laterales y un botón de acción central flotante.
+/// Motivo: Barra de navegación inferior con 4 elementos laterales y una acción central.
 /// API: BottomBarCentral(currentIndex: 0, onTap: (i) => ..., onCenterTap: () => ..., icons: [...], titles: [...])
 class BottomBarCentral extends StatelessWidget {
   final int currentIndex;
@@ -24,6 +24,16 @@ class BottomBarCentral extends StatelessWidget {
   final Color? centerButtonColor;
   final double centerCircleSize;
 
+  /// Si es true, conserva la barra elevada con márgenes y sombra.
+  /// Por defecto la barra queda integrada en el borde inferior.
+  final bool isFloating;
+
+  /// Altura mínima de la barra cuando no es flotante.
+  final double height;
+
+  /// Espacio inferior opcional para respetar un safe area gestionado externamente.
+  final double? paddingBottom;
+
   const BottomBarCentral({
     super.key,
     required this.currentIndex,
@@ -41,6 +51,9 @@ class BottomBarCentral extends StatelessWidget {
     this.notificationSize = 8,
     this.centerButtonColor,
     this.centerCircleSize = 75,
+    this.isFloating = false,
+    this.height = 75,
+    this.paddingBottom,
   }) : assert(
          icons.length == 4 && titles.length == 4,
          "Don Sputknif, esta barra necesita exactamente 4 iconos y 4 títulos para el equilibrio Pizzacorn.",
@@ -56,45 +69,64 @@ class BottomBarCentral extends StatelessWidget {
     final Color effectiveCenterColor = centerButtonColor ?? COLOR_ACCENT;
     final Color effectiveNotificationColor = notificationColor ?? COLOR_ERROR;
     final double effectiveCenterIconSize = centerCircleSize * 0.37;
+    final double effectivePaddingBottom =
+        paddingBottom ?? (isFloating ? 20 : 0);
+    final double effectiveHeight = isFloating
+        ? 140
+        : height > centerCircleSize
+        ? height
+        : centerCircleSize;
+    final double effectiveContainerHeight = isFloating
+        ? 140
+        : effectiveHeight + effectivePaddingBottom;
 
     return Semantics(
       explicitChildNodes: true,
 
       child: Container(
-        height: 140,
+        height: effectiveContainerHeight,
         width: double.infinity,
-        padding: const EdgeInsets.only(bottom: 20),
+        padding: EdgeInsets.only(bottom: effectivePaddingBottom),
 
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              COLOR_BACKGROUND_SECONDARY.withValues(alpha: 0),
-              effectiveBg.withValues(alpha: 0.5),
-              effectiveBg,
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+        decoration: isFloating
+            ? BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    COLOR_BACKGROUND_SECONDARY.withValues(alpha: 0),
+                    effectiveBg.withValues(alpha: 0.5),
+                    effectiveBg,
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              )
+            : null,
 
         child: Stack(
           alignment: Alignment.bottomCenter,
 
           children: [
             Container(
-              height: 65,
-              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
+              height: isFloating ? 65 : effectiveHeight,
+              margin: isFloating
+                  ? const EdgeInsets.symmetric(horizontal: 20, vertical: 25)
+                  : EdgeInsets.zero,
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: effectiveBg,
-                borderRadius: BorderRadius.circular(RADIUS),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 15,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
+                borderRadius: isFloating ? BorderRadius.circular(RADIUS) : null,
+                border: isFloating
+                    ? null
+                    : Border(top: BorderSide(color: COLOR_BORDER, width: 0.5)),
+                boxShadow: isFloating
+                    ? [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.1),
+                          blurRadius: 15,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
+                    : null,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -157,7 +189,7 @@ class BottomBarCentral extends StatelessWidget {
               ),
             ),
 
-            // 2. Botón Circular Central Flotante
+            // 2. Acción circular central integrada o flotante según configuración
             Align(
               alignment: Alignment.center,
               child: Semantics(
@@ -172,13 +204,15 @@ class BottomBarCentral extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: effectiveCenterColor,
                       shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: effectiveCenterColor.withValues(alpha: 0.4),
-                          blurRadius: 12,
-                          offset: const Offset(0, 6),
-                        ),
-                      ],
+                      boxShadow: isFloating
+                          ? [
+                              BoxShadow(
+                                color: effectiveCenterColor.withValues(alpha: 0.4),
+                                blurRadius: 12,
+                                offset: const Offset(0, 6),
+                              ),
+                            ]
+                          : null,
                       border: Border.all(
                         color: currentIndex == 4
                             ? effectiveActiveColor

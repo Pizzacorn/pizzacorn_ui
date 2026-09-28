@@ -1,3 +1,8 @@
+## 0.0.126
+
+#### Added independent uppercase configuration for primary and secondary typography families.
+#### Added integrated and floating layout modes to BottomBarCentral, with configurable height and bottom padding.
+
 ## 0.0.125
 
 #### Added BottomSheetInfo and ContainerHelp reusable information widgets.
