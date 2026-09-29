@@ -31,6 +31,7 @@ class TextFieldPhoneCustom extends StatefulWidget {
     this.favoriteCodes = const ['ES', 'MX', 'CO', 'AR'],
     this.initialPrefix = "34",
     this.initialPhoneNumber = "",
+    this.locale = const Locale('es'),
   });
 
   final TextEditingController? controller;
@@ -44,6 +45,7 @@ class TextFieldPhoneCustom extends StatefulWidget {
   final List<String> favoriteCodes;
   final String initialPrefix;
   final String initialPhoneNumber;
+  final Locale locale;
 
   @override
   State<TextFieldPhoneCustom> createState() => TextFieldPhoneCustomState();
@@ -112,7 +114,7 @@ class TextFieldPhoneCustomState extends State<TextFieldPhoneCustom> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  TextTitle("Seleccionar país", fontWeight: FontWeight.bold),
+                  TextTitle(countryPickerTitle(locale: widget.locale), fontWeight: FontWeight.bold),
                   IconButton(
                     icon: Icon(Icons.close, color: COLOR_TEXT),
                     onPressed: () => Navigator.pop(context),
@@ -121,19 +123,25 @@ class TextFieldPhoneCustomState extends State<TextFieldPhoneCustom> {
               ),
               Space(SPACE_MEDIUM),
               TextFieldCustom(
-                hintText: "Buscar país o prefijo...",
+                hintText: countryPickerSearchHint(locale: widget.locale),
                 prefixIcon: Icons.search,
                 onChanged: (val) {
                   setModalState(() {
                     filteredFavorites.clear();
                     for (int i = 0; i < favorites.length; i++) {
-                      if (favorites[i].name.toLowerCase().contains(val.toLowerCase()) || favorites[i].prefix.contains(val)) {
+                      if (countryName(countryPhone: favorites[i], locale: widget.locale)
+                              .toLowerCase()
+                              .contains(val.toLowerCase()) ||
+                          favorites[i].prefix.contains(val)) {
                         filteredFavorites.add(favorites[i]);
                       }
                     }
                     filteredOthers.clear();
                     for (int i = 0; i < others.length; i++) {
-                      if (others[i].name.toLowerCase().contains(val.toLowerCase()) || others[i].prefix.contains(val)) {
+                      if (countryName(countryPhone: others[i], locale: widget.locale)
+                              .toLowerCase()
+                              .contains(val.toLowerCase()) ||
+                          others[i].prefix.contains(val)) {
                         filteredOthers.add(others[i]);
                       }
                     }
@@ -153,7 +161,7 @@ class TextFieldPhoneCustomState extends State<TextFieldPhoneCustom> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Space(SPACE_MEDIUM),
-                          TextCaption("FAVORITOS", fontWeight: FontWeight.bold, color: COLOR_SUBTEXT),
+                          TextCaption(countryPickerFavorites(locale: widget.locale), fontWeight: FontWeight.bold, color: COLOR_SUBTEXT),
                         ],
                       );
                     }
@@ -169,7 +177,7 @@ class TextFieldPhoneCustomState extends State<TextFieldPhoneCustom> {
                         children: [
                           const Divider(height: 1),
                           Space(SPACE_MEDIUM),
-                          TextCaption("TODOS LOS PAÍSES", fontWeight: FontWeight.bold, color: COLOR_SUBTEXT),
+                          TextCaption(countryPickerAllCountries(locale: widget.locale), fontWeight: FontWeight.bold, color: COLOR_SUBTEXT),
                         ],
                       );
                     }
@@ -188,7 +196,7 @@ class TextFieldPhoneCustomState extends State<TextFieldPhoneCustom> {
   Widget countryTile(CountryPhone c) {
     return ListTile(
       leading: TextBody(c.flag),
-      title: TextBody(c.name),
+      title: TextBody(countryName(countryPhone: c, locale: widget.locale)),
       trailing: TextBody("+${c.prefix}", fontWeight: FontWeight.bold, color: COLOR_ACCENT),
       onTap: () {
         setState(() => selectedCountry = c);

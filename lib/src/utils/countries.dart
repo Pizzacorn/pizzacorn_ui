@@ -1,4 +1,81 @@
+import 'package:flutter/widgets.dart';
 import 'package:pizzacorn_ui/src/form/phonefield.dart';
+
+String countryName({required CountryPhone countryPhone, required Locale locale}) {
+  if (locale.languageCode.toLowerCase() == 'es') {
+    return countryPhone.name;
+  }
+
+  return countryNamesEnglish[countryPhone.code] ?? countryPhone.name;
+}
+
+String countryPickerTitle({required Locale locale}) {
+  return locale.languageCode.toLowerCase() == 'es' ? "Seleccionar país" : "Select country";
+}
+
+String countryPickerSearchHint({required Locale locale}) {
+  return locale.languageCode.toLowerCase() == 'es' ? "Buscar país o prefijo..." : "Search country or calling code...";
+}
+
+String countryPickerFavorites({required Locale locale}) {
+  return locale.languageCode.toLowerCase() == 'es' ? "FAVORITOS" : "FAVORITES";
+}
+
+String countryPickerAllCountries({required Locale locale}) {
+  return locale.languageCode.toLowerCase() == 'es' ? "TODOS LOS PAÍSES" : "ALL COUNTRIES";
+}
+
+const Map<String, String> countryNamesEnglish = {
+  'AF': 'Afghanistan', 'AL': 'Albania', 'DE': 'Germany', 'AD': 'Andorra',
+  'AO': 'Angola', 'SA': 'Saudi Arabia', 'DZ': 'Algeria', 'AR': 'Argentina',
+  'AM': 'Armenia', 'AU': 'Australia', 'AT': 'Austria', 'AZ': 'Azerbaijan',
+  'BS': 'Bahamas', 'BD': 'Bangladesh', 'BB': 'Barbados', 'BH': 'Bahrain',
+  'BE': 'Belgium', 'BZ': 'Belize', 'BJ': 'Benin', 'BY': 'Belarus',
+  'BO': 'Bolivia', 'BA': 'Bosnia and Herzegovina', 'BW': 'Botswana', 'BR': 'Brazil',
+  'BN': 'Brunei', 'BG': 'Bulgaria', 'BF': 'Burkina Faso', 'BI': 'Burundi',
+  'BT': 'Bhutan', 'CV': 'Cape Verde', 'KH': 'Cambodia', 'CM': 'Cameroon',
+  'CA': 'Canada', 'QA': 'Qatar', 'TD': 'Chad', 'CL': 'Chile',
+  'CN': 'China', 'CY': 'Cyprus', 'CO': 'Colombia', 'KM': 'Comoros',
+  'KP': 'North Korea', 'KR': 'South Korea', 'CI': 'Ivory Coast', 'CR': 'Costa Rica',
+  'HR': 'Croatia', 'CU': 'Cuba', 'DK': 'Denmark', 'DM': 'Dominica',
+  'EC': 'Ecuador', 'EG': 'Egypt', 'SV': 'El Salvador', 'AE': 'United Arab Emirates',
+  'ER': 'Eritrea', 'SK': 'Slovakia', 'SI': 'Slovenia', 'ES': 'Spain',
+  'US': 'United States', 'EE': 'Estonia', 'ET': 'Ethiopia', 'PH': 'Philippines',
+  'FI': 'Finland', 'FJ': 'Fiji', 'FR': 'France', 'GA': 'Gabon',
+  'GM': 'Gambia', 'GE': 'Georgia', 'GH': 'Ghana', 'GD': 'Grenada',
+  'GR': 'Greece', 'GT': 'Guatemala', 'GY': 'Guyana', 'GN': 'Guinea',
+  'GW': 'Guinea-Bissau', 'GQ': 'Equatorial Guinea', 'HT': 'Haiti', 'HN': 'Honduras',
+  'HU': 'Hungary', 'IN': 'India', 'ID': 'Indonesia', 'IQ': 'Iraq',
+  'IR': 'Iran', 'IE': 'Ireland', 'IS': 'Iceland', 'MH': 'Marshall Islands',
+  'SB': 'Solomon Islands', 'IL': 'Israel', 'IT': 'Italy', 'JM': 'Jamaica',
+  'JP': 'Japan', 'JO': 'Jordan', 'KZ': 'Kazakhstan', 'KE': 'Kenya',
+  'KG': 'Kyrgyzstan', 'KI': 'Kiribati', 'KW': 'Kuwait', 'LA': 'Laos',
+  'LS': 'Lesotho', 'LV': 'Latvia', 'LB': 'Lebanon', 'LR': 'Liberia',
+  'LY': 'Libya', 'LI': 'Liechtenstein', 'LT': 'Lithuania', 'LU': 'Luxembourg',
+  'MK': 'North Macedonia', 'MG': 'Madagascar', 'MY': 'Malaysia', 'MW': 'Malawi',
+  'MV': 'Maldives', 'ML': 'Mali', 'MT': 'Malta', 'MA': 'Morocco',
+  'MU': 'Mauritius', 'MR': 'Mauritania', 'MX': 'Mexico', 'FM': 'Micronesia',
+  'MD': 'Moldova', 'MC': 'Monaco', 'MN': 'Mongolia', 'ME': 'Montenegro',
+  'MZ': 'Mozambique', 'NA': 'Namibia', 'NR': 'Nauru', 'NP': 'Nepal',
+  'NI': 'Nicaragua', 'NE': 'Niger', 'NG': 'Nigeria', 'NO': 'Norway',
+  'NZ': 'New Zealand', 'OM': 'Oman', 'NL': 'Netherlands', 'PK': 'Pakistan',
+  'PW': 'Palau', 'PA': 'Panama', 'PG': 'Papua New Guinea', 'PY': 'Paraguay',
+  'PE': 'Peru', 'PL': 'Poland', 'PT': 'Portugal', 'GB': 'United Kingdom',
+  'CF': 'Central African Republic', 'CZ': 'Czech Republic', 'CG': 'Republic of the Congo',
+  'CD': 'Democratic Republic of the Congo', 'DO': 'Dominican Republic', 'RW': 'Rwanda',
+  'RO': 'Romania', 'RU': 'Russia', 'WS': 'Samoa', 'KN': 'Saint Kitts and Nevis',
+  'SM': 'San Marino', 'VC': 'Saint Vincent and the Grenadines', 'LC': 'Saint Lucia',
+  'ST': 'Sao Tome and Principe', 'SN': 'Senegal', 'RS': 'Serbia', 'SC': 'Seychelles',
+  'SL': 'Sierra Leone', 'SG': 'Singapore', 'SY': 'Syria', 'SO': 'Somalia',
+  'LK': 'Sri Lanka', 'ZA': 'South Africa', 'SD': 'Sudan', 'SS': 'South Sudan',
+  'SE': 'Sweden', 'CH': 'Switzerland', 'SR': 'Suriname', 'TH': 'Thailand',
+  'TW': 'Taiwan', 'TZ': 'Tanzania', 'TJ': 'Tajikistan', 'TL': 'East Timor',
+  'TG': 'Togo', 'TO': 'Tonga', 'TT': 'Trinidad and Tobago', 'TN': 'Tunisia',
+  'TM': 'Turkmenistan', 'TR': 'Turkey', 'TV': 'Tuvalu', 'UA': 'Ukraine',
+  'UG': 'Uganda', 'UY': 'Uruguay', 'UZ': 'Uzbekistan', 'VU': 'Vanuatu',
+  'VE': 'Venezuela', 'VN': 'Vietnam', 'YE': 'Yemen', 'DJ': 'Djibouti',
+  'ZM': 'Zambia', 'ZW': 'Zimbabwe',
+};
 
 final List<CountryPhone> countriesData = [
   CountryPhone(name: "Afganistán", code: "AF", prefix: "93", flag: "🇦🇫"),

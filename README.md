@@ -484,6 +484,14 @@ TextFieldCustom(
 | `SelectorList` | Lista de opciones seleccionables |
 | `CheckboxPolitics` | Checkbox para políticas/condiciones |
 
+El selector telefónico admite español e inglés mediante `locale` (español por defecto):
+
+```dart
+TextFieldPhoneCustom(
+  locale: Locale('en'),
+)
+```
+
 ---
 
 ## 🔽 Dropdowns

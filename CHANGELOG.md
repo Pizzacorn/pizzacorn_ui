@@ -1,3 +1,8 @@
+## 0.0.127
+
+#### Added Spanish and English locale support to TextFieldPhoneCustom country names and picker labels.
+#### Added the Pizzacorn development agent guidelines.
+
 ## 0.0.126
 
 #### Added independent uppercase configuration for primary and secondary typography families.
