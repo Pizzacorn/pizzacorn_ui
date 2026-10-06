@@ -9,6 +9,14 @@ class SelectorList extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onChanged;
   final double spaceSize;
+  /// Distribuye las opciones en filas de celdas con el mismo ancho.
+  final bool horizontal;
+  /// Número mínimo de filas en modo horizontal.
+  final int rows;
+  /// Celdas por fila; si se omite, se calcula a partir de [rows].
+  final int? columns;
+  /// En horizontal se oculta el check por defecto.
+  final bool? showSelectedCheck;
   final Color? selectedColor;
   final Color? selectedBackgroundColor;
   final Color? selectedBorderColor;
@@ -28,6 +36,10 @@ class SelectorList extends StatelessWidget {
     required this.selectedIndex,
     required this.onChanged,
     this.spaceSize = SPACE_SMALL,
+    this.horizontal = false,
+    this.rows = 1,
+    this.columns,
+    this.showSelectedCheck,
     this.selectedColor,
     this.selectedBackgroundColor,
     this.selectedBorderColor,
@@ -40,33 +52,87 @@ class SelectorList extends StatelessWidget {
     this.selectedBackgroundGradient = false,
     this.selectedBorderWidth = 2,
     this.maxLines,
-  }) : assert(selectedBorderWidth >= 0);
+  }) : assert(selectedBorderWidth >= 0),
+       assert(rows > 0),
+       assert(columns == null || columns > 0);
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        for (int i = 0; i < options.length; i++) ...[
-          SelectorListItem(
-            options[i],
-            isSelected: selectedIndex == i,
-            selectedColor: selectedColor ?? COLOR_ACCENT,
-            selectedBackgroundColor: selectedBackgroundColor,
-            selectedBorderColor: selectedBorderColor,
-            selectedTextColor: selectedTextColor,
-            selectedCheckColor: selectedCheckColor,
-            selectedTextStyle: selectedTextStyle,
-            unselectedTextStyle: unselectedTextStyle,
-            selectedGradientColors: selectedGradientColors,
-            selectedBorderGradient: selectedBorderGradient,
-            selectedBackgroundGradient: selectedBackgroundGradient,
-            selectedBorderWidth: selectedBorderWidth,
-            maxLines: maxLines,
-            onTap: () => onChanged(i),
+    if (horizontal) {
+      return buildHorizontal();
+    }
+
+    final List<Widget> children = [];
+    for (int i = 0; i < options.length; i++) {
+      children.add(buildItem(i));
+      if (i < options.length - 1) {
+        children.add(Space(spaceSize));
+      }
+    }
+    return Column(children: children);
+  }
+
+  Widget buildHorizontal() {
+    if (options.isEmpty) {
+      return SizedBox.shrink();
+    }
+
+    final int columnCount = columns ?? (options.length + rows - 1) ~/ rows;
+    final int rowCount = rows > (options.length + columnCount - 1) ~/ columnCount
+        ? rows
+        : (options.length + columnCount - 1) ~/ columnCount;
+    final List<Widget> rowWidgets = [];
+
+    for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+      final List<Widget> cells = [];
+      for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+        final int itemIndex = rowIndex * columnCount + columnIndex;
+        cells.add(
+          Expanded(
+            child: itemIndex < options.length
+                ? buildItem(itemIndex)
+                : SizedBox.shrink(),
           ),
-          if (i < options.length - 1) Space(spaceSize),
-        ],
-      ],
+        );
+        if (columnIndex < columnCount - 1) {
+          cells.add(SizedBox(width: spaceSize));
+        }
+      }
+      rowWidgets.add(
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: cells,
+          ),
+        ),
+      );
+      if (rowIndex < rowCount - 1) {
+        rowWidgets.add(SizedBox(height: spaceSize));
+      }
+    }
+
+    return Column(children: rowWidgets);
+  }
+
+  SelectorListItem buildItem(int index) {
+    return SelectorListItem(
+      options[index],
+      isSelected: selectedIndex == index,
+      selectedColor: selectedColor ?? COLOR_ACCENT,
+      selectedBackgroundColor: selectedBackgroundColor,
+      selectedBorderColor: selectedBorderColor,
+      selectedTextColor: selectedTextColor,
+      selectedCheckColor: selectedCheckColor,
+      selectedTextStyle: selectedTextStyle,
+      unselectedTextStyle: unselectedTextStyle,
+      selectedGradientColors: selectedGradientColors,
+      selectedBorderGradient: selectedBorderGradient,
+      selectedBackgroundGradient: selectedBackgroundGradient,
+      selectedBorderWidth: selectedBorderWidth,
+      horizontal: horizontal,
+      showSelectedCheck: showSelectedCheck ?? !horizontal,
+      maxLines: maxLines,
+      onTap: () => onChanged(index),
     );
   }
 }
@@ -85,6 +151,8 @@ class SelectorListItem extends StatelessWidget {
   final bool selectedBorderGradient;
   final bool selectedBackgroundGradient;
   final double selectedBorderWidth;
+  final bool horizontal;
+  final bool showSelectedCheck;
   final int? maxLines;
   final VoidCallback onTap;
 
@@ -102,6 +170,8 @@ class SelectorListItem extends StatelessWidget {
     this.selectedBorderGradient = false,
     this.selectedBackgroundGradient = false,
     this.selectedBorderWidth = 2,
+    this.horizontal = false,
+    this.showSelectedCheck = true,
     this.maxLines,
     required this.onTap,
   }) : assert(selectedBorderWidth >= 0);
@@ -158,32 +228,40 @@ class SelectorListItem extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: horizontal
+                  ? MainAxisAlignment.center
+                  : MainAxisAlignment.start,
               children: [
                 Expanded(
                   child: Align(
-                    alignment: Alignment.centerLeft,
+                    alignment: horizontal
+                        ? Alignment.center
+                        : Alignment.centerLeft,
                     child: IgnorePointer(
                       child: customTextStyle == null
                           ? TextBody(
                               label,
                               color: contentColor,
                               fontWeight: isSelected ? WEIGHT_BOLD : WEIGHT_NORMAL,
-                              textAlign: TextAlign.left,
+                              textAlign: horizontal
+                                  ? TextAlign.center
+                                  : TextAlign.left,
                               maxlines: maxLines,
                             )
                           : Text(
                               bodyUppercase ? label.toUpperCase() : label,
                               style: finalTextStyle,
-                              textAlign: TextAlign.left,
+                              textAlign: horizontal
+                                  ? TextAlign.center
+                                  : TextAlign.left,
                               maxLines: maxLines == 0 ? null : maxLines,
                               overflow: TextOverflow.ellipsis,
                             ),
                     ),
                   ),
                 ),
-                if (isSelected) Space(SPACE_SMALL),
-                if (isSelected)
+                if (isSelected && showSelectedCheck) Space(SPACE_SMALL),
+                if (isSelected && showSelectedCheck)
                   Icon(
                     UIconsPro.regularRounded.check,
                     color: selectedCheckColor ?? contentColor,

@@ -1,3 +1,7 @@
+## 0.0.129
+
+#### Added horizontal and multi-row layouts to SelectorList with configurable rows, columns, equal-width cells, and optional selected check.
+
 ## 0.0.128
 
 #### Added OnboardingProgressSegments with segmented, gradient, and separated progress modes.

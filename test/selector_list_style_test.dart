@@ -126,4 +126,90 @@ void main() {
     expect(unselectedText.style?.color, Colors.green);
     expect(tester.widget<Icon>(find.byType(Icon).first).color, Colors.pink);
   });
+
+  testWidgets('SelectorList horizontal reparte el ancho entre las opciones', (
+    tester,
+  ) async {
+    int changedIndex = -1;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SizedBox(
+            width: 400,
+            child: SelectorList(
+              ['Casi ninguno', '1–2', '3–4', '5 o más'],
+              selectedIndex: 2,
+              horizontal: true,
+              selectedBorderGradient: true,
+              selectedBackgroundColor: Colors.white,
+              selectedGradientColors: [Colors.blue, Colors.pink],
+              onChanged: (index) => changedIndex = index,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final List<Finder> items = [
+      find.text('Casi ninguno'),
+      find.text('1–2'),
+      find.text('3–4'),
+      find.text('5 o más'),
+    ];
+    for (int i = 0; i < items.length; i++) {
+      expect(items[i], findsOneWidget);
+    }
+    expect(find.byType(Icon), findsNothing);
+    expect(find.byType(AnimatedGradientBorder), findsOneWidget);
+    final Finder firstItem = find.ancestor(
+      of: items[0],
+      matching: find.byType(SelectorListItem),
+    );
+    final Finder secondItem = find.ancestor(
+      of: items[1],
+      matching: find.byType(SelectorListItem),
+    );
+    expect(tester.getSize(firstItem).width, closeTo(92.5, 0.01));
+    expect(tester.getSize(firstItem), tester.getSize(secondItem));
+
+    await tester.tap(
+      find.ancestor(of: items[3], matching: find.byType(InkWell)).first,
+    );
+    expect(changedIndex, 3);
+  });
+
+  testWidgets('SelectorList crea dos filas de tres columnas sin perder opciones', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SizedBox(
+            width: 330,
+            child: SelectorList(
+              ['Uno', 'Dos', 'Tres', 'Cuatro', 'Cinco'],
+              selectedIndex: 4,
+              horizontal: true,
+              rows: 2,
+              columns: 3,
+              onChanged: (_) {},
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final Finder firstItem = find.ancestor(
+      of: find.text('Uno'),
+      matching: find.byType(SelectorListItem),
+    );
+    final Finder fourthItem = find.ancestor(
+      of: find.text('Cuatro'),
+      matching: find.byType(SelectorListItem),
+    );
+    expect(find.byType(SelectorListItem), findsNWidgets(5));
+    expect(tester.getSize(firstItem).width, closeTo(103.33, 0.02));
+    expect(tester.getTopLeft(fourthItem).dy, greaterThan(tester.getTopLeft(firstItem).dy));
+    expect(tester.getTopLeft(fourthItem).dx, tester.getTopLeft(firstItem).dx);
+  });
 }
