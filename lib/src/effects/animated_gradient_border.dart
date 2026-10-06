@@ -4,13 +4,17 @@ import 'package:flutter/material.dart';
 
 import '../theme/config.dart';
 
-/// Rodea cualquier widget con un borde de colores en movimiento.
+enum PizzacornGradientType { sweep, linear, radial }
+
+/// Rodea cualquier widget con un gradiente fijo o animado.
 class AnimatedGradientBorder extends StatefulWidget {
   final Widget child;
   final double radius;
   final double borderWidth;
   final List<Color> colors;
   final Duration duration;
+  final bool animated;
+  final PizzacornGradientType gradientType;
 
   // ignore: prefer_const_constructors_in_immutables
   AnimatedGradientBorder({
@@ -20,6 +24,8 @@ class AnimatedGradientBorder extends StatefulWidget {
     this.borderWidth = 2,
     this.colors = const [],
     this.duration = const Duration(milliseconds: 2600),
+    this.animated = true,
+    this.gradientType = PizzacornGradientType.sweep,
   }) : assert(radius >= 0),
        assert(borderWidth >= 0),
        assert(duration > Duration.zero);
@@ -38,7 +44,10 @@ class AnimatedGradientBorderState extends State<AnimatedGradientBorder>
     animationController = AnimationController(
       vsync: this,
       duration: widget.duration,
-    )..repeat();
+    );
+    if (widget.animated) {
+      animationController.repeat();
+    }
   }
 
   @override
@@ -46,7 +55,13 @@ class AnimatedGradientBorderState extends State<AnimatedGradientBorder>
     super.didUpdateWidget(oldWidget);
     if (oldWidget.duration != widget.duration) {
       animationController.duration = widget.duration;
+    }
+    if (widget.animated &&
+        (!oldWidget.animated || oldWidget.duration != widget.duration)) {
       animationController.repeat();
+    } else if (!widget.animated && oldWidget.animated) {
+      animationController.stop();
+      animationController.value = 0;
     }
   }
 
@@ -63,7 +78,7 @@ class AnimatedGradientBorderState extends State<AnimatedGradientBorder>
         : widget.colors;
     final List<Color> gradientColors = sourceColors.length == 1
         ? [sourceColors.first, sourceColors.first]
-        : [...sourceColors, sourceColors.first];
+        : sourceColors;
     final double innerRadius = max(0, widget.radius - widget.borderWidth);
 
     return AnimatedBuilder(
@@ -76,13 +91,32 @@ class AnimatedGradientBorderState extends State<AnimatedGradientBorder>
         ),
       ),
       builder: (context, child) {
+        final double angle = animationController.value * 2 * pi;
+        final Gradient gradient = switch (widget.gradientType) {
+          PizzacornGradientType.linear => LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: gradientColors,
+              transform: widget.animated ? GradientRotation(angle) : null,
+            ),
+          PizzacornGradientType.radial => RadialGradient(
+              center: widget.animated
+                  ? Alignment(cos(angle) * 0.6, sin(angle) * 0.6)
+                  : Alignment.center,
+              radius: 1.2,
+              colors: gradientColors,
+            ),
+          PizzacornGradientType.sweep => SweepGradient(
+              colors: gradientColors.length == 2 && sourceColors.length == 1
+                  ? gradientColors
+                  : [...gradientColors, gradientColors.first],
+              transform: widget.animated ? GradientRotation(angle) : null,
+            ),
+        };
         return DecoratedBox(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(widget.radius),
-            gradient: SweepGradient(
-              colors: gradientColors,
-              transform: GradientRotation(animationController.value * 2 * pi),
-            ),
+            gradient: gradient,
           ),
           child: child,
         );

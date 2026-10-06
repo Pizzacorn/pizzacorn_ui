@@ -137,6 +137,7 @@ export 'src/segmented/segmented_subtitles.dart';
 export 'src/selectors/animated_gradient_border_container.dart';
 export 'src/selectors/column_expanded_selector.dart';
 export 'src/selectors/grid_expanded_selector.dart';
+export 'src/selectors/multi_selector.dart';
 
 //Socials
 export 'src/socials/socials.dart';

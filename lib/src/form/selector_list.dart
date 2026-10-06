@@ -27,6 +27,10 @@ class SelectorList extends StatelessWidget {
   final List<Color> selectedGradientColors;
   final bool selectedBorderGradient;
   final bool selectedBackgroundGradient;
+  final bool selectedBorderGradientAnimated;
+  final bool selectedBackgroundGradientAnimated;
+  final PizzacornGradientType selectedBorderGradientType;
+  final PizzacornGradientType selectedBackgroundGradientType;
   final double selectedBorderWidth;
   final int? maxLines;
 
@@ -50,6 +54,10 @@ class SelectorList extends StatelessWidget {
     this.selectedGradientColors = const [],
     this.selectedBorderGradient = false,
     this.selectedBackgroundGradient = false,
+    this.selectedBorderGradientAnimated = true,
+    this.selectedBackgroundGradientAnimated = true,
+    this.selectedBorderGradientType = PizzacornGradientType.sweep,
+    this.selectedBackgroundGradientType = PizzacornGradientType.sweep,
     this.selectedBorderWidth = 2,
     this.maxLines,
   }) : assert(selectedBorderWidth >= 0),
@@ -128,6 +136,10 @@ class SelectorList extends StatelessWidget {
       selectedGradientColors: selectedGradientColors,
       selectedBorderGradient: selectedBorderGradient,
       selectedBackgroundGradient: selectedBackgroundGradient,
+      selectedBorderGradientAnimated: selectedBorderGradientAnimated,
+      selectedBackgroundGradientAnimated: selectedBackgroundGradientAnimated,
+      selectedBorderGradientType: selectedBorderGradientType,
+      selectedBackgroundGradientType: selectedBackgroundGradientType,
       selectedBorderWidth: selectedBorderWidth,
       horizontal: horizontal,
       showSelectedCheck: showSelectedCheck ?? !horizontal,
@@ -150,6 +162,10 @@ class SelectorListItem extends StatelessWidget {
   final List<Color> selectedGradientColors;
   final bool selectedBorderGradient;
   final bool selectedBackgroundGradient;
+  final bool selectedBorderGradientAnimated;
+  final bool selectedBackgroundGradientAnimated;
+  final PizzacornGradientType selectedBorderGradientType;
+  final PizzacornGradientType selectedBackgroundGradientType;
   final double selectedBorderWidth;
   final bool horizontal;
   final bool showSelectedCheck;
@@ -169,6 +185,10 @@ class SelectorListItem extends StatelessWidget {
     this.selectedGradientColors = const [],
     this.selectedBorderGradient = false,
     this.selectedBackgroundGradient = false,
+    this.selectedBorderGradientAnimated = true,
+    this.selectedBackgroundGradientAnimated = true,
+    this.selectedBorderGradientType = PizzacornGradientType.sweep,
+    this.selectedBackgroundGradientType = PizzacornGradientType.sweep,
     this.selectedBorderWidth = 2,
     this.horizontal = false,
     this.showSelectedCheck = true,
@@ -178,11 +198,11 @@ class SelectorListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool animatedBackground = isSelected && selectedBackgroundGradient;
-    final bool animatedBorder = isSelected && selectedBorderGradient;
+    final bool gradientBackground = isSelected && selectedBackgroundGradient;
+    final bool gradientBorder = isSelected && selectedBorderGradient;
     final bool solidBorder =
-        isSelected && !animatedBorder && selectedBorderColor != null;
-    final Color? backgroundColor = animatedBackground
+        isSelected && !gradientBorder && selectedBorderColor != null;
+    final Color? backgroundColor = gradientBackground
         ? null
         : isSelected
         ? selectedBackgroundColor ?? selectedColor
@@ -190,7 +210,7 @@ class SelectorListItem extends StatelessWidget {
 
     final Color contentColor = isSelected
         ? selectedTextColor ??
-              (selectedBackgroundColor != null && !animatedBackground
+              (selectedBackgroundColor != null && !gradientBackground
                   ? COLOR_TEXT
                   : Colors.white)
         : COLOR_TEXT;
@@ -274,11 +294,13 @@ class SelectorListItem extends StatelessWidget {
       ),
     );
 
-    if (animatedBackground) {
+    if (gradientBackground) {
       item = AnimatedGradientBorder(
         radius: RADIUS,
         borderWidth: 0,
         colors: selectedGradientColors,
+        animated: selectedBackgroundGradientAnimated,
+        gradientType: selectedBackgroundGradientType,
         child: item,
       );
     }
@@ -301,10 +323,12 @@ class SelectorListItem extends StatelessWidget {
       );
     }
 
-    if (animatedBorder) {
+    if (gradientBorder) {
       item = AnimatedGradientBorder(
         radius: RADIUS,
         borderWidth: selectedBorderWidth,
+        animated: selectedBorderGradientAnimated,
+        gradientType: selectedBorderGradientType,
         colors: selectedGradientColors.isNotEmpty
             ? selectedGradientColors
             : selectedBorderColor == null

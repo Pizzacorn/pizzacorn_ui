@@ -1,3 +1,8 @@
+## 0.0.130
+
+#### Added MultiSelector with configurable colors, text styles, and solid or gradient selected backgrounds.
+#### Added fixed and animated linear, radial, and sweep gradients to AnimatedGradientBorder and SelectorList.
+
 ## 0.0.129
 
 #### Added horizontal and multi-row layouts to SelectorList with configurable rows, columns, equal-width cells, and optional selected check.

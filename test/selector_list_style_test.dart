@@ -212,4 +212,36 @@ void main() {
     expect(tester.getTopLeft(fourthItem).dy, greaterThan(tester.getTopLeft(firstItem).dy));
     expect(tester.getTopLeft(fourthItem).dx, tester.getTopLeft(firstItem).dx);
   });
+
+  testWidgets('SelectorList admite borde lineal fijo y fondo radial animado', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SelectorList(
+            ['Primera'],
+            selectedIndex: 0,
+            selectedBorderGradient: true,
+            selectedBorderGradientAnimated: false,
+            selectedBorderGradientType: PizzacornGradientType.linear,
+            selectedBackgroundGradient: true,
+            selectedBackgroundGradientAnimated: true,
+            selectedBackgroundGradientType: PizzacornGradientType.radial,
+            selectedGradientColors: [Colors.red, Colors.blue],
+            onChanged: (_) {},
+          ),
+        ),
+      ),
+    );
+
+    final List<AnimatedGradientBorder> gradients = tester
+        .widgetList<AnimatedGradientBorder>(find.byType(AnimatedGradientBorder))
+        .toList();
+    expect(gradients.length, 2);
+    expect(gradients[0].gradientType, PizzacornGradientType.linear);
+    expect(gradients[0].animated, isFalse);
+    expect(gradients[1].gradientType, PizzacornGradientType.radial);
+    expect(gradients[1].animated, isTrue);
+  });
 }
