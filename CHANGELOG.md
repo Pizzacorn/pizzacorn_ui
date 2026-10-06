@@ -1,3 +1,9 @@
+## 0.0.128
+
+#### Added OnboardingProgressSegments with segmented, gradient, and separated progress modes.
+#### Added AnimatedGradientBorder for wrapping widgets with a rotating color border.
+#### Added configurable solid and animated gradient backgrounds, borders, check colors, and selected/unselected text styles to SelectorList.
+
 ## 0.0.127
 
 #### Added Spanish and English locale support to TextFieldPhoneCustom country names and picker labels.

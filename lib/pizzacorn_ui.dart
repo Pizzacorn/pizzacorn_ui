@@ -46,6 +46,7 @@ export 'src/dropdown/dropdown.dart';
 export 'src/dropdown/dropdown_search.dart';
 
 // effects
+export 'src/effects/animated_gradient_border.dart';
 export 'src/effects/shimmer.dart';
 export 'src/effects/show_up.dart';
 export 'src/effects/hover.dart';
@@ -157,3 +158,4 @@ export 'src/utils/countries.dart';
 // widgets
 export 'src/widgets/container_help.dart';
 export 'src/widgets/disclaimer_widget.dart';
+export 'src/widgets/onboarding_progress_segments.dart';
