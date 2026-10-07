@@ -255,8 +255,13 @@ void main() {
       home: Scaffold(
         body: SelectorList(
           ['Ancho', 'Intermedio'],
-          subtitles: ['Estructura amplia', 'Estructura equilibrada'],
+          subtitles: [
+            'Estructura amplia con una explicación extensa que ocupa varias líneas y aumenta la altura de esta opción.',
+            'Estructura equilibrada',
+          ],
           images: [image, null],
+          imageWidth: 112,
+          imageHeight: 40,
           selectedIndex: 1,
           onChanged: (_) {},
           selectedBackgroundColor: Colors.white,
@@ -265,9 +270,19 @@ void main() {
       ),
     ));
 
-    expect(find.text('Estructura amplia'), findsOneWidget);
+    expect(find.textContaining('Estructura amplia'), findsOneWidget);
     expect(find.text('Estructura equilibrada'), findsOneWidget);
-    expect(find.byType(Image), findsOneWidget);
+    final item = find.byType(SelectorListItem).first;
+    final imageBox = find.descendant(
+      of: item,
+      matching: find.byWidgetPredicate(
+        (widget) => widget is SizedBox && widget.width == 112,
+      ),
+    );
+    expect(imageBox, findsOneWidget);
+    expect(tester.getSize(imageBox).width, 112);
+    expect(tester.getSize(imageBox).height, tester.getSize(item).height);
+    expect(tester.getSize(imageBox).height, greaterThan(40));
   });
 
   testWidgets('SelectorList permite estilos independientes para título y subtítulo', (tester) async {
@@ -290,5 +305,35 @@ void main() {
     expect(tester.widget<Text>(find.text('Intermedio')).style!.fontSize, 18);
     expect(tester.widget<Text>(find.text('Descripción activa')).style!.color, Colors.red);
     expect(tester.widget<Text>(find.text('Descripción inactiva')).style!.color, Colors.blue);
+  });
+
+  testWidgets('La imagen también se estira en el layout horizontal', (tester) async {
+    final image = MemoryImage(base64Decode(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScL/nwAAAABJRU5ErkJggg==',
+    ));
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: SizedBox(
+          width: 500,
+          child: SelectorList(
+            ['Primera', 'Segunda'],
+            subtitles: ['Descripción larga que ocupa varias líneas en la primera opción', 'Breve'],
+            images: [image, image],
+            imageWidth: 64,
+            imageHeight: 40,
+            horizontal: true,
+            selectedIndex: 0,
+            onChanged: (_) {},
+          ),
+        ),
+      ),
+    ));
+
+    expect(tester.takeException(), isNull);
+    final imageBoxes = find.byWidgetPredicate(
+      (widget) => widget is SizedBox && widget.width == 64,
+    );
+    expect(imageBoxes, findsNWidgets(2));
+    expect(tester.getSize(imageBoxes.first).height, tester.getSize(imageBoxes.last).height);
   });
 }

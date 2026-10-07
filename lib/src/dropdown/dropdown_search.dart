@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pizzacorn_ui/pizzacorn_ui.dart';
+import 'package:uicons_pro/uicons_pro.dart';
 
 /// Dropdown con buscador integrado al estilo Pizzacorn
 class DropdownSearch<T> extends StatefulWidget {
@@ -9,6 +10,8 @@ class DropdownSearch<T> extends StatefulWidget {
   final String Function(T) getName;
   final String tooltip;
   final String hintText;
+  final IconData? dropdownIcon;
+  final Color? dropdownIconColor;
 
   DropdownSearch({
     super.key,
@@ -18,6 +21,8 @@ class DropdownSearch<T> extends StatefulWidget {
     required this.getName,
     required this.tooltip,
     required this.hintText,
+    this.dropdownIcon,
+    this.dropdownIconColor,
   });
 
   @override
@@ -81,9 +86,10 @@ class DropdownSearchState<T> extends State<DropdownSearch<T>> {
               // REGLA: Parámetro posicional
               TextBody(currentText),
               Spacer(),
-              RotatedBox(
-                quarterTurns: 3,
-                child: SvgCustom(icon: "atras", size: 12),
+              Icon(
+                widget.dropdownIcon ?? UIconsPro.regularRounded.angle_small_down,
+                color: widget.dropdownIconColor ?? COLOR_TEXT,
+                size: 16,
               ),
             ],
           ),

@@ -1,5 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:pizzacorn_ui/pizzacorn_ui.dart';
+import 'package:uicons_pro/uicons_pro.dart';
+
+/// Estilo opcional de una entrada del menú desplegable.
+class DropdownOptionStyle {
+  final Color? backgroundColor;
+  final Color? textColor;
+  final Color? borderColor;
+  final Gradient? gradient;
+  final TextStyle? textStyle;
+  final double borderWidth;
+
+  const DropdownOptionStyle({
+    this.backgroundColor,
+    this.textColor,
+    this.borderColor,
+    this.gradient,
+    this.textStyle,
+    this.borderWidth = 1,
+  }) : assert(borderWidth >= 0);
+}
 
 /// Dropdown elegante basado en PopupMenu al estilo Pizzacorn
 class DropdownCustom<T> extends StatefulWidget {
@@ -18,6 +38,10 @@ class DropdownCustom<T> extends StatefulWidget {
   final Color? selectedBorderColor;
   final double borderWidth;
   final double height;
+  final IconData? dropdownIcon;
+  final Color? dropdownIconColor;
+  final Color? menuBackgroundColor;
+  final DropdownOptionStyle? Function(T item, bool isSelected)? optionStyleBuilder;
 
   DropdownCustom({
     super.key,
@@ -36,6 +60,10 @@ class DropdownCustom<T> extends StatefulWidget {
     this.selectedBorderColor,
     this.borderWidth = 1.5,
     this.height = 55,
+    this.dropdownIcon,
+    this.dropdownIconColor,
+    this.menuBackgroundColor,
+    this.optionStyleBuilder,
   }) : assert(borderWidth >= 0),
        assert(height > 0),
        assert(gradientColors.length != 1);
@@ -103,9 +131,10 @@ class DropdownCustomState<T> extends State<DropdownCustom<T>> {
         children: [
           TextBody(currentText, color: textColor),
           Spacer(),
-          RotatedBox(
-            quarterTurns: 3,
-            child: SvgCustom(icon: "atras", size: 12),
+          Icon(
+            widget.dropdownIcon ?? UIconsPro.regularRounded.angle_small_down,
+            color: widget.dropdownIconColor ?? textColor,
+            size: 16,
           ),
         ],
       ),
@@ -125,7 +154,7 @@ class DropdownCustomState<T> extends State<DropdownCustom<T>> {
       tooltip: widget.tooltip,
       // Usamos los estilos y tokens de la librería
       style: styleTransparent(),
-      color: COLOR_BACKGROUND,
+      color: widget.menuBackgroundColor ?? COLOR_BACKGROUND,
       elevation: 10,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(RADIUS)),
@@ -144,10 +173,42 @@ class DropdownCustomState<T> extends State<DropdownCustom<T>> {
         final List<PopupMenuEntry<T>> menuItems = <PopupMenuEntry<T>>[];
         for (int i = 0; i < widget.items.length; i++) {
           final T item = widget.items[i];
+          final DropdownOptionStyle? optionStyle =
+              widget.optionStyleBuilder?.call(item, selectedItem == item);
           menuItems.add(
             PopupMenuItem<T>(
               value: item,
-              child: TextBody(widget.getName(item)),
+              padding: optionStyle == null ? null : EdgeInsets.zero,
+              child: optionStyle == null
+                  ? TextBody(widget.getName(item))
+                  : Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      decoration: BoxDecoration(
+                        color: optionStyle.gradient == null
+                            ? optionStyle.backgroundColor
+                            : null,
+                        gradient: optionStyle.gradient,
+                        border: optionStyle.borderColor == null
+                            ? null
+                            : Border.all(
+                                color: optionStyle.borderColor!,
+                                width: optionStyle.borderWidth,
+                              ),
+                        borderRadius: BorderRadius.circular(RADIUS),
+                      ),
+                      child: optionStyle.textStyle == null
+                          ? TextBody(
+                              widget.getName(item),
+                              color: optionStyle.textColor ?? COLOR_TEXT,
+                            )
+                          : Text(
+                              widget.getName(item),
+                              style: styleBody(
+                                color: optionStyle.textColor ?? COLOR_TEXT,
+                              ).merge(optionStyle.textStyle),
+                            ),
+                    ),
             ),
           );
         }

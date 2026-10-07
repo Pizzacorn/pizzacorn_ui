@@ -1,3 +1,10 @@
+## 0.0.133
+
+#### Made SelectorList images fill each option's height while keeping configurable width.
+#### Replaced dropdown SVG arrows with configurable uicons icons.
+#### Added selected and unselected counter circle colors to SegmentedCupertinoCustom.
+#### Added per-option menu styling to DropdownCustom.
+
 ## 0.0.132
 
 #### Added independent selected and unselected subtitle text styles to SelectorList.

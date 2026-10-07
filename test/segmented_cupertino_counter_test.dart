@@ -53,4 +53,29 @@ void main() {
     ).decoration as BoxDecoration;
     expect(decoration.gradient, isA<RadialGradient>());
   });
+
+  testWidgets('El círculo usa colores distintos según la selección', (tester) async {
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: SegmentedCupertinoCustom(
+          items: ['Gimnasio', 'Casa'],
+          itemsSecondary: ['7', '3'],
+          currentIndex: 0,
+          onValueChanged: (_) {},
+          counterCircle: true,
+          selectedCounterCircleColor: Colors.green,
+          unselectedCounterCircleColor: Colors.grey,
+        ),
+      ),
+    ));
+
+    final selectedCircle = tester.widget<Container>(
+      find.ancestor(of: find.text('7'), matching: find.byType(Container)).first,
+    );
+    final unselectedCircle = tester.widget<Container>(
+      find.ancestor(of: find.text('3'), matching: find.byType(Container)).first,
+    );
+    expect((selectedCircle.decoration as BoxDecoration).color, Colors.green);
+    expect((unselectedCircle.decoration as BoxDecoration).color, Colors.grey);
+  });
 }

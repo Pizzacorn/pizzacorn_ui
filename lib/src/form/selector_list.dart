@@ -9,6 +9,7 @@ class SelectorList extends StatelessWidget {
   final List<String>? subtitles;
   final List<ImageProvider?>? images;
   final double imageWidth;
+  /// Altura mínima de las opciones con imagen; la imagen ocupa toda la tarjeta.
   final double imageHeight;
   final BoxFit imageFit;
   final int selectedIndex;
@@ -285,9 +286,13 @@ class SelectorListItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(RADIUS),
           highlightColor: Colors.white.withOpacity(0.1),
           splashColor: Colors.white.withOpacity(0.1),
-          child: Container(
-            width: double.infinity,
-            child: Row(
+          child: ConstrainedBox(
+            constraints: image == null
+                ? const BoxConstraints()
+                : BoxConstraints(minHeight: imageHeight),
+            child: IntrinsicHeight(
+              child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: horizontal
                   ? MainAxisAlignment.center
                   : MainAxisAlignment.start,
@@ -298,11 +303,13 @@ class SelectorListItem extends StatelessWidget {
                       topLeft: Radius.circular(RADIUS),
                       bottomLeft: Radius.circular(RADIUS),
                     ),
-                    child: Image(
-                      image: image!,
+                    child: SizedBox(
                       width: imageWidth,
-                      height: imageHeight,
-                      fit: imageFit,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(image: image!, fit: imageFit),
+                        ),
+                      ),
                     ),
                   ),
                 Expanded(
@@ -369,6 +376,7 @@ class SelectorListItem extends StatelessWidget {
                     ),
                   ),
               ],
+            ),
             ),
           ),
         ),

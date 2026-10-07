@@ -20,6 +20,8 @@ class SegmentedCupertinoCustom extends StatelessWidget {
   final SegmentedCounterPosition counterPosition;
   final bool counterCircle;
   final Color? counterCircleColor;
+  final Color? selectedCounterCircleColor;
+  final Color? unselectedCounterCircleColor;
   final List<Color> counterGradientColors;
   final PizzacornGradientType counterGradientType;
   final Color? counterTextColor;
@@ -57,6 +59,8 @@ class SegmentedCupertinoCustom extends StatelessWidget {
     this.counterPosition = SegmentedCounterPosition.below,
     this.counterCircle = false,
     this.counterCircleColor,
+    this.selectedCounterCircleColor,
+    this.unselectedCounterCircleColor,
     this.counterGradientColors = const [],
     this.counterGradientType = PizzacornGradientType.linear,
     this.counterTextColor,
@@ -104,7 +108,12 @@ class SegmentedCupertinoCustom extends StatelessWidget {
       final Color effectiveCounterTextColor = counterTextColor ??
           (counterCircle ? Colors.white :
               (isSelected ? effectiveActiveText : effectiveInactiveText));
-      final Gradient? counterGradient = counterCircle && counterGradientColors.length >= 2
+      final Color? stateCounterCircleColor = isSelected
+          ? selectedCounterCircleColor
+          : unselectedCounterCircleColor;
+      final Gradient? counterGradient = counterCircle &&
+              stateCounterCircleColor == null &&
+              counterGradientColors.length >= 2
           ? switch (counterGradientType) {
               PizzacornGradientType.linear => LinearGradient(colors: counterGradientColors),
               PizzacornGradientType.radial => RadialGradient(colors: counterGradientColors),
@@ -118,7 +127,7 @@ class SegmentedCupertinoCustom extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: counterGradient == null
-                    ? counterCircleColor ?? effectiveThumbColor
+                    ? stateCounterCircleColor ?? counterCircleColor ?? effectiveThumbColor
                     : null,
                 gradient: counterGradient,
               ),
