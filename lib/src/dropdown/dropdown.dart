@@ -38,6 +38,7 @@ class DropdownCustom<T> extends StatefulWidget {
   final Color? selectedBorderColor;
   final double borderWidth;
   final double height;
+  final EdgeInsetsGeometry contentPadding;
   final IconData? dropdownIcon;
   final Color? dropdownIconColor;
   final Color? menuBackgroundColor;
@@ -60,6 +61,7 @@ class DropdownCustom<T> extends StatefulWidget {
     this.selectedBorderColor,
     this.borderWidth = 1.5,
     this.height = 55,
+    this.contentPadding = const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
     this.dropdownIcon,
     this.dropdownIconColor,
     this.menuBackgroundColor,
@@ -110,7 +112,7 @@ class DropdownCustomState<T> extends State<DropdownCustom<T>> {
 
     Widget field = Container(
       height: widget.height,
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+      padding: widget.contentPadding,
       decoration: BoxDecoration(
         color: widget.selected && widget.backgroundGradient
             ? null

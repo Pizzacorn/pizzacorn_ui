@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../pizzacorn_ui.dart';
@@ -17,6 +19,9 @@ class BottomBarCustom extends StatelessWidget {
   final Color? notificationColor;
   final List<bool>? notifications;
   final double notificationSize;
+  final List<Color>? selectedGradientColors;
+  final bool selectedGradientAnimated;
+  final PizzacornGradientType selectedGradientType;
 
   /// Decide si los títulos son siempre visibles o solo en la pestaña activa.
   final bool alwaysShowTitles;
@@ -29,7 +34,7 @@ class BottomBarCustom extends StatelessWidget {
   final double height;
 
   /// Padding inferior adicional (útil para el efecto flotante o safe area manual).
-  final double paddingBottom;
+  final double? paddingBottom;
 
   const BottomBarCustom({
     super.key,
@@ -43,10 +48,13 @@ class BottomBarCustom extends StatelessWidget {
     this.notificationColor,
     this.notifications,
     this.notificationSize = 8,
+    this.selectedGradientColors,
+    this.selectedGradientAnimated = false,
+    this.selectedGradientType = PizzacornGradientType.linear,
     this.alwaysShowTitles = false,
     this.isFloating = true,
     this.height = 75,
-    this.paddingBottom = 20,
+    this.paddingBottom,
   }) : assert(
          icons.length == titles.length,
          "La lista de iconos y títulos debe tener el mismo tamaño, Don Sput.",
@@ -65,7 +73,7 @@ class BottomBarCustom extends StatelessWidget {
       explicitChildNodes: true,
       child: Container(
         width: double.infinity,
-        padding: EdgeInsets.only(bottom: paddingBottom),
+        padding: EdgeInsets.only(bottom: paddingBottom ?? (isFloating ? 20 : 0)),
         decoration: isFloating
             ? BoxDecoration(
                 gradient: LinearGradient(
@@ -113,6 +121,9 @@ class BottomBarCustom extends StatelessWidget {
                 notificationColor: effectiveNotificationColor,
                 notificationSize: notificationSize,
                 alwaysShowTitles: alwaysShowTitles,
+                selectedGradientColors: selectedGradientColors,
+                selectedGradientAnimated: selectedGradientAnimated,
+                selectedGradientType: selectedGradientType,
               );
             }),
           ),
@@ -122,7 +133,7 @@ class BottomBarCustom extends StatelessWidget {
   }
 }
 
-class BottomItem extends StatelessWidget {
+class BottomItem extends StatefulWidget {
   final String title;
   final dynamic iconData;
   final bool isSelected;
@@ -133,6 +144,9 @@ class BottomItem extends StatelessWidget {
   final Color? notificationColor;
   final double notificationSize;
   final bool alwaysShowTitles;
+  final List<Color>? selectedGradientColors;
+  final bool selectedGradientAnimated;
+  final PizzacornGradientType selectedGradientType;
 
   const BottomItem({
     super.key,
@@ -146,21 +160,68 @@ class BottomItem extends StatelessWidget {
     this.notificationColor,
     this.notificationSize = 8,
     required this.alwaysShowTitles,
+    this.selectedGradientColors,
+    this.selectedGradientAnimated = false,
+    this.selectedGradientType = PizzacornGradientType.linear,
   });
 
   @override
+  State<BottomItem> createState() => BottomItemState();
+}
+
+class BottomItemState extends State<BottomItem>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2600),
+    );
+    updateAnimation();
+  }
+
+  @override
+  void didUpdateWidget(BottomItem oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    updateAnimation();
+  }
+
+  void updateAnimation() {
+    if (widget.isSelected && widget.selectedGradientAnimated &&
+        widget.selectedGradientColors != null &&
+        widget.selectedGradientColors!.isNotEmpty) {
+      if (!animationController.isAnimating) animationController.repeat();
+    } else {
+      animationController.stop();
+      animationController.value = 0;
+    }
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final Color effectiveNotificationColor = notificationColor ?? COLOR_ERROR;
+    final Color effectiveNotificationColor = widget.notificationColor ?? COLOR_ERROR;
+    final bool useGradient = widget.isSelected &&
+        widget.selectedGradientColors != null &&
+        widget.selectedGradientColors!.isNotEmpty;
 
     return Expanded(
       child: Semantics(
-        label: "Pestaña $title",
-        selected: isSelected,
+        label: "Pestaña ${widget.title}",
+        selected: widget.isSelected,
         button: true,
-        onTap: onTap,
+        onTap: widget.onTap,
         child: InkWell(
-          onTap: onTap,
-          splashColor: activeColor.withValues(alpha: 0.1),
+          onTap: widget.onTap,
+          splashColor: widget.activeColor.withValues(alpha: 0.1),
           highlightColor: Colors.transparent,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -170,14 +231,14 @@ class BottomItem extends StatelessWidget {
               Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  buildIconContent(),
-                  if (hasNotification)
+                  useGradient ? gradientContent(child: buildIconContent()) : buildIconContent(),
+                  if (widget.hasNotification)
                     Positioned(
                       top: -2,
                       right: -4,
                       child: Container(
-                        width: notificationSize,
-                        height: notificationSize,
+                        width: widget.notificationSize,
+                        height: widget.notificationSize,
                         decoration: BoxDecoration(
                           color: effectiveNotificationColor,
                           shape: BoxShape.circle,
@@ -190,15 +251,18 @@ class BottomItem extends StatelessWidget {
                     ),
                 ],
               ),
-              if (isSelected || alwaysShowTitles) ...[
+              if (widget.isSelected || widget.alwaysShowTitles) ...[
                 const SizedBox(height: 4),
-                TextSmall(
-                  title,
+                Builder(builder: (context) {
+                  final Widget label = TextSmall(
+                  widget.title,
                   maxlines: 1,
                   textAlign: TextAlign.center,
-                  fontWeight: isSelected ? WEIGHT_BOLD : WEIGHT_NORMAL,
-                  color: isSelected ? activeColor : inactiveColor,
-                ),
+                  fontWeight: widget.isSelected ? WEIGHT_BOLD : WEIGHT_NORMAL,
+                  color: widget.isSelected ? widget.activeColor : widget.inactiveColor,
+                  );
+                  return useGradient ? gradientContent(child: label) : label;
+                }),
               ],
               const Spacer(),
             ],
@@ -209,18 +273,54 @@ class BottomItem extends StatelessWidget {
   }
 
   Widget buildIconContent() {
-    final Color color = isSelected ? activeColor : inactiveColor;
+    final Color color = widget.isSelected ? widget.activeColor : widget.inactiveColor;
 
-    if (iconData is IconData) {
-      return Icon(iconData, size: 22, color: color);
-    } else if (iconData is String) {
+    if (widget.iconData is IconData) {
+      return Icon(widget.iconData, size: 22, color: color);
+    } else if (widget.iconData is String) {
       return SvgPicture.asset(
-        iconData,
+        widget.iconData,
         height: 22,
         colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
       );
     }
 
     return const SizedBox(width: 22, height: 22);
+  }
+
+  Widget gradientContent({required Widget child}) {
+    final List<Color> colors = widget.selectedGradientColors!;
+    final List<Color> gradientColors = colors.length == 1
+        ? [colors.first, colors.first]
+        : colors;
+    return AnimatedBuilder(
+      animation: animationController,
+      child: child,
+      builder: (context, child) {
+        final double angle = animationController.value * 2 * pi;
+        final Gradient gradient = switch (widget.selectedGradientType) {
+          PizzacornGradientType.linear => LinearGradient(
+              colors: gradientColors,
+              transform: widget.selectedGradientAnimated ? GradientRotation(angle) : null,
+            ),
+          PizzacornGradientType.radial => RadialGradient(
+              colors: gradientColors,
+              center: widget.selectedGradientAnimated
+                  ? Alignment(cos(angle) * 0.6, sin(angle) * 0.6)
+                  : Alignment.center,
+              radius: 1.2,
+            ),
+          PizzacornGradientType.sweep => SweepGradient(
+              colors: [...gradientColors, gradientColors.first],
+              transform: widget.selectedGradientAnimated ? GradientRotation(angle) : null,
+            ),
+        };
+        return ShaderMask(
+          shaderCallback: gradient.createShader,
+          blendMode: BlendMode.srcIn,
+          child: child,
+        );
+      },
+    );
   }
 }

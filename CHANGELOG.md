@@ -1,3 +1,7 @@
+## 0.0.136
+
+#### Added configurable contentPadding to DropdownCustom.
+
 ## 0.0.135
 
 #### Added configurable itemPadding to SelectorList.
