@@ -1,3 +1,7 @@
+## 0.0.134
+
+#### Added configurable unselectedBackgroundColor to SelectorList.
+
 ## 0.0.133
 
 #### Made SelectorList images fill each option's height while keeping configurable width.

@@ -28,6 +28,30 @@ void main() {
     expect(find.byType(AnimatedGradientBorder), findsNothing);
   });
 
+  testWidgets('SelectorList permite el fondo de opciones no seleccionadas', (tester) async {
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: SelectorList(
+          ['Primera', 'Segunda'],
+          selectedIndex: 0,
+          onChanged: (_) {},
+          selectedBackgroundColor: Colors.blue,
+          unselectedBackgroundColor: Colors.orange,
+        ),
+      ),
+    ));
+
+    final items = find.byType(SelectorListItem);
+    final selectedBackground = tester.widget<AnimatedContainer>(
+      find.descendant(of: items.first, matching: find.byType(AnimatedContainer)).first,
+    );
+    final unselectedBackground = tester.widget<AnimatedContainer>(
+      find.descendant(of: items.last, matching: find.byType(AnimatedContainer)).first,
+    );
+    expect((selectedBackground.decoration as BoxDecoration).color, Colors.blue);
+    expect((unselectedBackground.decoration as BoxDecoration).color, Colors.orange);
+  });
+
   testWidgets('SelectorList aplica borde animado y fondo sólido al activo', (
     tester,
   ) async {

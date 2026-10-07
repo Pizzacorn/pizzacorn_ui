@@ -25,6 +25,7 @@ class SelectorList extends StatelessWidget {
   final bool? showSelectedCheck;
   final Color? selectedColor;
   final Color? selectedBackgroundColor;
+  final Color? unselectedBackgroundColor;
   final Color? selectedBorderColor;
   final Color? selectedTextColor;
   final Color? selectedCheckColor;
@@ -59,6 +60,7 @@ class SelectorList extends StatelessWidget {
     this.showSelectedCheck,
     this.selectedColor,
     this.selectedBackgroundColor,
+    this.unselectedBackgroundColor,
     this.selectedBorderColor,
     this.selectedTextColor,
     this.selectedCheckColor,
@@ -151,6 +153,7 @@ class SelectorList extends StatelessWidget {
       isSelected: selectedIndex == index,
       selectedColor: selectedColor ?? COLOR_ACCENT,
       selectedBackgroundColor: selectedBackgroundColor,
+      unselectedBackgroundColor: unselectedBackgroundColor,
       selectedBorderColor: selectedBorderColor,
       selectedTextColor: selectedTextColor,
       selectedCheckColor: selectedCheckColor,
@@ -184,6 +187,7 @@ class SelectorListItem extends StatelessWidget {
   final bool isSelected;
   final Color selectedColor;
   final Color? selectedBackgroundColor;
+  final Color? unselectedBackgroundColor;
   final Color? selectedBorderColor;
   final Color? selectedTextColor;
   final Color? selectedCheckColor;
@@ -214,6 +218,7 @@ class SelectorListItem extends StatelessWidget {
     required this.isSelected,
     required this.selectedColor,
     this.selectedBackgroundColor,
+    this.unselectedBackgroundColor,
     this.selectedBorderColor,
     this.selectedTextColor,
     this.selectedCheckColor,
@@ -245,7 +250,7 @@ class SelectorListItem extends StatelessWidget {
         ? null
         : isSelected
         ? selectedBackgroundColor ?? selectedColor
-        : COLOR_BACKGROUND_SECONDARY;
+        : unselectedBackgroundColor ?? COLOR_BACKGROUND_SECONDARY;
 
     final Color contentColor = isSelected
         ? selectedTextColor ??
