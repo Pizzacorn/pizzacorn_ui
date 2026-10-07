@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pizzacorn_ui/pizzacorn_ui.dart';
@@ -243,5 +245,28 @@ void main() {
     expect(gradients[0].animated, isFalse);
     expect(gradients[1].gradientType, PizzacornGradientType.radial);
     expect(gradients[1].animated, isTrue);
+  });
+
+  testWidgets('SelectorList muestra imagen y subtítulo por opción', (tester) async {
+    final image = MemoryImage(base64Decode(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScL/nwAAAABJRU5ErkJggg==',
+    ));
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: SelectorList(
+          ['Ancho', 'Intermedio'],
+          subtitles: ['Estructura amplia', 'Estructura equilibrada'],
+          images: [image, null],
+          selectedIndex: 1,
+          onChanged: (_) {},
+          selectedBackgroundColor: Colors.white,
+          selectedTextColor: Colors.black,
+        ),
+      ),
+    ));
+
+    expect(find.text('Estructura amplia'), findsOneWidget);
+    expect(find.text('Estructura equilibrada'), findsOneWidget);
+    expect(find.byType(Image), findsOneWidget);
   });
 }

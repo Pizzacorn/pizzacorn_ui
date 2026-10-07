@@ -1,3 +1,10 @@
+## 0.0.131
+
+#### Added configurable counter placement and badges to SegmentedCupertinoCustom.
+#### Added solid or animated linear and radial selection gradients to SegmentedCupertinoCustom.
+#### Added per-option images and subtitles to SelectorList.
+#### Added selected colors, gradients, sizing, and external-value updates to DropdownCustom.
+
 ## 0.0.130
 
 #### Added MultiSelector with configurable colors, text styles, and solid or gradient selected backgrounds.

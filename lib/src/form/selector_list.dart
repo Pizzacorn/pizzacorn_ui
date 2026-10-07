@@ -6,6 +6,11 @@ import '../../pizzacorn_ui.dart';
 /// API: SelectorList(options, selectedIndex: index, onChanged: (i) => ...)
 class SelectorList extends StatelessWidget {
   final List<String> options;
+  final List<String>? subtitles;
+  final List<ImageProvider?>? images;
+  final double imageWidth;
+  final double imageHeight;
+  final BoxFit imageFit;
   final int selectedIndex;
   final ValueChanged<int> onChanged;
   final double spaceSize;
@@ -37,6 +42,11 @@ class SelectorList extends StatelessWidget {
   const SelectorList(
     this.options, {
     super.key,
+    this.subtitles,
+    this.images,
+    this.imageWidth = 88,
+    this.imageHeight = 88,
+    this.imageFit = BoxFit.cover,
     required this.selectedIndex,
     required this.onChanged,
     this.spaceSize = SPACE_SMALL,
@@ -61,6 +71,9 @@ class SelectorList extends StatelessWidget {
     this.selectedBorderWidth = 2,
     this.maxLines,
   }) : assert(selectedBorderWidth >= 0),
+       assert(subtitles == null || subtitles.length == options.length),
+       assert(images == null || images.length == options.length),
+       assert(imageWidth > 0 && imageHeight > 0),
        assert(rows > 0),
        assert(columns == null || columns > 0);
 
@@ -125,6 +138,11 @@ class SelectorList extends StatelessWidget {
   SelectorListItem buildItem(int index) {
     return SelectorListItem(
       options[index],
+      subtitle: subtitles == null ? null : subtitles![index],
+      image: images == null ? null : images![index],
+      imageWidth: imageWidth,
+      imageHeight: imageHeight,
+      imageFit: imageFit,
       isSelected: selectedIndex == index,
       selectedColor: selectedColor ?? COLOR_ACCENT,
       selectedBackgroundColor: selectedBackgroundColor,
@@ -151,6 +169,11 @@ class SelectorList extends StatelessWidget {
 
 class SelectorListItem extends StatelessWidget {
   final String label;
+  final String? subtitle;
+  final ImageProvider? image;
+  final double imageWidth;
+  final double imageHeight;
+  final BoxFit imageFit;
   final bool isSelected;
   final Color selectedColor;
   final Color? selectedBackgroundColor;
@@ -174,6 +197,11 @@ class SelectorListItem extends StatelessWidget {
 
   const SelectorListItem(
     this.label, {
+    this.subtitle,
+    this.image,
+    this.imageWidth = 88,
+    this.imageHeight = 88,
+    this.imageFit = BoxFit.cover,
     required this.isSelected,
     required this.selectedColor,
     this.selectedBackgroundColor,
@@ -246,46 +274,79 @@ class SelectorListItem extends StatelessWidget {
           splashColor: Colors.white.withOpacity(0.1),
           child: Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
             child: Row(
               mainAxisAlignment: horizontal
                   ? MainAxisAlignment.center
                   : MainAxisAlignment.start,
               children: [
+                if (image != null)
+                  ClipRRect(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(RADIUS),
+                      bottomLeft: Radius.circular(RADIUS),
+                    ),
+                    child: Image(
+                      image: image!,
+                      width: imageWidth,
+                      height: imageHeight,
+                      fit: imageFit,
+                    ),
+                  ),
                 Expanded(
-                  child: Align(
-                    alignment: horizontal
-                        ? Alignment.center
-                        : Alignment.centerLeft,
-                    child: IgnorePointer(
-                      child: customTextStyle == null
-                          ? TextBody(
-                              label,
-                              color: contentColor,
-                              fontWeight: isSelected ? WEIGHT_BOLD : WEIGHT_NORMAL,
-                              textAlign: horizontal
-                                  ? TextAlign.center
-                                  : TextAlign.left,
-                              maxlines: maxLines,
-                            )
-                          : Text(
-                              bodyUppercase ? label.toUpperCase() : label,
-                              style: finalTextStyle,
-                              textAlign: horizontal
-                                  ? TextAlign.center
-                                  : TextAlign.left,
-                              maxLines: maxLines == 0 ? null : maxLines,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                    child: Align(
+                      alignment: horizontal
+                          ? Alignment.center
+                          : Alignment.centerLeft,
+                      child: IgnorePointer(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: horizontal
+                              ? CrossAxisAlignment.center
+                              : CrossAxisAlignment.start,
+                          children: [
+                            customTextStyle == null
+                                ? TextBody(
+                                    label,
+                                    color: contentColor,
+                                    fontWeight: isSelected ? WEIGHT_BOLD : WEIGHT_NORMAL,
+                                    textAlign: horizontal
+                                        ? TextAlign.center
+                                        : TextAlign.left,
+                                    maxlines: maxLines,
+                                  )
+                                : Text(
+                                    bodyUppercase ? label.toUpperCase() : label,
+                                    style: finalTextStyle,
+                                    textAlign: horizontal
+                                        ? TextAlign.center
+                                        : TextAlign.left,
+                                    maxLines: maxLines == 0 ? null : maxLines,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                            if (subtitle != null && subtitle!.isNotEmpty) ...[
+                              Space(SPACE_SMALLEST),
+                              TextCaption(
+                                subtitle!,
+                                color: contentColor,
+                                textAlign: horizontal ? TextAlign.center : TextAlign.left,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
-                if (isSelected && showSelectedCheck) Space(SPACE_SMALL),
                 if (isSelected && showSelectedCheck)
-                  Icon(
-                    UIconsPro.regularRounded.check,
-                    color: selectedCheckColor ?? contentColor,
-                    size: 14,
+                  Padding(
+                    padding: const EdgeInsets.only(right: 20),
+                    child: Icon(
+                      UIconsPro.regularRounded.check,
+                      color: selectedCheckColor ?? contentColor,
+                      size: 14,
+                    ),
                   ),
               ],
             ),
