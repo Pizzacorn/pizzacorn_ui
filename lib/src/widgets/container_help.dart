@@ -5,6 +5,7 @@ import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 class ContainerHelp extends StatelessWidget {
   final String text;
   final IconData icon;
+  final bool showIcon;
   final Color? color;
   final Color? backgroundColor;
   final Color? textColor;
@@ -19,6 +20,7 @@ class ContainerHelp extends StatelessWidget {
     super.key,
     this.text = "",
     this.icon = Icons.info_outline_rounded,
+    this.showIcon = true,
     this.color,
     this.backgroundColor,
     this.textColor,
@@ -47,12 +49,14 @@ class ContainerHelp extends StatelessWidget {
         crossAxisAlignment:
             compact ? CrossAxisAlignment.start : CrossAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            color: effectiveColor,
-            size: iconSize,
-          ),
-          Space(SPACE_SMALL),
+          if (showIcon) ...[
+            Icon(
+              icon,
+              color: effectiveColor,
+              size: iconSize,
+            ),
+            Space(SPACE_SMALL),
+          ],
           Expanded(
             child: compact
                 ? TextCaption(

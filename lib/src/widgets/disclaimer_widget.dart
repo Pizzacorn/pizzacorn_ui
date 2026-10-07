@@ -4,6 +4,7 @@ import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 Widget disclaimerWidget({
   String text = "",
   IconData icon = Icons.info_outline_rounded,
+  bool showIcon = true,
   Color? color,
   Color? textColor,
   int maxlines = 5,
@@ -13,6 +14,7 @@ Widget disclaimerWidget({
   return ContainerHelp(
     text: text,
     icon: icon,
+    showIcon: showIcon,
     color: accentColor,
     backgroundColor: accentColor.withValues(alpha: 0.10),
     textColor: textColor ?? COLOR_TEXT,

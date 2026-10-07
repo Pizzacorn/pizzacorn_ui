@@ -29,6 +29,8 @@ class SelectorList extends StatelessWidget {
   final Color? selectedCheckColor;
   final TextStyle? selectedTextStyle;
   final TextStyle? unselectedTextStyle;
+  final TextStyle? selectedSubtitleStyle;
+  final TextStyle? unselectedSubtitleStyle;
   final List<Color> selectedGradientColors;
   final bool selectedBorderGradient;
   final bool selectedBackgroundGradient;
@@ -61,6 +63,8 @@ class SelectorList extends StatelessWidget {
     this.selectedCheckColor,
     this.selectedTextStyle,
     this.unselectedTextStyle,
+    this.selectedSubtitleStyle,
+    this.unselectedSubtitleStyle,
     this.selectedGradientColors = const [],
     this.selectedBorderGradient = false,
     this.selectedBackgroundGradient = false,
@@ -151,6 +155,8 @@ class SelectorList extends StatelessWidget {
       selectedCheckColor: selectedCheckColor,
       selectedTextStyle: selectedTextStyle,
       unselectedTextStyle: unselectedTextStyle,
+      selectedSubtitleStyle: selectedSubtitleStyle,
+      unselectedSubtitleStyle: unselectedSubtitleStyle,
       selectedGradientColors: selectedGradientColors,
       selectedBorderGradient: selectedBorderGradient,
       selectedBackgroundGradient: selectedBackgroundGradient,
@@ -182,6 +188,8 @@ class SelectorListItem extends StatelessWidget {
   final Color? selectedCheckColor;
   final TextStyle? selectedTextStyle;
   final TextStyle? unselectedTextStyle;
+  final TextStyle? selectedSubtitleStyle;
+  final TextStyle? unselectedSubtitleStyle;
   final List<Color> selectedGradientColors;
   final bool selectedBorderGradient;
   final bool selectedBackgroundGradient;
@@ -210,6 +218,8 @@ class SelectorListItem extends StatelessWidget {
     this.selectedCheckColor,
     this.selectedTextStyle,
     this.unselectedTextStyle,
+    this.selectedSubtitleStyle,
+    this.unselectedSubtitleStyle,
     this.selectedGradientColors = const [],
     this.selectedBorderGradient = false,
     this.selectedBackgroundGradient = false,
@@ -245,6 +255,9 @@ class SelectorListItem extends StatelessWidget {
     final TextStyle? customTextStyle = isSelected
         ? selectedTextStyle
         : unselectedTextStyle;
+    final TextStyle? customSubtitleStyle = isSelected
+        ? selectedSubtitleStyle
+        : unselectedSubtitleStyle;
     final TextStyle effectiveTextStyle = styleBody(
       color: contentColor,
       fontWeight: isSelected ? WEIGHT_BOLD : WEIGHT_NORMAL,
@@ -327,11 +340,18 @@ class SelectorListItem extends StatelessWidget {
                                   ),
                             if (subtitle != null && subtitle!.isNotEmpty) ...[
                               Space(SPACE_SMALLEST),
-                              TextCaption(
-                                subtitle!,
-                                color: contentColor,
-                                textAlign: horizontal ? TextAlign.center : TextAlign.left,
-                              ),
+                              customSubtitleStyle == null
+                                  ? TextCaption(
+                                      subtitle!,
+                                      color: contentColor,
+                                      textAlign: horizontal ? TextAlign.center : TextAlign.left,
+                                    )
+                                  : Text(
+                                      subtitle!,
+                                      style: styleCaption(color: contentColor)
+                                          .merge(customSubtitleStyle),
+                                      textAlign: horizontal ? TextAlign.center : TextAlign.left,
+                                    ),
                             ],
                           ],
                         ),

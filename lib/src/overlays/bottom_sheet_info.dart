@@ -12,6 +12,7 @@ class BottomSheetInfo extends StatelessWidget {
   final String infoText;
   final String disclaimer;
   final IconData disclaimerIcon;
+  final bool showDisclaimerIcon;
   final Color? disclaimerColor;
   final Color? disclaimerTextColor;
   final int disclaimerMaxlines;
@@ -49,6 +50,7 @@ class BottomSheetInfo extends StatelessWidget {
     this.infoText = "",
     this.disclaimer = "",
     this.disclaimerIcon = Icons.info_outline_rounded,
+    this.showDisclaimerIcon = true,
     this.disclaimerColor,
     this.disclaimerTextColor,
     this.disclaimerMaxlines = 5,
@@ -134,6 +136,7 @@ class BottomSheetInfo extends StatelessWidget {
               disclaimerWidget(
                 text: disclaimer,
                 icon: disclaimerIcon,
+                showIcon: showDisclaimerIcon,
                 color: disclaimerColor,
                 textColor: disclaimerTextColor,
                 maxlines: disclaimerMaxlines,

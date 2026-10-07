@@ -1,3 +1,8 @@
+## 0.0.132
+
+#### Added independent selected and unselected subtitle text styles to SelectorList.
+#### Added optional icons to disclaimerWidget, ContainerHelp, and BottomSheetInfo disclaimers.
+
 ## 0.0.131
 
 #### Added configurable counter placement and badges to SegmentedCupertinoCustom.

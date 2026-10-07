@@ -19,6 +19,27 @@ void main() {
     expect(find.byIcon(Icons.info_outline_rounded), findsOneWidget);
   });
 
+  testWidgets("disclaimerWidget admite otro icono y puede ocultarlo", (tester) async {
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: disclaimerWidget(text: "Aviso", icon: Icons.warning_amber_rounded),
+      ),
+    ));
+    expect(find.byIcon(Icons.warning_amber_rounded), findsOneWidget);
+
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: disclaimerWidget(
+          text: "Aviso sin icono",
+          icon: Icons.warning_amber_rounded,
+          showIcon: false,
+        ),
+      ),
+    ));
+    expect(find.text("Aviso sin icono"), findsOneWidget);
+    expect(find.byIcon(Icons.warning_amber_rounded), findsNothing);
+  });
+
   testWidgets("ImageCustom carga su placeholder incluido", (tester) async {
     await tester.pumpWidget(
       MaterialApp(

@@ -269,4 +269,26 @@ void main() {
     expect(find.text('Estructura equilibrada'), findsOneWidget);
     expect(find.byType(Image), findsOneWidget);
   });
+
+  testWidgets('SelectorList permite estilos independientes para título y subtítulo', (tester) async {
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: SelectorList(
+          ['Ancho', 'Intermedio'],
+          subtitles: ['Descripción activa', 'Descripción inactiva'],
+          selectedIndex: 0,
+          onChanged: (_) {},
+          selectedTextStyle: const TextStyle(fontSize: 22),
+          unselectedTextStyle: const TextStyle(fontSize: 18),
+          selectedSubtitleStyle: const TextStyle(fontSize: 15, color: Colors.red),
+          unselectedSubtitleStyle: const TextStyle(fontSize: 12, color: Colors.blue),
+        ),
+      ),
+    ));
+
+    expect(tester.widget<Text>(find.text('Ancho')).style!.fontSize, 22);
+    expect(tester.widget<Text>(find.text('Intermedio')).style!.fontSize, 18);
+    expect(tester.widget<Text>(find.text('Descripción activa')).style!.color, Colors.red);
+    expect(tester.widget<Text>(find.text('Descripción inactiva')).style!.color, Colors.blue);
+  });
 }
