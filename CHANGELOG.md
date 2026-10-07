@@ -1,3 +1,8 @@
+## 0.0.135
+
+#### Added configurable itemPadding to SelectorList.
+#### Added StepSliderCustom with discrete steps, labels, and configurable track and thumb styles.
+
 ## 0.0.134
 
 #### Added configurable unselectedBackgroundColor to SelectorList.

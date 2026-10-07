@@ -15,6 +15,8 @@ class SelectorList extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onChanged;
   final double spaceSize;
+  /// Espacio del contenido; la imagen permanece pegada al borde de la opción.
+  final EdgeInsetsGeometry itemPadding;
   /// Distribuye las opciones en filas de celdas con el mismo ancho.
   final bool horizontal;
   /// Número mínimo de filas en modo horizontal.
@@ -54,6 +56,7 @@ class SelectorList extends StatelessWidget {
     required this.selectedIndex,
     required this.onChanged,
     this.spaceSize = SPACE_SMALL,
+    this.itemPadding = const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
     this.horizontal = false,
     this.rows = 1,
     this.columns,
@@ -172,6 +175,7 @@ class SelectorList extends StatelessWidget {
       horizontal: horizontal,
       showSelectedCheck: showSelectedCheck ?? !horizontal,
       maxLines: maxLines,
+      itemPadding: itemPadding,
       onTap: () => onChanged(index),
     );
   }
@@ -206,6 +210,7 @@ class SelectorListItem extends StatelessWidget {
   final bool horizontal;
   final bool showSelectedCheck;
   final int? maxLines;
+  final EdgeInsetsGeometry itemPadding;
   final VoidCallback onTap;
 
   const SelectorListItem(
@@ -237,6 +242,7 @@ class SelectorListItem extends StatelessWidget {
     this.horizontal = false,
     this.showSelectedCheck = true,
     this.maxLines,
+    this.itemPadding = const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
     required this.onTap,
   }) : assert(selectedBorderWidth >= 0);
 
@@ -319,7 +325,7 @@ class SelectorListItem extends StatelessWidget {
                   ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                    padding: itemPadding,
                     child: Align(
                       alignment: horizontal
                           ? Alignment.center
@@ -373,7 +379,9 @@ class SelectorListItem extends StatelessWidget {
                 ),
                 if (isSelected && showSelectedCheck)
                   Padding(
-                    padding: const EdgeInsets.only(right: 20),
+                    padding: EdgeInsets.only(
+                      right: itemPadding.resolve(Directionality.of(context)).right,
+                    ),
                     child: Icon(
                       UIconsPro.regularRounded.check,
                       color: selectedCheckColor ?? contentColor,

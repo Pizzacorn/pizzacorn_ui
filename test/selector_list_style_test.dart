@@ -52,6 +52,24 @@ void main() {
     expect((unselectedBackground.decoration as BoxDecoration).color, Colors.orange);
   });
 
+  testWidgets('SelectorList aplica el padding interno configurado', (tester) async {
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: SelectorList(
+          ['Primera'],
+          selectedIndex: -1,
+          onChanged: (_) {},
+          itemPadding: const EdgeInsets.fromLTRB(10, 6, 14, 8),
+        ),
+      ),
+    ));
+
+    final itemPosition = tester.getTopLeft(find.byType(SelectorListItem));
+    final textPosition = tester.getTopLeft(find.text('Primera'));
+    expect(textPosition.dx - itemPosition.dx, 10);
+    expect(textPosition.dy - itemPosition.dy, 6);
+  });
+
   testWidgets('SelectorList aplica borde animado y fondo sólido al activo', (
     tester,
   ) async {

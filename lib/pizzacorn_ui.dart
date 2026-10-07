@@ -60,6 +60,7 @@ export 'src/form/phonefield.dart';
 export 'src/form/datefield.dart';
 export 'src/form/title_and_textfield.dart';
 export 'src/form/selector_list.dart';
+export 'src/sliders/step_slider_custom.dart';
 export 'src/form/timefield.dart';
 
 // icons
