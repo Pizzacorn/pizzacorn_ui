@@ -87,6 +87,8 @@ class PaginationParams<T> {
   final T Function(Map<String, dynamic> data) fromJson;
   final String? identifier;
   final String? databaseName;
+  final bool Function(T item)? itemFilter;
+  final int maxFetchBatches;
 
   PaginationParams({
     required this.collection,
@@ -94,6 +96,8 @@ class PaginationParams<T> {
     this.query,
     this.limit = 15,
     this.identifier,
+    this.itemFilter,
+    this.maxFetchBatches = 5,
     String? databaseName,
   }) : databaseName = PizzacornPaginationConfig.sanitizeDatabaseName(
           databaseName ?? PizzacornPaginationConfig.databaseName,
@@ -106,6 +110,7 @@ class PaginationParams<T> {
               runtimeType == other.runtimeType &&
               collection == other.collection &&
               limit == other.limit &&
+              maxFetchBatches == other.maxFetchBatches &&
               databaseName == other.databaseName &&
               identifier == other.identifier;
 
@@ -113,6 +118,7 @@ class PaginationParams<T> {
   int get hashCode =>
       collection.hashCode ^
       limit.hashCode ^
+      maxFetchBatches.hashCode ^
       databaseName.hashCode ^
       identifier.hashCode;
 }
@@ -150,30 +156,10 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
   Future<void> loadItems() async {
     try {
       state = state.copyWith(isLoading: true, items: [], error: '');
-
-      Query q = getQuery().limit(arg.limit);
-      final snapshot = await q.get();
-
+      final (List<T>, DocumentSnapshot?, bool) page = await readVisiblePage();
       if (!isMounted) return;
-
-      final List<T> newItems = [];
-
-      if (snapshot.docs.isNotEmpty) {
-        lastDocument = snapshot.docs.last;
-
-        for (int i = 0; i < snapshot.docs.length; i++) {
-          final data = snapshot.docs[i].data() as Map<String, dynamic>;
-          newItems.add(arg.fromJson(data));
-        }
-
-        state = state.copyWith(
-          items: newItems,
-          isLoading: false,
-          hasMore: snapshot.docs.length == arg.limit,
-        );
-      } else {
-        state = state.copyWith(isLoading: false, hasMore: false, items: []);
-      }
+      lastDocument = page.$2;
+      state = state.copyWith(items: page.$1, isLoading: false, hasMore: page.$3);
     } catch (e) {
       if (isMounted) {
         state = state.copyWith(isLoading: false, error: e.toString());
@@ -188,34 +174,53 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
       // 🛡️ IMPORTANTE: Limpiamos el error aquí para que pueda reintentar de forma limpia
       state = state.copyWith(isFetchingMore: true, error: '');
 
-      Query q = getQuery().startAfterDocument(lastDocument!).limit(arg.limit);
-      final snapshot = await q.get();
-
+      final (List<T>, DocumentSnapshot?, bool) page = await readVisiblePage(
+        afterDocument: lastDocument,
+      );
       if (!isMounted) return;
-
-      if (snapshot.docs.isNotEmpty) {
-        lastDocument = snapshot.docs.last;
-        final List<T> moreItems = List.from(state.items);
-
-        for (int i = 0; i < snapshot.docs.length; i++) {
-          final data = snapshot.docs[i].data() as Map<String, dynamic>;
-          moreItems.add(arg.fromJson(data));
-        }
-
-        state = state.copyWith(
-          items: moreItems,
-          isFetchingMore: false,
-          hasMore: snapshot.docs.length == arg.limit,
-        );
-      } else {
-        state = state.copyWith(isFetchingMore: false, hasMore: false);
-      }
+      lastDocument = page.$2;
+      state = state.copyWith(
+        items: [...state.items, ...page.$1],
+        isFetchingMore: false,
+        hasMore: page.$3,
+      );
     } catch (e) {
       if (isMounted) {
         // Si hay error, quitamos el loader y guardamos el error
         state = state.copyWith(isFetchingMore: false, error: e.toString());
       }
     }
+  }
+
+  Future<(List<T>, DocumentSnapshot?, bool)> readVisiblePage({
+    DocumentSnapshot? afterDocument,
+  }) async {
+    final List<T> visibleItems = [];
+    DocumentSnapshot? cursor = afterDocument;
+    final int batchLimit = arg.itemFilter == null ? 1 : arg.maxFetchBatches;
+    if (arg.limit <= 0 || batchLimit <= 0) {
+      throw ArgumentError('limit y maxFetchBatches deben ser mayores que cero.');
+    }
+
+    for (int batch = 0; batch < batchLimit && visibleItems.length < arg.limit; batch++) {
+      Query query = getQuery();
+      if (cursor != null) query = query.startAfterDocument(cursor);
+      final int remaining = arg.limit - visibleItems.length;
+      final snapshot = await query.limit(remaining).get();
+      if (snapshot.docs.isEmpty) return (visibleItems, cursor, false);
+
+      for (int i = 0; i < snapshot.docs.length; i++) {
+        final document = snapshot.docs[i];
+        cursor = document;
+        final data = document.data() as Map<String, dynamic>;
+        final T item = arg.fromJson(data);
+        if (arg.itemFilter == null || arg.itemFilter!(item)) {
+          visibleItems.add(item);
+        }
+      }
+      if (snapshot.docs.length < remaining) return (visibleItems, cursor, false);
+    }
+    return (visibleItems, cursor, true);
   }
 }
 

@@ -1,3 +1,8 @@
+## 0.0.137
+
+#### Added optional itemFilter and maxFetchBatches to Firestore pagination so pages can be filled with visible items.
+#### Added a load-more action when filtering leaves the initial list or grid empty.
+
 ## 0.0.136
 
 #### Added configurable contentPadding to DropdownCustom.

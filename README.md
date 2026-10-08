@@ -253,6 +253,15 @@ final params = PaginationParams<UserModel>(
 );
 ```
 
+Para completar cada página con hasta `limit` elementos visibles, añade
+`itemFilter: (userModel) => !blockedIds.contains(userModel.id)`. El controlador
+lee lotes adicionales y conserva el cursor del último documento leído, también
+cuando el elemento se descarta. `maxFetchBatches` limita los lotes por carga
+(5 por defecto); si todos se descartan, la lista o cuadrícula muestra
+«Cargar más resultados». Incluye en `identifier` una versión de los filtros
+externos, o llama a `refresh()` cuando cambien. El filtrado consume lecturas de
+Firestore y no reemplaza las reglas de seguridad.
+
 ### 2. Lista paginada
 
 ```dart

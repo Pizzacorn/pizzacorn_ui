@@ -66,6 +66,18 @@ class SliverGridCustom<T> extends ConsumerWidget {
 
     // 3. ESTADO VACÍO
     if (state.items.isEmpty) {
+      if (state.hasMore && params.itemFilter != null) {
+        return SliverToBoxAdapter(
+          child: Center(
+            child: TextButton(
+              onPressed: state.isFetchingMore ? null : () => controller.fetchMore(),
+              child: state.isFetchingMore
+                  ? CircularProgressIndicator()
+                  : TextBody('Cargar más resultados'),
+            ),
+          ),
+        );
+      }
       if (emptyWidget == null) {
         return SliverToBoxAdapter(
           child: Center(
