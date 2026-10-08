@@ -1,3 +1,7 @@
+## 0.0.138
+
+#### Fixed runtime type errors when itemFilter uses a model type through the dynamic pagination provider.
+
 ## 0.0.137
 
 #### Added optional itemFilter and maxFetchBatches to Firestore pagination so pages can be filled with visible items.

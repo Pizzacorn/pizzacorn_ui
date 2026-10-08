@@ -87,7 +87,7 @@ class PaginationParams<T> {
   final T Function(Map<String, dynamic> data) fromJson;
   final String? identifier;
   final String? databaseName;
-  final bool Function(T item)? itemFilter;
+  final bool Function(dynamic item)? itemFilter;
   final int maxFetchBatches;
 
   PaginationParams({
@@ -96,10 +96,13 @@ class PaginationParams<T> {
     this.query,
     this.limit = 15,
     this.identifier,
-    this.itemFilter,
+    bool Function(T item)? itemFilter,
     this.maxFetchBatches = 5,
     String? databaseName,
-  }) : databaseName = PizzacornPaginationConfig.sanitizeDatabaseName(
+  }) : itemFilter = itemFilter == null
+           ? null
+           : ((dynamic item) => itemFilter(item as T)),
+       databaseName = PizzacornPaginationConfig.sanitizeDatabaseName(
           databaseName ?? PizzacornPaginationConfig.databaseName,
         );
 
