@@ -9,6 +9,7 @@ class ContainerHelp extends StatelessWidget {
   final Color? color;
   final Color? backgroundColor;
   final Color? textColor;
+  final TextStyle? textStyle;
   final Color? borderColor;
   final double iconSize;
   final int? maxlines;
@@ -24,6 +25,7 @@ class ContainerHelp extends StatelessWidget {
     this.color,
     this.backgroundColor,
     this.textColor,
+    this.textStyle,
     this.borderColor,
     this.iconSize = 24,
     this.maxlines,
@@ -58,7 +60,17 @@ class ContainerHelp extends StatelessWidget {
             Space(SPACE_SMALL),
           ],
           Expanded(
-            child: compact
+            child: textStyle != null
+                ? Text(
+                    text,
+                    style: (compact
+                            ? styleCaption(color: textColor ?? COLOR_TEXT)
+                            : styleBody(color: textColor ?? COLOR_SUBTEXT))
+                        .merge(textStyle),
+                    maxLines: maxlines ?? 5,
+                    overflow: TextOverflow.ellipsis,
+                  )
+                : compact
                 ? TextCaption(
                     text,
                     color: textColor ?? COLOR_TEXT,

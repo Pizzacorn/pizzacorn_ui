@@ -133,7 +133,7 @@ class BottomSheetInfo extends StatelessWidget {
               ),
             if (disclaimer.isNotEmpty) Space(SPACE_MEDIUM),
             if (disclaimer.isNotEmpty)
-              disclaimerWidget(
+              DisclaimerWidget(
                 text: disclaimer,
                 icon: disclaimerIcon,
                 showIcon: showDisclaimerIcon,

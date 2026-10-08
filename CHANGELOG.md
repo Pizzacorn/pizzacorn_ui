@@ -1,3 +1,7 @@
+## 0.0.139
+
+#### Renamed disclaimerWidget to DisclaimerWidget and added an optional TextStyle for its text.
+
 ## 0.0.138
 
 #### Fixed runtime type errors when itemFilter uses a model type through the dynamic pagination provider.
