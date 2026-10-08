@@ -23,7 +23,7 @@ Añade la dependencia en tu `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  pizzacorn_ui: ^0.0.125
+  pizzacorn_ui: ^0.0.140
 ```
 
 Para consumir cambios todavía no publicados, también puedes apuntar temporalmente
@@ -36,6 +36,33 @@ import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 ```
 
 > Regla Pizzacorn: en los proyectos de app usamos barrel import desde `lib/config/imports.dart`, así que normalmente exportaremos `pizzacorn_ui` desde ahí y cada archivo de pantalla importará solo ese archivo global.
+
+### Notificaciones
+
+Configura los tipos que admite la app y abre la pantalla con el ID del usuario:
+
+```dart
+ConfigurePizzacornNotifications(types: ['invitation', 'match']);
+
+NotificationsCustomPage(
+  userId: currentUserId,
+  showAppBar: false, // Devuelve solo el contenido para integrarlo en otra pantalla.
+  typeAppearances: {
+    'invitation': NotificationTypeAppearance(
+      icon: Icons.person_add_rounded,
+      color: Colors.blue,
+    ),
+  },
+  onPressed: (notificationModel) {
+    // La app decide la navegación con type y relatedId.
+  },
+)
+```
+
+`sendNotificationCustom` recibe la URL de la Cloud Function y la instancia de
+Firestore de la base elegida cuando se proporciona `userId`. El ejemplo de
+Cloud Function está en `example/send_notification_cloud.js`. La consulta de la
+pantalla puede requerir un índice compuesto de `userId` y `createdAt`.
 
 ---
 

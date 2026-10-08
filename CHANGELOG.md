@@ -1,3 +1,8 @@
+## 0.0.140
+
+#### Added configurable notification sending, NotificationCustomModel, and a paginated notifications page with per-type appearance and optional AppBar.
+#### Added an example Cloud Function payload for notification navigation.
+
 ## 0.0.139
 
 #### Renamed disclaimerWidget to DisclaimerWidget and added an optional TextStyle for its text.

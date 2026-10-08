@@ -98,6 +98,12 @@ export 'src/login/widgets/hero_login.dart';
 export 'src/models/address_model.dart';
 export 'src/models/file_model.dart';
 export 'src/models/social_model.dart';
+export 'src/models/notification_custom_model.dart';
+
+// notifications
+export 'src/notifications/send_notification_custom.dart';
+export 'src/notifications/notification_card_custom.dart';
+export 'src/notifications/notifications_custom_page.dart';
 
 //multilanguage
 export 'src/multilanguage/excel_translations.dart';
