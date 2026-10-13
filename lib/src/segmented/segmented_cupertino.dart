@@ -25,6 +25,8 @@ class SegmentedCupertinoCustom extends StatelessWidget {
   final List<Color> counterGradientColors;
   final PizzacornGradientType counterGradientType;
   final Color? counterTextColor;
+  final Color? unselectedCounterTextColor;
+  final Color? selectedCounterTextColor;
 
   /// Puntos de notificación (opcional), uno por segmento.
   final List<bool>? notifications;
@@ -64,6 +66,8 @@ class SegmentedCupertinoCustom extends StatelessWidget {
     this.counterGradientColors = const [],
     this.counterGradientType = PizzacornGradientType.linear,
     this.counterTextColor,
+    this.unselectedCounterTextColor,
+    this.selectedCounterTextColor,
     this.notifications,
     required this.currentIndex,
     required this.onValueChanged,
@@ -105,7 +109,9 @@ class SegmentedCupertinoCustom extends StatelessWidget {
       final String label = items[i];
       final String secondary = (itemsSecondary != null) ? itemsSecondary![i] : '';
       final bool hasNotification = notifications != null && notifications![i];
-      final Color effectiveCounterTextColor = counterTextColor ??
+      final Color effectiveCounterTextColor =
+          (isSelected ? selectedCounterTextColor : unselectedCounterTextColor) ??
+          counterTextColor ??
           (counterCircle ? Colors.white :
               (isSelected ? effectiveActiveText : effectiveInactiveText));
       final Color? stateCounterCircleColor = isSelected
@@ -217,6 +223,7 @@ class SegmentedSelectionGradient extends StatefulWidget {
   final PizzacornGradientType gradientType;
   final bool animated;
   final Duration duration;
+  final double borderRadius;
   final Widget child;
 
   const SegmentedSelectionGradient({
@@ -225,6 +232,7 @@ class SegmentedSelectionGradient extends StatefulWidget {
     required this.gradientType,
     required this.animated,
     required this.duration,
+    this.borderRadius = 7,
     required this.child,
   });
 
@@ -290,7 +298,7 @@ class SegmentedSelectionGradientState extends State<SegmentedSelectionGradient>
         };
         return DecoratedBox(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(7),
+            borderRadius: BorderRadius.circular(widget.borderRadius),
             gradient: gradient,
           ),
           child: child,

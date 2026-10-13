@@ -1,3 +1,8 @@
+## 0.0.141
+
+#### Added selected and unselected counter text colors to all segmented controls.
+#### Added configurable selected gradients and animation to SegmentedControlCustom and SegmentedTabCustom.
+
 ## 0.0.140
 
 #### Added configurable notification sending, NotificationCustomModel, and a paginated notifications page with per-type appearance and optional AppBar.

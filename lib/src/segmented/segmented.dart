@@ -23,6 +23,12 @@ class SegmentedControlCustom extends StatelessWidget {
   final Color? backgroundColor;
   final Color? activeTextColor;
   final Color? inactiveTextColor;
+  final List<Color> selectedGradientColors;
+  final PizzacornGradientType selectedGradientType;
+  final bool selectedGradientAnimated;
+  final Duration selectedGradientDuration;
+  final Color? unselectedCounterTextColor;
+  final Color? selectedCounterTextColor;
 
   /// Radio de curva del thumb
   final double thumbRadius;
@@ -40,10 +46,17 @@ class SegmentedControlCustom extends StatelessWidget {
     this.backgroundColor,
     this.activeTextColor,
     this.inactiveTextColor,
+    this.selectedGradientColors = const [],
+    this.selectedGradientType = PizzacornGradientType.linear,
+    this.selectedGradientAnimated = false,
+    this.selectedGradientDuration = const Duration(milliseconds: 2600),
+    this.unselectedCounterTextColor,
+    this.selectedCounterTextColor,
     this.thumbRadius = 0,
     this.height = 32.0,
   }) : assert(itemsSecondary == null || itemsSecondary.length == items.length,
-  'secondaryTexts debe tener la misma longitud que segments');
+  'secondaryTexts debe tener la misma longitud que segments'),
+       assert(selectedGradientDuration > Duration.zero);
 
   @override
   Widget build(BuildContext context) {
@@ -77,14 +90,23 @@ class SegmentedControlCustom extends StatelessWidget {
               curve: Curves.easeInOut,
               left: currentIndex * segmentWidth,
               top: 0,
-              child: Container(
-                width: segmentWidth,
-                height: height,
-                decoration: BoxDecoration(
-                  color: effectiveThumbColor,
-                  borderRadius: BorderRadius.circular(thumbRadius),
-                ),
-              ),
+              child: selectedGradientColors.isNotEmpty
+                  ? SegmentedSelectionGradient(
+                      colors: selectedGradientColors,
+                      gradientType: selectedGradientType,
+                      animated: selectedGradientAnimated,
+                      duration: selectedGradientDuration,
+                      borderRadius: thumbRadius,
+                      child: SizedBox(width: segmentWidth, height: height),
+                    )
+                  : Container(
+                      width: segmentWidth,
+                      height: height,
+                      decoration: BoxDecoration(
+                        color: effectiveThumbColor,
+                        borderRadius: BorderRadius.circular(thumbRadius),
+                      ),
+                    ),
             ),
 
             // Opciones encima
@@ -123,8 +145,8 @@ class SegmentedControlCustom extends StatelessWidget {
                               TextCaption(
                                 secondary,
                                 color: selected
-                                    ? effectiveActiveText
-                                    : effectiveInactiveText,
+                                    ? selectedCounterTextColor ?? effectiveActiveText
+                                    : unselectedCounterTextColor ?? effectiveInactiveText,
                                 fontSize: 10,
                               ),
                             ],

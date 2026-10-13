@@ -25,6 +25,12 @@ class SegmentedTabCustom extends StatelessWidget {
   final Color? backgroundColor;
   final Color? selectedColor;
   final Color? unselectedColor;
+  final List<Color> selectedGradientColors;
+  final PizzacornGradientType selectedGradientType;
+  final bool selectedGradientAnimated;
+  final Duration selectedGradientDuration;
+  final Color? unselectedCounterTextColor;
+  final Color? selectedCounterTextColor;
   final Color? notificationColor;
   final EdgeInsetsGeometry padding;
   final double indicatorHeight;
@@ -42,6 +48,12 @@ class SegmentedTabCustom extends StatelessWidget {
     this.backgroundColor,
     this.selectedColor,
     this.unselectedColor,
+    this.selectedGradientColors = const [],
+    this.selectedGradientType = PizzacornGradientType.linear,
+    this.selectedGradientAnimated = false,
+    this.selectedGradientDuration = const Duration(milliseconds: 2600),
+    this.unselectedCounterTextColor,
+    this.selectedCounterTextColor,
     this.notificationColor,
     this.padding = EdgeInsets.zero,
     this.indicatorHeight = 2.0,
@@ -53,7 +65,8 @@ class SegmentedTabCustom extends StatelessWidget {
         assert(
           notifications == null || notifications.length == items.length,
           'notifications debe tener la misma longitud que items',
-        );
+        ),
+        assert(selectedGradientDuration > Duration.zero);
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +121,9 @@ class SegmentedTabCustom extends StatelessWidget {
                             Space(SPACE_SMALLEST),
                             TextCaption(
                               itemsSecondary![i],
-                              color: currentIndex == i ? effectiveAccent : effectiveText,
+                              color: currentIndex == i
+                                  ? selectedCounterTextColor ?? effectiveAccent
+                                  : unselectedCounterTextColor ?? effectiveText,
                               fontSize: 10,
                             ),
                           ],
@@ -135,10 +150,19 @@ class SegmentedTabCustom extends StatelessWidget {
                 ),
                 child: FractionallySizedBox(
                   widthFactor: 1 / items.length,
-                  child: Container(
-                    height: indicatorHeight,
-                    color: effectiveAccent,
-                  ),
+                  child: selectedGradientColors.isNotEmpty
+                      ? SegmentedSelectionGradient(
+                          colors: selectedGradientColors,
+                          gradientType: selectedGradientType,
+                          animated: selectedGradientAnimated,
+                          duration: selectedGradientDuration,
+                          borderRadius: 0,
+                          child: SizedBox(height: indicatorHeight),
+                        )
+                      : Container(
+                          height: indicatorHeight,
+                          color: effectiveAccent,
+                        ),
                 ),
               ),
             ],
