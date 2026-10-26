@@ -54,7 +54,7 @@ dependencies:
   url_launcher: ^6.3.0
 
   # --- ICONS ---
-  uicons_pro: ^1.1.0
+  uicons_pro: 1.1.0
 
   # --- MULTILANGUAGE ---
   flutter_localization: ^0.3.3
