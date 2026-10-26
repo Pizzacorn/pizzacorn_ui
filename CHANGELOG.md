@@ -1,3 +1,7 @@
+## 0.0.142
+
+#### Added optional leading widgets to SelectorList and SelectorListItem, allowing colored containers beside each option.
+
 ## 0.0.141
 
 #### Added selected and unselected counter text colors to all segmented controls.

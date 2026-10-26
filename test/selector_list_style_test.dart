@@ -5,6 +5,29 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 
 void main() {
+  testWidgets('SelectorList muestra un Container de color a la izquierda', (tester) async {
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: SelectorList(
+          ['Agotado', 'Listo'],
+          leadingWidgets: [
+            Container(key: const ValueKey('red'), color: Colors.red),
+            Container(key: const ValueKey('green'), color: Colors.green),
+          ],
+          imageWidth: 28,
+          selectedIndex: 1,
+          onChanged: (_) {},
+        ),
+      ),
+    ));
+
+    final firstItem = find.byType(SelectorListItem).first;
+    final secondItem = find.byType(SelectorListItem).last;
+    expect(find.descendant(of: firstItem, matching: find.byKey(const ValueKey('red'))), findsOneWidget);
+    expect(find.descendant(of: secondItem, matching: find.byKey(const ValueKey('green'))), findsOneWidget);
+    expect(tester.getSize(find.byKey(const ValueKey('red'))).width, 28);
+  });
+
   testWidgets('SelectorList conserva el estilo activo existente', (tester) async {
     await tester.pumpWidget(
       MaterialApp(

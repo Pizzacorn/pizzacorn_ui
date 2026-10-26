@@ -8,6 +8,8 @@ class SelectorList extends StatelessWidget {
   final List<String> options;
   final List<String>? subtitles;
   final List<ImageProvider?>? images;
+  /// Widget lateral por opción; si existe, sustituye la imagen de esa opción.
+  final List<Widget?>? leadingWidgets;
   final double imageWidth;
   /// Altura mínima de las opciones con imagen; la imagen ocupa toda la tarjeta.
   final double imageHeight;
@@ -50,6 +52,7 @@ class SelectorList extends StatelessWidget {
     super.key,
     this.subtitles,
     this.images,
+    this.leadingWidgets,
     this.imageWidth = 88,
     this.imageHeight = 88,
     this.imageFit = BoxFit.cover,
@@ -83,6 +86,7 @@ class SelectorList extends StatelessWidget {
   }) : assert(selectedBorderWidth >= 0),
        assert(subtitles == null || subtitles.length == options.length),
        assert(images == null || images.length == options.length),
+       assert(leadingWidgets == null || leadingWidgets.length == options.length),
        assert(imageWidth > 0 && imageHeight > 0),
        assert(rows > 0),
        assert(columns == null || columns > 0);
@@ -150,6 +154,7 @@ class SelectorList extends StatelessWidget {
       options[index],
       subtitle: subtitles == null ? null : subtitles![index],
       image: images == null ? null : images![index],
+      leadingWidget: leadingWidgets == null ? null : leadingWidgets![index],
       imageWidth: imageWidth,
       imageHeight: imageHeight,
       imageFit: imageFit,
@@ -185,6 +190,7 @@ class SelectorListItem extends StatelessWidget {
   final String label;
   final String? subtitle;
   final ImageProvider? image;
+  final Widget? leadingWidget;
   final double imageWidth;
   final double imageHeight;
   final BoxFit imageFit;
@@ -217,6 +223,7 @@ class SelectorListItem extends StatelessWidget {
     this.label, {
     this.subtitle,
     this.image,
+    this.leadingWidget,
     this.imageWidth = 88,
     this.imageHeight = 88,
     this.imageFit = BoxFit.cover,
@@ -298,7 +305,7 @@ class SelectorListItem extends StatelessWidget {
           highlightColor: Colors.white.withOpacity(0.1),
           splashColor: Colors.white.withOpacity(0.1),
           child: ConstrainedBox(
-            constraints: image == null
+            constraints: image == null && leadingWidget == null
                 ? const BoxConstraints()
                 : BoxConstraints(minHeight: imageHeight),
             child: IntrinsicHeight(
@@ -308,7 +315,7 @@ class SelectorListItem extends StatelessWidget {
                   ? MainAxisAlignment.center
                   : MainAxisAlignment.start,
               children: [
-                if (image != null)
+                if (leadingWidget != null || image != null)
                   ClipRRect(
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(RADIUS),
@@ -316,7 +323,7 @@ class SelectorListItem extends StatelessWidget {
                     ),
                     child: SizedBox(
                       width: imageWidth,
-                      child: DecoratedBox(
+                      child: leadingWidget ?? DecoratedBox(
                         decoration: BoxDecoration(
                           image: DecorationImage(image: image!, fit: imageFit),
                         ),
