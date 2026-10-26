@@ -1,3 +1,7 @@
+## 0.0.143
+
+#### Added `hasShadow` to BottomSheetCustomOneButton so its shadow can be disabled without changing existing usage.
+
 ## 0.0.142
 
 #### Added optional leading widgets to SelectorList and SelectorListItem, allowing colored containers beside each option.

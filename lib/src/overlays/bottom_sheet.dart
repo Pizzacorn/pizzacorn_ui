@@ -14,6 +14,7 @@ class BottomSheetCustomOneButton extends StatelessWidget {
   final bool border;
 
   final bool hasBackground;
+  final bool hasShadow;
 
   const BottomSheetCustomOneButton({
     super.key,
@@ -25,6 +26,7 @@ class BottomSheetCustomOneButton extends StatelessWidget {
     this.borderColor,
     this.border = false,
     this.hasBackground = true,
+    this.hasShadow = true,
   });
 
   @override
@@ -44,7 +46,7 @@ class BottomSheetCustomOneButton extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: showBackground ? effectiveBackground : Colors.transparent,
-        boxShadow: showBackground ? [BoxShadowCustom()] : [],
+        boxShadow: showBackground && hasShadow ? [BoxShadowCustom()] : [],
       ),
       child: ButtonCustom(
         text: title,
