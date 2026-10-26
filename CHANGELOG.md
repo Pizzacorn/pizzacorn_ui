@@ -1,3 +1,7 @@
+## 0.0.144
+
+#### Added optional `textStyle` to ButtonCustom and TextButtonCustom for customizing button labels.
+
 ## 0.0.143
 
 #### Added `hasShadow` to BottomSheetCustomOneButton so its shadow can be disabled without changing existing usage.

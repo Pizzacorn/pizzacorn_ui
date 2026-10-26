@@ -10,6 +10,7 @@ class ButtonCustom extends StatelessWidget {
 
   // TEXT
   final Color? textColor;
+  final TextStyle? textStyle;
   final String text;
   final bool onlyText;
   final double customSizeText;
@@ -70,6 +71,7 @@ class ButtonCustom extends StatelessWidget {
     this.customSizeText = 0,
     this.richTexts = const [],
     this.textColor,
+    this.textStyle,
     this.color,
     this.padding = 15,
     this.colorSplash,
@@ -189,6 +191,7 @@ class ButtonCustom extends StatelessWidget {
                         child: TextButtonCustom(
                           text,
                           color: effectiveTextColor,
+                          textStyle: textStyle,
                           fontSize: customSizeText != 0
                               ? customSizeText
                               : TEXT_BUTTON_SIZE,

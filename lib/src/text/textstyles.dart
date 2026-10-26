@@ -635,6 +635,7 @@ Widget TextBody(
 Widget TextButtonCustom(
   String texto, {
   double? fontSize,
+  TextStyle? textStyle,
   bool shadow = false,
   bool strikethrough = false,
   Color? color,
@@ -651,7 +652,7 @@ Widget TextButtonCustom(
       fontWeight: fontWeight,
       color: color ?? COLOR_TEXT_BUTTONS,
       strikethrough: strikethrough,
-    ),
+    ).merge(textStyle),
     fontType: PizzacornTextConfig.fonts.button,
     textAlign: textAlign,
     maxlines: maxlines,
