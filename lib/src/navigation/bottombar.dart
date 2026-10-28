@@ -14,6 +14,9 @@ class BottomBarCustom extends StatelessWidget {
   final List<dynamic> icons; // Acepta IconData (UIconsPro) o String (SVG Path)
   final List<String> titles;
   final Color? backgroundColor;
+  final bool? hasBorder;
+  final Color? borderColor;
+  final bool hasShadow;
   final Color? activeColor;
   final Color? inactiveColor;
   final Color? notificationColor;
@@ -43,6 +46,9 @@ class BottomBarCustom extends StatelessWidget {
     required this.icons,
     required this.titles,
     this.backgroundColor,
+    this.hasBorder,
+    this.borderColor,
+    this.hasShadow = true,
     this.activeColor,
     this.inactiveColor,
     this.notificationColor,
@@ -96,16 +102,18 @@ class BottomBarCustom extends StatelessWidget {
           decoration: BoxDecoration(
             color: effectiveBg,
             borderRadius: isFloating ? BorderRadius.circular(RADIUS) : null,
-            border: !isFloating
-                ? Border(top: BorderSide(color: COLOR_BORDER, width: 0.5))
+            border: (hasBorder ?? !isFloating)
+                ? isFloating
+                    ? Border.all(color: borderColor ?? COLOR_BORDER, width: 0.5)
+                    : Border(top: BorderSide(color: borderColor ?? COLOR_BORDER, width: 0.5))
                 : null,
-            boxShadow: [
+            boxShadow: hasShadow ? [
               BoxShadow(
                 color: Colors.black.withValues(alpha: isFloating ? 0.1 : 0.05),
                 blurRadius: 10,
                 offset: Offset(0, isFloating ? 4 : -2),
               ),
-            ],
+            ] : null,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

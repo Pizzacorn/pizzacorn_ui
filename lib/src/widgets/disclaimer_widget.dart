@@ -9,6 +9,7 @@ class DisclaimerWidget extends StatelessWidget {
   final Color? textColor;
   final TextStyle? style;
   final int maxlines;
+  final bool hasBorder;
 
   // ignore: prefer_const_constructors_in_immutables
   DisclaimerWidget({
@@ -20,6 +21,7 @@ class DisclaimerWidget extends StatelessWidget {
     this.textColor,
     this.style,
     this.maxlines = 5,
+    this.hasBorder = true,
   });
 
   @override
@@ -35,6 +37,7 @@ class DisclaimerWidget extends StatelessWidget {
       textColor: textColor ?? COLOR_TEXT,
       textStyle: style,
       borderColor: accentColor.withValues(alpha: 0.25),
+      hasBorder: hasBorder,
       iconSize: 18,
       maxlines: maxlines,
       compact: true,

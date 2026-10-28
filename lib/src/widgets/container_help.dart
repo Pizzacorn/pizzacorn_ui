@@ -11,6 +11,7 @@ class ContainerHelp extends StatelessWidget {
   final Color? textColor;
   final TextStyle? textStyle;
   final Color? borderColor;
+  final bool hasBorder;
   final double iconSize;
   final int? maxlines;
   final EdgeInsetsGeometry? padding;
@@ -27,6 +28,7 @@ class ContainerHelp extends StatelessWidget {
     this.textColor,
     this.textStyle,
     this.borderColor,
+    this.hasBorder = true,
     this.iconSize = 24,
     this.maxlines,
     this.padding,
@@ -43,9 +45,11 @@ class ContainerHelp extends StatelessWidget {
       decoration: BoxDecoration(
         color: backgroundColor ?? effectiveColor.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(RADIUS),
-        border: Border.all(
-          color: borderColor ?? effectiveColor.withValues(alpha: 0.12),
-        ),
+        border: hasBorder
+            ? Border.all(
+                color: borderColor ?? effectiveColor.withValues(alpha: 0.12),
+              )
+            : null,
       ),
       child: Row(
         crossAxisAlignment:

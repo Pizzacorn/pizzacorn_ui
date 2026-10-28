@@ -3,6 +3,24 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 
 void main() {
+  testWidgets("DisclaimerWidget permite ocultar el borde", (tester) async {
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(body: DisclaimerWidget(text: "Aviso")),
+    ));
+    Container container = tester.widget<Container>(
+      find.descendant(of: find.byType(ContainerHelp), matching: find.byType(Container)),
+    );
+    expect((container.decoration as BoxDecoration).border, isNotNull);
+
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(body: DisclaimerWidget(text: "Aviso", hasBorder: false)),
+    ));
+    container = tester.widget<Container>(
+      find.descendant(of: find.byType(ContainerHelp), matching: find.byType(Container)),
+    );
+    expect((container.decoration as BoxDecoration).border, isNull);
+  });
+
   testWidgets("ContainerHelp muestra el icono y el texto", (tester) async {
     await tester.pumpWidget(
       MaterialApp(

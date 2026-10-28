@@ -1,3 +1,8 @@
+## 0.0.146
+
+#### Added configurable border visibility and color plus shadow visibility to BottomBarCustom.
+#### Added optional border visibility to DisclaimerWidget and ContainerHelp.
+
 ## 0.0.145
 
 #### Kept TextFieldCustom's input height when validation or helper text appears below it.
