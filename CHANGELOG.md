@@ -1,3 +1,7 @@
+## 0.0.145
+
+#### Kept TextFieldCustom's input height when validation or helper text appears below it.
+
 ## 0.0.144
 
 #### Added optional `textStyle` to ButtonCustom and TextButtonCustom for customizing button labels.

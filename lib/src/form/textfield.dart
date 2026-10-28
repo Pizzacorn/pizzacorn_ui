@@ -144,7 +144,6 @@ class TextFieldCustomState extends State<TextFieldCustom> {
 
     return Container(
       width: widget.width,
-      height: widget.maxLines > 1 ? null : finalHeight,
       decoration: BoxDecoration(
         boxShadow: widget.shadow ? [BoxShadowCustom()] : null,
       ),
@@ -172,6 +171,9 @@ class TextFieldCustomState extends State<TextFieldCustom> {
           return null;
         },
         decoration: InputDecoration(
+          constraints: hasFixedSingleLineHeight
+              ? BoxConstraints(minHeight: finalHeight)
+              : null,
           filled: widget.filled,
           fillColor: effectiveFill,
           hintText: widget.hintText.isNotEmpty ? widget.hintText : null,
@@ -192,7 +194,9 @@ class TextFieldCustomState extends State<TextFieldCustom> {
               ? EdgeInsets.zero
               : EdgeInsets.symmetric(
             horizontal: 15,
-            vertical: hasFixedSingleLineHeight ? 0 : 15,
+            vertical: hasFixedSingleLineHeight
+                ? ((finalHeight - effectiveTextSize * 1.5) / 2).clamp(0, double.infinity)
+                : 15,
           ),
           suffixText: widget.sufixText.isNotEmpty ? widget.sufixText : null,
           suffixIcon: buildSuffixIcon(context, effectiveIconColor),
