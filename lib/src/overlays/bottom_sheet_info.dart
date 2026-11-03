@@ -108,6 +108,7 @@ class BottomSheetInfo extends StatelessWidget {
               TextTitle(
                 title,
                 textAlign: TextAlign.center,
+                maxlines: 100,
               ),
             if (title.isNotEmpty && body.isNotEmpty) Space(SPACE_SMALL),
             if (body.isNotEmpty)
@@ -115,6 +116,7 @@ class BottomSheetInfo extends StatelessWidget {
                 body,
                 color: COLOR_SUBTEXT,
                 textAlign: TextAlign.center,
+                maxlines: 100,
               ),
             if (infoText.isNotEmpty) Space(SPACE_MEDIUM),
             if (infoText.isNotEmpty)

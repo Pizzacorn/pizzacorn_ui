@@ -1,3 +1,7 @@
+## 0.0.147
+
+#### Allow up to 100 lines in BottomSheetInfo title and body text.
+
 ## 0.0.146
 
 #### Added configurable border visibility and color plus shadow visibility to BottomBarCustom.
