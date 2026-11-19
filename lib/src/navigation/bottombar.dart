@@ -21,6 +21,10 @@ class BottomBarCustom extends StatelessWidget {
   final Color? inactiveColor;
   final Color? notificationColor;
   final List<bool>? notifications;
+
+  /// Pestañas habilitadas. Una pestaña deshabilitada se ve atenuada y no responde;
+  /// al habilitarse aparece con un fundido suave.
+  final List<bool>? enabledItems;
   final double notificationSize;
   final List<Color>? selectedGradientColors;
   final bool selectedGradientAnimated;
@@ -53,6 +57,7 @@ class BottomBarCustom extends StatelessWidget {
     this.inactiveColor,
     this.notificationColor,
     this.notifications,
+    this.enabledItems,
     this.notificationSize = 8,
     this.selectedGradientColors,
     this.selectedGradientAnimated = false,
@@ -65,7 +70,8 @@ class BottomBarCustom extends StatelessWidget {
          icons.length == titles.length,
          "La lista de iconos y títulos debe tener el mismo tamaño, Don Sput.",
        ),
-       assert(notifications == null || notifications.length == titles.length);
+       assert(notifications == null || notifications.length == titles.length),
+       assert(enabledItems == null || enabledItems.length == titles.length);
 
   @override
   Widget build(BuildContext context) {
@@ -126,6 +132,7 @@ class BottomBarCustom extends StatelessWidget {
                 activeColor: effectiveActiveColor,
                 inactiveColor: effectiveInactiveColor,
                 hasNotification: notifications != null && notifications![index],
+                enabled: enabledItems == null || enabledItems![index],
                 notificationColor: effectiveNotificationColor,
                 notificationSize: notificationSize,
                 alwaysShowTitles: alwaysShowTitles,
@@ -149,6 +156,7 @@ class BottomItem extends StatefulWidget {
   final Color activeColor;
   final Color inactiveColor;
   final bool hasNotification;
+  final bool enabled;
   final Color? notificationColor;
   final double notificationSize;
   final bool alwaysShowTitles;
@@ -165,6 +173,7 @@ class BottomItem extends StatefulWidget {
     required this.activeColor,
     required this.inactiveColor,
     this.hasNotification = false,
+    this.enabled = true,
     this.notificationColor,
     this.notificationSize = 8,
     required this.alwaysShowTitles,
@@ -222,13 +231,18 @@ class BottomItemState extends State<BottomItem>
         widget.selectedGradientColors!.isNotEmpty;
 
     return Expanded(
-      child: Semantics(
+      child: AnimatedOpacity(
+        opacity: widget.enabled ? 1 : 0.3,
+        duration: const Duration(milliseconds: 1200),
+        curve: Curves.easeOutCubic,
+        child: Semantics(
         label: "Pestaña ${widget.title}",
         selected: widget.isSelected,
         button: true,
-        onTap: widget.onTap,
+        enabled: widget.enabled,
+        onTap: widget.enabled ? widget.onTap : null,
         child: InkWell(
-          onTap: widget.onTap,
+          onTap: widget.enabled ? widget.onTap : null,
           splashColor: widget.activeColor.withValues(alpha: 0.1),
           highlightColor: Colors.transparent,
           child: Column(
@@ -275,6 +289,7 @@ class BottomItemState extends State<BottomItem>
               const Spacer(),
             ],
           ),
+        ),
         ),
       ),
     );

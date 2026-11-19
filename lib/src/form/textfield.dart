@@ -48,6 +48,12 @@ class TextFieldCustom extends StatefulWidget {
     this.autofocus = false,
     this.prefixIcon,
     this.suffixIcon,
+    this.outlined = false,
+    this.borderColor,
+    this.borderColorFocus,
+    this.borderWidth,
+    this.passwordVisibleIcon,
+    this.passwordHiddenIcon,
   });
 
   // ... (RESTO DE VARIABLES SE MANTIENEN IGUAL)
@@ -84,6 +90,23 @@ class TextFieldCustom extends StatefulWidget {
   // ICONOS (ACTUALIZADOS)
   final IconData? prefixIcon;
   final IconData? suffixIcon;
+
+  // 🔲 BORDE VISIBLE (opcional). Con `outlined: false` el campo es el de siempre (relleno sin borde).
+  /// Dibuja un contorno con COLOR_BORDER_NOFOCUS / COLOR_BORDER_FOCUS y BORDER_SIZE / BORDER_SIZE_FOCUS.
+  final bool outlined;
+  /// Color del borde en reposo. Por defecto COLOR_BORDER_NOFOCUS.
+  final Color? borderColor;
+  /// Color del borde con foco. Por defecto COLOR_BORDER_FOCUS.
+  final Color? borderColorFocus;
+  /// Grosor del borde (reposo y foco). Por defecto BORDER_SIZE / BORDER_SIZE_FOCUS.
+  final double? borderWidth;
+
+  // 👁️ ICONOS DE CONTRASEÑA (opcionales). Por defecto candado cerrado / abierto.
+  /// Icono cuando la contraseña se está viendo.
+  final IconData? passwordVisibleIcon;
+  /// Icono cuando la contraseña está oculta.
+  final IconData? passwordHiddenIcon;
+
   final double iconSize; // ⬅ camelCase
   final Color? iconColor; // ⬅ Nuevo
 
@@ -141,6 +164,11 @@ class TextFieldCustomState extends State<TextFieldCustom> {
     // Color de icono por defecto es COLOR_ACCENT si no se pasa nada
     final Color effectiveIconColor = widget.iconColor ?? COLOR_ACCENT;
     final bool hasFixedSingleLineHeight = widget.maxLines == 1 && widget.minLines == 1;
+    // 🔲 Bordes del modo contorneado
+    final Color effectiveBorderColor = widget.borderColor ?? COLOR_BORDER_NOFOCUS;
+    final Color effectiveBorderColorFocus = widget.borderColorFocus ?? COLOR_BORDER_FOCUS;
+    final double effectiveBorderWidth = widget.borderWidth ?? BORDER_SIZE;
+    final double effectiveBorderWidthFocus = widget.borderWidth ?? BORDER_SIZE_FOCUS;
 
     return Container(
       width: widget.width,
@@ -184,11 +212,25 @@ class TextFieldCustomState extends State<TextFieldCustom> {
           helperStyle: styleBody(color: effectiveHintColor, size: effectiveHintSize),
           errorStyle: styleCaption(color: COLOR_ERROR),
           counterText: widget.maxLength == 0 ? null : "",
-          border: widget.filled
+          border: widget.outlined
+              ? buildOutlineBorder(effectiveRadius, effectiveBorderColor, effectiveBorderWidth)
+              : widget.filled
               ? OutlineInputBorder(
             borderRadius: BorderRadius.circular(effectiveRadius),
             borderSide: BorderSide.none,
           )
+              : null,
+          enabledBorder: widget.outlined
+              ? buildOutlineBorder(effectiveRadius, effectiveBorderColor, effectiveBorderWidth)
+              : null,
+          focusedBorder: widget.outlined
+              ? buildOutlineBorder(effectiveRadius, effectiveBorderColorFocus, effectiveBorderWidthFocus)
+              : null,
+          errorBorder: widget.outlined
+              ? buildOutlineBorder(effectiveRadius, COLOR_ERROR, effectiveBorderWidth)
+              : null,
+          focusedErrorBorder: widget.outlined
+              ? buildOutlineBorder(effectiveRadius, COLOR_ERROR, effectiveBorderWidthFocus)
               : null,
           contentPadding: widget.noPadding
               ? EdgeInsets.zero
@@ -206,6 +248,13 @@ class TextFieldCustomState extends State<TextFieldCustom> {
           prefixIcon: buildPrefixIcon(effectiveIconColor),
         ),
       ),
+    );
+  }
+
+  OutlineInputBorder buildOutlineBorder(double radius, Color color, double width) {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(radius),
+      borderSide: BorderSide(color: color, width: width),
     );
   }
 
@@ -237,8 +286,11 @@ class TextFieldCustomState extends State<TextFieldCustom> {
   Widget? buildSuffixIcon(BuildContext context, Color iconColor) {
     if (widget.password) {
       return IconButton(
+        tooltip: obscureVisible ? 'Ocultar contraseña' : 'Mostrar contraseña',
         icon: Icon(
-          obscureVisible ? Icons.lock_open_outlined : Icons.lock_outline,
+          obscureVisible
+              ? (widget.passwordVisibleIcon ?? Icons.lock_open_outlined)
+              : (widget.passwordHiddenIcon ?? Icons.lock_outline),
           color: iconColor,
         ),
         onPressed: () => setState(() => obscureVisible = !obscureVisible),

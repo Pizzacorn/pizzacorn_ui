@@ -13,6 +13,7 @@ class StepSliderCustom extends StatefulWidget {
   final TextStyle? optionTextStyle;
   final TextStyle? selectedOptionTextStyle;
   final bool showAllOptionLabels;
+  final bool showOptionLabels;
   final Color? selectedColor;
   final Color? unselectedColor;
   final bool selectedGradient;
@@ -37,6 +38,7 @@ class StepSliderCustom extends StatefulWidget {
     this.optionTextStyle,
     this.selectedOptionTextStyle,
     this.showAllOptionLabels = false,
+    this.showOptionLabels = true,
     this.selectedColor,
     this.unselectedColor,
     this.selectedGradient = false,
@@ -234,7 +236,7 @@ class StepSliderCustomState extends State<StepSliderCustom>
             },
           ),
         ),
-        Row(
+        if (widget.showOptionLabels) Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             for (int i = 0; i < widget.optionLabels.length; i++)

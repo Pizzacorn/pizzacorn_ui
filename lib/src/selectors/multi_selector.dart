@@ -22,6 +22,7 @@ class MultiSelector extends StatelessWidget {
   final TextStyle? unselectedTextStyle;
   final List<Color> selectedGradientColors;
   final bool selectedBackgroundGradient;
+  final bool selectedBorderGradient;
   final bool selectedGradientAnimated;
   final PizzacornGradientType selectedGradientType;
   final double spacing;
@@ -45,6 +46,7 @@ class MultiSelector extends StatelessWidget {
     this.unselectedTextStyle,
     this.selectedGradientColors = const [],
     this.selectedBackgroundGradient = true,
+    this.selectedBorderGradient = false,
     this.selectedGradientAnimated = false,
     this.selectedGradientType = PizzacornGradientType.linear,
     this.spacing = SPACE_SMALL,
@@ -138,10 +140,10 @@ class MultiSelector extends StatelessWidget {
         ),
       );
 
-      if (selected && selectedBackgroundGradient) {
+      if (selected && (selectedBackgroundGradient || selectedBorderGradient)) {
         chip = AnimatedGradientBorder(
           radius: RADIUS,
-          borderWidth: 0,
+          borderWidth: selectedBorderGradient ? 1.5 : 0,
           colors: selectedGradientColors.isEmpty
               ? [COLOR_ACCENT, COLOR_ACCENT_SECONDARY]
               : selectedGradientColors,

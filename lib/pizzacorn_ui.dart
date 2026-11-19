@@ -164,6 +164,8 @@ export 'src/utils/uicons_helper.dart';
 export 'src/utils/countries.dart';
 
 // widgets
+export 'src/widgets/check_bullet.dart';
+export 'src/widgets/divider_text.dart';
 export 'src/widgets/container_help.dart';
 export 'src/widgets/disclaimer_widget.dart';
 export 'src/widgets/onboarding_progress_segments.dart';

@@ -47,6 +47,10 @@ class MonthlyCalendar extends StatefulWidget {
   final List<int> blockedWeekdays;
   final CalendarStyle style;
   final double dayBoxSize;
+  final double dayCellAspectRatio;
+  final bool showHeader;
+  final bool showAdjacentMonthDays;
+  final bool indicatorsAtBottom;
   final String locale;
   final List<String>? weekdayLabels;
   final EdgeInsetsGeometry? padding;
@@ -79,6 +83,10 @@ class MonthlyCalendar extends StatefulWidget {
     this.blockedWeekdays = const [],
     required this.style,
     this.dayBoxSize = 50,
+    this.dayCellAspectRatio = 1,
+    this.showHeader = true,
+    this.showAdjacentMonthDays = false,
+    this.indicatorsAtBottom = false,
     this.locale = 'es_ES',
     this.weekdayLabels,
     this.padding,
@@ -91,7 +99,7 @@ class MonthlyCalendar extends StatefulWidget {
     this.eventIndicatorBackgroundColors = const {},
     this.eventIndicatorTextColors = const {},
     this.typedEventIndicatorBuilder,
-  });
+  }) : assert(dayCellAspectRatio > 0);
 
   @override
   State<MonthlyCalendar> createState() => MonthlyCalendarState();
@@ -282,15 +290,26 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
     final List<String> weekdayLabelList = getWeekdayLabels();
 
     for (int i = 0; i < offset; i++) {
-      cells.add(null);
+      cells.add(
+        widget.showAdjacentMonthDays
+            ? DateTime(currentMonth.year, currentMonth.month, i - offset + 1)
+            : null,
+      );
     }
     for (int i = 1; i <= daysInMonth; i++) {
       cells.add(DateTime(currentMonth.year, currentMonth.month, i));
     }
+    if (widget.showAdjacentMonthDays) {
+      final trailingDays = (7 - cells.length % 7) % 7;
+      for (int i = 1; i <= trailingDays; i++) {
+        cells.add(DateTime(currentMonth.year, currentMonth.month, daysInMonth + i));
+      }
+    }
 
     final calendarContent = Column(
       children: [
-        Row(
+        if (widget.showHeader)
+          Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             IconButton(
@@ -321,13 +340,13 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
               ),
           ],
         ),
-        Space(PADDING_SMALL_SIZE),
+        Space(SPACE_SMALLEST),
         GridView.builder(
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 7,
-            childAspectRatio: 1,
+            childAspectRatio: widget.dayCellAspectRatio,
             crossAxisSpacing: 4,
             mainAxisSpacing: 4,
           ),
@@ -345,8 +364,14 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
 
             // 🚫 Un día es pasado si es estrictamente anterior a widget.startDate (today)
             final bool isPast = day.isBefore(today);
+            final now = DateTime.now();
+            final currentDate = DateTime(now.year, now.month, now.day);
+            final bool isBeforeCurrentDate = day.isBefore(currentDate);
+            final bool isOutsideMonth =
+                day.year != currentMonth.year || day.month != currentMonth.month;
 
             final bool blocked =
+                isOutsideMonth ||
                 isPast || // 🚫 Bloqueo de días pasados a startDate
                     widget.blockedDays.any((d) => isSameDay(d, day)) ||
                     widget.blockedWeekdays.contains(day.weekday) ||
@@ -415,6 +440,15 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
               }
             }
 
+            final bool isCurrentDay = !blocked &&
+                widget.style.borderWidthUnselected == 0 &&
+                widget.style.borderWidthSelected == 0 &&
+                isSameDay(day, currentDate);
+            if (isCurrentDay) {
+              bc = Colors.transparent;
+              bw = 0;
+            }
+
             BorderRadius radius = BorderRadius.circular(RADIUS);
             if (widget.selectionMode == CalendarSelectionMode.range) {
               if (isStart && !isEnd) {
@@ -431,6 +465,36 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
                 radius = BorderRadius.zero;
               }
             }
+
+            final dayCell = Container(
+              decoration: BoxDecoration(
+                color: bg,
+                border: Border.all(color: bc, width: bw),
+                borderRadius: radius,
+              ),
+              child: Stack(
+                children: [
+                  Center(
+                    child: TextBody(
+                      '${day.day}',
+                      fontWeight: FontWeight.w600,
+                      color: isBeforeCurrentDate ? COLOR_SUBTEXT : txt,
+                    ),
+                  ),
+                  if (hasHighlightedEvents && widget.style.showHighlightedCircle)
+                    Positioned(
+                      right: 2,
+                      top: widget.indicatorsAtBottom ? null : 2,
+                      bottom: widget.indicatorsAtBottom ? 2 : null,
+                      child: buildTypedEventIndicator(
+                        day,
+                        eventList,
+                        highlightedCount,
+                      ),
+                    ),
+                ],
+              ),
+            );
 
             return GestureDetector(
               onTap: blocked
@@ -463,35 +527,19 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
                         }
                       }
                     },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: bg,
-                  border: Border.all(color: bc, width: bw),
-                  borderRadius: radius,
-                ),
-                child: Stack(
-                  children: [
-                    Center(
-                      child: TextBody(
-                        '${day.day}',
-                        fontWeight: FontWeight.w600,
-                        color: txt,
-                      ),
-                    ),
-                    if (hasHighlightedEvents &&
-                        widget.style.showHighlightedCircle)
-                      Positioned(
-                        right: 2,
-                        top: 2,
-                        child: buildTypedEventIndicator(
-                          day,
-                          eventList,
-                          highlightedCount,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
+              child: isCurrentDay
+                  ? AnimatedGradientBorder(
+                      radius: RADIUS,
+                      borderWidth: 2,
+                      colors: [
+                        COLOR_INFO,
+                        COLOR_ACCENT_SECONDARY,
+                        COLOR_INFO,
+                        COLOR_DONE,
+                      ],
+                      child: dayCell,
+                    )
+                  : dayCell,
             );
           },
         ),

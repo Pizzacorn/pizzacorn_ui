@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:crop_your_image/crop_your_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pizzacorn_ui/src/models/file_model.dart';
@@ -94,16 +95,24 @@ class _CropPageState extends State<CropPage> {
   Future<void> finishCrop(Uint8List croppedData) async {
     setState(() => loading = true);
 
-    // PATH
-    final String pathFile = DateTime.now().millisecondsSinceEpoch.toString();
+    String path = "";
 
-    // Directorio local
-    final directory = await getApplicationDocumentsDirectory();
-    final File file = File('${directory.path}/$pathFile.png');
-    await file.writeAsBytes(croppedData);
+    try {
+      // En web no hay sistema de archivos local (dart:io): solo se devuelven los bytes
+      if (!kIsWeb) {
+        final String pathFile = DateTime.now().millisecondsSinceEpoch
+            .toString();
+        final directory = await getApplicationDocumentsDirectory();
+        final File file = File('${directory.path}/$pathFile.png');
+        await file.writeAsBytes(croppedData);
+        path = file.path;
+      }
+    } catch (e) {
+      // Si falla el guardado en disco no se bloquea el flujo: los bytes ya están recortados
+      debugPrint("·🔴 No se pudo guardar el recorte en disco: $e");
+    }
 
-    final String path = file.path;
-
+    if (!mounted) return;
     setState(() => loading = false);
 
     widget.onFinish(croppedData, path);

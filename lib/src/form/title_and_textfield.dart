@@ -6,6 +6,7 @@ import '../../pizzacorn_ui.dart';
 /// Widget: TitleAndTextField
 /// Motivo: Combina un título (TextBody) con un campo de texto (TextFieldCustom) para formularios estandarizados.
 /// API: TitleAndTextField("Nombre", controller: myController, hintText: "Tu nombre")
+/// Con `outlined: true` el campo se dibuja con borde visible y el título queda encima.
 class TitleAndTextField extends StatelessWidget {
   final String title;
   final TextEditingController controller;
@@ -27,6 +28,28 @@ class TitleAndTextField extends StatelessWidget {
   final int maxLines;
   final int minLines;
 
+  // 🆕 OPCIONALES (no cambian el uso anterior)
+  /// Campo de contraseña (con botón para mostrar/ocultar).
+  final bool password;
+  /// Campo con borde visible (ver TextFieldCustom.outlined).
+  final bool outlined;
+  /// Altura del campo. Por defecto FIELD_HEIGHT.
+  final double? height;
+  /// Radio del campo. Por defecto RADIUS.
+  final double? radius;
+  /// Tamaño del título. Por defecto el de TextBody.
+  final double? titleSize;
+  /// Relleno del campo. Por defecto COLOR_BACKGROUND_SECONDARY.
+  final Color? colorFill;
+  /// Color de los iconos del campo (por ejemplo el de la contraseña).
+  final Color? iconColor;
+  /// Color del borde en reposo (solo con `outlined`).
+  final Color? borderColor;
+  /// Icono con la contraseña visible.
+  final IconData? passwordVisibleIcon;
+  /// Icono con la contraseña oculta.
+  final IconData? passwordHiddenIcon;
+
   const TitleAndTextField(
       this.title, { // El título es parámetro posicional según la ley
         super.key,
@@ -46,6 +69,16 @@ class TitleAndTextField extends StatelessWidget {
         this.maxLength = 0,
         this.maxLines = 1, // Por defecto 1 como un TextField normal
         this.minLines = 1,
+        this.password = false,
+        this.outlined = false,
+        this.height,
+        this.radius,
+        this.titleSize,
+        this.colorFill,
+        this.iconColor,
+        this.borderColor,
+        this.passwordVisibleIcon,
+        this.passwordHiddenIcon,
       });
 
   @override
@@ -58,7 +91,7 @@ class TitleAndTextField extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Sin const según la ley Pizzacorn
-          TextBody(title, fontWeight: FontWeight.bold),
+          TextBody(title, fontWeight: FontWeight.bold, fontSize: titleSize),
 
           Space(spaceSize),
 
@@ -74,11 +107,21 @@ class TitleAndTextField extends StatelessWidget {
             focusNode: focusNode,
             inputFormatters: inputFormatters,
             onTap: onTap,
-            textInputType: textInputType ?? TextInputType.name,
+            textInputType: textInputType ??
+                (password ? TextInputType.visiblePassword : TextInputType.name),
             maxLength: maxLength,
             // Pasamos los nuevos parámetros
             maxLines: maxLines,
             minLines: minLines,
+            password: password,
+            outlined: outlined,
+            height: height,
+            radius: radius,
+            colorFill: colorFill,
+            iconColor: iconColor,
+            borderColor: borderColor,
+            passwordVisibleIcon: passwordVisibleIcon,
+            passwordHiddenIcon: passwordHiddenIcon,
           ),
         ],
       ),

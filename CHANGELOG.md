@@ -1,3 +1,15 @@
+## 0.0.148
+
+#### Fixed CropPage freezing on web: it used dart:io and path_provider to save the cropped image, which throw on web and left the loading overlay on forever. On web it now returns only the bytes (empty path), and a disk error no longer blocks the flow.
+#### Added optional outlined mode to TextFieldCustom (`outlined`, `borderColor`, `borderColorFocus`, `borderWidth`) using the COLOR_BORDER_NOFOCUS / COLOR_BORDER_FOCUS and BORDER_SIZE tokens. Default look is unchanged.
+#### Added `passwordVisibleIcon` and `passwordHiddenIcon` to TextFieldCustom, plus a tooltip on the password toggle.
+#### Added `password`, `outlined`, `height`, `radius`, `titleSize`, `colorFill`, `iconColor`, `borderColor` and password icons to TitleAndTextField.
+#### Added `innerPadding`, `backgroundRadius` and `textSize` to SegmentedControlCustom so the thumb can sit inside its background.
+#### Added `color`, `checkColor`, `linkColor` and `linkFontWeight` to CheckboxPolitics.
+#### Added CheckBulletCustom (check circle + text) and DividerTextCustom (divider with centered text).
+#### Added `selectedTextStyle` to DropdownCustom.
+#### Changed DropdownCustom's default `contentPadding` to horizontal 20 with no vertical padding, so the text is no longer clipped when `height` is small (e.g. 44). The content stays vertically centered, so taller dropdowns look the same.
+
 ## 0.0.147
 
 #### Allow up to 100 lines in BottomSheetInfo title and body text.

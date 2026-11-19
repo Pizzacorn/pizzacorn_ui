@@ -7,6 +7,7 @@ import '../../pizzacorn_ui.dart';
 /// Widget: CheckboxPolitics
 /// Motivo: Checkbox legal estandarizado con enlaces de texto.
 /// API: CheckboxPolitics(value: true, onTap: () => ..., onLegalTap: () => ..., onPrivacyTap: () => ...)
+/// Opcionales: `color`, `checkColor`, `linkColor` y `linkFontWeight` para adaptarlo a cada marca.
 
 class CheckboxPolitics extends StatelessWidget {
   final bool value;
@@ -18,6 +19,16 @@ class CheckboxPolitics extends StatelessWidget {
   final String labelMid;
   final String labelPrivacy;
 
+  // 🆕 OPCIONALES (no cambian el uso anterior)
+  /// Color de la casilla (relleno y borde). Por defecto COLOR_ACCENT.
+  final Color? color;
+  /// Color de la marca de verificación. Por defecto COLOR_BACKGROUND.
+  final Color? checkColor;
+  /// Color de los enlaces del texto. Por defecto COLOR_ACCENT.
+  final Color? linkColor;
+  /// Grosor de los enlaces. Por defecto WEIGHT_BOLD.
+  final FontWeight? linkFontWeight;
+
   const CheckboxPolitics({
     super.key,
     required this.value,
@@ -28,10 +39,21 @@ class CheckboxPolitics extends StatelessWidget {
     this.labelLegal = 'AVISO LEGAL Y CONDICIONES DE USO',
     this.labelMid = ' y nuestra ',
     this.labelPrivacy = 'POLÍTICA DE PRIVACIDAD.',
+    this.color,
+    this.checkColor,
+    this.linkColor,
+    this.linkFontWeight,
   });
 
   @override
   Widget build(BuildContext context) {
+    final Color effectiveColor = color ?? COLOR_ACCENT;
+    final Color effectiveCheckColor = checkColor ?? COLOR_BACKGROUND;
+    final TextStyle linkStyle = styleCaption(
+      color: linkColor ?? COLOR_ACCENT,
+      fontWeight: linkFontWeight ?? WEIGHT_BOLD,
+    );
+
     return Semantics(
       label: "Aceptar políticas y condiciones",
       checked: value,
@@ -43,10 +65,10 @@ class CheckboxPolitics extends StatelessWidget {
             height: 25,
             width: 25,
             child: CupertinoCheckbox(
-              activeColor: COLOR_ACCENT,
+              activeColor: effectiveColor,
               focusColor: COLOR_BACKGROUND,
-              checkColor: COLOR_BACKGROUND,
-              side: BorderSide(color: COLOR_ACCENT, width: 2),
+              checkColor: effectiveCheckColor,
+              side: BorderSide(color: effectiveColor, width: 2),
               value: value,
               onChanged: (bool? newValue) => onTap(),
             ),
@@ -65,19 +87,13 @@ class CheckboxPolitics extends StatelessWidget {
                   TextSpan(text: labelPre),
                   TextSpan(
                     text: labelLegal,
-                    style: styleCaption(
-                      color: COLOR_ACCENT,
-                      fontWeight: WEIGHT_BOLD,
-                    ),
+                    style: linkStyle,
                     recognizer: TapGestureRecognizer()..onTap = onLegalTap,
                   ),
                   TextSpan(text: labelMid),
                   TextSpan(
                     text: labelPrivacy,
-                    style: styleCaption(
-                      color: COLOR_ACCENT,
-                      fontWeight: WEIGHT_BOLD,
-                    ),
+                    style: linkStyle,
                     recognizer: TapGestureRecognizer()..onTap = onPrivacyTap,
                   ),
                 ],

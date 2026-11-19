@@ -34,6 +34,13 @@ class SegmentedControlCustom extends StatelessWidget {
   final double thumbRadius;
   /// Altura del control
   final double height;
+  /// Margen interior entre el fondo y el thumb (el thumb queda "dentro" del fondo).
+  /// Por defecto cero: el thumb ocupa todo el fondo, como siempre.
+  final EdgeInsets innerPadding;
+  /// Radio del fondo. Por defecto el mismo que [thumbRadius].
+  final double? backgroundRadius;
+  /// Tamaño del texto de cada segmento. Por defecto el de TextCaption.
+  final double? textSize;
 
   const SegmentedControlCustom({
     super.key, // Usando super.key moderno
@@ -54,6 +61,9 @@ class SegmentedControlCustom extends StatelessWidget {
     this.selectedCounterTextColor,
     this.thumbRadius = 0,
     this.height = 32.0,
+    this.innerPadding = EdgeInsets.zero,
+    this.backgroundRadius,
+    this.textSize,
   }) : assert(itemsSecondary == null || itemsSecondary.length == items.length,
   'secondaryTexts debe tener la misma longitud que segments'),
        assert(selectedGradientDuration > Duration.zero);
@@ -70,17 +80,18 @@ class SegmentedControlCustom extends StatelessWidget {
       padding: padding,
       child: LayoutBuilder(builder: (context, constraints) {
         final totalWidth = constraints.maxWidth;
-        final segmentWidth = totalWidth / items.length;
+        final segmentWidth = (totalWidth - innerPadding.horizontal) / items.length;
+        final totalHeight = height + innerPadding.vertical;
 
         return Stack(
           children: [
             // Fondo
             Container(
               width: totalWidth,
-              height: height,
+              height: totalHeight,
               decoration: BoxDecoration(
                 color: effectiveBgColor,
-                borderRadius: BorderRadius.circular(thumbRadius),
+                borderRadius: BorderRadius.circular(backgroundRadius ?? thumbRadius),
               ),
             ),
 
@@ -88,8 +99,8 @@ class SegmentedControlCustom extends StatelessWidget {
             AnimatedPositioned(
               duration: const Duration(milliseconds: 200),
               curve: Curves.easeInOut,
-              left: currentIndex * segmentWidth,
-              top: 0,
+              left: innerPadding.left + currentIndex * segmentWidth,
+              top: innerPadding.top,
               child: selectedGradientColors.isNotEmpty
                   ? SegmentedSelectionGradient(
                       colors: selectedGradientColors,
@@ -110,7 +121,9 @@ class SegmentedControlCustom extends StatelessWidget {
             ),
 
             // Opciones encima
-            Row(
+            Padding(
+              padding: innerPadding,
+              child: Row(
               children: items.asMap().entries.map((entry) {
                 final idx = entry.key;
                 final label = entry.value;
@@ -133,6 +146,7 @@ class SegmentedControlCustom extends StatelessWidget {
                           children: [
                             TextCaption(
                               label,
+                              fontSize: textSize,
                               color: selected
                                   ? effectiveActiveText
                                   : effectiveInactiveText,
@@ -157,6 +171,7 @@ class SegmentedControlCustom extends StatelessWidget {
                   ),
                 );
               }).toList(),
+              ),
             ),
           ],
         );

@@ -35,6 +35,7 @@ class DropdownCustom<T> extends StatefulWidget {
   final List<Color> gradientColors;
   final Color? selectedBackgroundColor;
   final Color? selectedTextColor;
+  final TextStyle? selectedTextStyle;
   final Color? selectedBorderColor;
   final double borderWidth;
   final double height;
@@ -58,10 +59,12 @@ class DropdownCustom<T> extends StatefulWidget {
     this.gradientColors = const [],
     this.selectedBackgroundColor,
     this.selectedTextColor,
+    this.selectedTextStyle,
     this.selectedBorderColor,
     this.borderWidth = 1.5,
     this.height = 55,
-    this.contentPadding = const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+    // Sin relleno vertical: el Row ya centra el texto y así no se recorta con alturas bajas (p. ej. 44)
+    this.contentPadding = const EdgeInsets.symmetric(horizontal: 20),
     this.dropdownIcon,
     this.dropdownIconColor,
     this.menuBackgroundColor,
@@ -131,7 +134,12 @@ class DropdownCustomState<T> extends State<DropdownCustom<T>> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextBody(currentText, color: textColor),
+          widget.selected && widget.selectedTextStyle != null
+              ? Text(
+                  currentText,
+                  style: styleBody(color: textColor).merge(widget.selectedTextStyle),
+                )
+              : TextBody(currentText, color: textColor),
           Spacer(),
           Icon(
             widget.dropdownIcon ?? UIconsPro.regularRounded.angle_small_down,

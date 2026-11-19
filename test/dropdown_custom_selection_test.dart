@@ -4,6 +4,33 @@ import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 import 'package:uicons_pro/uicons_pro.dart';
 
 void main() {
+  testWidgets('DropdownCustom aplica selectedTextStyle solo al seleccionarse', (
+    tester,
+  ) async {
+    Widget buildDropdown(bool selected) => MaterialApp(
+      home: Scaffold(
+        body: DropdownCustom<String>(
+          items: ['Uno'],
+          initialItem: 'Uno',
+          getName: (item) => item,
+          tooltip: 'Elegir',
+          hintText: 'Elegir',
+          selected: selected,
+          selectedTextColor: Colors.blue,
+          selectedTextStyle: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(buildDropdown(false));
+    expect(tester.widget<Text>(find.text('Uno')).style?.fontWeight, isNot(FontWeight.bold));
+
+    await tester.pumpWidget(buildDropdown(true));
+    final selectedText = tester.widget<Text>(find.text('Uno'));
+    expect(selectedText.style?.fontWeight, FontWeight.bold);
+    expect(selectedText.style?.color, Colors.blue);
+  });
+
   testWidgets('DropdownCustom actualiza el valor externo y el estilo seleccionado', (
     tester,
   ) async {
