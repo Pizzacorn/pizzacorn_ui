@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'pagination_status.dart' show PaginationStatus;
 
 class SliverGridCustom<T> extends ConsumerWidget {
   final PaginationParams<T> params;
@@ -11,7 +12,14 @@ class SliverGridCustom<T> extends ConsumerWidget {
   final double mainAxisSpacing;
   final double crossAxisSpacing;
   final int crossAxisCount;
+
+  /// Ancho mínimo deseado por celda cuando las columnas son adaptables.
+  final double? minItemWidth;
+
   final double childAspectRatio;
+  final bool autoLoadMore;
+  final bool showSkeleton;
+  final PaginationMessages messages;
   // Añadimos el extractor de ID opcional igual que en la lista
   final String Function(T item)? idExtractor;
 
@@ -24,42 +32,76 @@ class SliverGridCustom<T> extends ConsumerWidget {
     this.mainAxisSpacing = SPACE_SMALL,
     this.crossAxisSpacing = SPACE_SMALL,
     this.crossAxisCount = 2,
+    this.minItemWidth,
     this.childAspectRatio = 1.0,
+    this.autoLoadMore = true,
+    this.showSkeleton = true,
+    this.messages = const PaginationMessages(),
     this.idExtractor,
-  });
+  }) : assert(minItemWidth == null || (minItemWidth > 0 && minItemWidth.isFinite));
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(paginationProvider(params));
     final controller = ref.read(paginationProvider(params).notifier);
+    final double? itemWidth = minItemWidth;
 
+    if (itemWidth == null) {
+      return buildGrid(
+        state: state,
+        controller: controller,
+        columnCount: crossAxisCount,
+      );
+    }
+    return SliverLayoutBuilder(
+      builder: (context, constraints) {
+        final int fittingColumns =
+            ((constraints.crossAxisExtent + crossAxisSpacing) /
+                    (itemWidth + crossAxisSpacing))
+                .floor();
+        return buildGrid(
+          state: state,
+          controller: controller,
+          columnCount: fittingColumns < 1 ? 1 : fittingColumns,
+        );
+      },
+    );
+  }
+
+  Widget buildGrid({
+    required PaginationState<dynamic> state,
+    required PaginationController<dynamic> controller,
+    required int columnCount,
+  }) {
+    final gridDelegate = SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: columnCount,
+      mainAxisSpacing: mainAxisSpacing,
+      crossAxisSpacing: crossAxisSpacing,
+      childAspectRatio: childAspectRatio,
+    );
     // 1. ESTADO DE CARGA INICIAL
     if (state.isLoading && state.items.isEmpty) {
-      return Skeletonizer.sliver(
-        enabled: true,
-        child: SliverGrid(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: crossAxisCount,
-            mainAxisSpacing: mainAxisSpacing,
-            crossAxisSpacing: crossAxisSpacing,
-            childAspectRatio: childAspectRatio,
-          ),
-          delegate: SliverChildBuilderDelegate(
-            (context, i) => itemBuilder(itemPlaceholder),
-            childCount: 6,
-          ),
-        ),
+      if (!showSkeleton) {
+        return SliverToBoxAdapter(
+          child: PaginationStatus(loading: true, loadingLabel: messages.loading),
+        );
+      }
+
+      return buildSkeleton(
+        gridDelegate: gridDelegate,
+        itemCount: columnCount > 6 ? columnCount : 6,
       );
     }
 
     // 2. ESTADO DE ERROR INICIAL
     if (state.error.isNotEmpty && state.items.isEmpty) {
       return SliverToBoxAdapter(
-        child: Center(
-          child: Padding(
-            padding: PADDING_ALL,
-            child: TextBody("Error: ${state.error}", maxlines: 50),
-          ),
+        child: PaginationStatus(
+          message: controller.lastDocument == null
+              ? messages.initialError
+              : messages.loadMoreError,
+          actionLabel: messages.retry,
+          onAction: controller.retry,
         ),
       );
     }
@@ -68,24 +110,17 @@ class SliverGridCustom<T> extends ConsumerWidget {
     if (state.items.isEmpty) {
       if (state.hasMore && params.itemFilter != null) {
         return SliverToBoxAdapter(
-          child: Center(
-            child: TextButton(
-              onPressed: state.isFetchingMore ? null : () => controller.fetchMore(),
-              child: state.isFetchingMore
-                  ? CircularProgressIndicator()
-                  : TextBody('Cargar más resultados'),
-            ),
+          child: PaginationStatus(
+            actionLabel: messages.loadMore,
+            onAction: controller.fetchMore,
+            loading: state.isFetchingMore,
+            loadingLabel: messages.loading,
           ),
         );
       }
       if (emptyWidget == null) {
         return SliverToBoxAdapter(
-          child: Center(
-            child: Padding(
-              padding: PADDING_ALL,
-              child: TextBody("No hay resultados"),
-            ),
-          ),
+          child: PaginationStatus(message: messages.empty),
         );
       }
 
@@ -98,16 +133,11 @@ class SliverGridCustom<T> extends ConsumerWidget {
     return SliverMainAxisGroup(
       slivers: [
         SliverGrid(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: crossAxisCount,
-            mainAxisSpacing: mainAxisSpacing,
-            crossAxisSpacing: crossAxisSpacing,
-            childAspectRatio: childAspectRatio,
-          ),
+          gridDelegate: gridDelegate,
           delegate: SliverChildBuilderDelegate(
             (context, i) {
-              // 🚀 Lógica de carga idéntica a la lista para mantener consistencia
-              if (i == state.items.length - 1 &&
+              if (autoLoadMore &&
+                  i == state.items.length - 1 &&
                   state.hasMore &&
                   !state.isFetchingMore &&
                   !state.isLoading &&
@@ -127,53 +157,51 @@ class SliverGridCustom<T> extends ConsumerWidget {
           ),
         ),
 
-        // 5. ZONA INFERIOR: SKELETON O ERROR DE PAGINACIÓN
-        if (state.hasMore || state.error.isNotEmpty)
+        if (state.isFetchingMore && showSkeleton)
+          SliverPadding(
+            padding: EdgeInsets.only(top: mainAxisSpacing),
+            sliver: buildSkeleton(
+              gridDelegate: gridDelegate,
+              itemCount: columnCount,
+            ),
+          )
+        else if (state.isFetchingMore)
           SliverToBoxAdapter(
-            child: Column(
-              children: [
-                // Skeleton de una fila si está cargando más
-                if (state.isFetchingMore)
-                  Skeletonizer(
-                    enabled: true,
-                    child: Padding(
-                      padding: EdgeInsets.only(top: mainAxisSpacing),
-                      child: GridView.builder(
-                        shrinkWrap: true,
-                        padding: EdgeInsets.zero,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: crossAxisCount,
-                          mainAxisSpacing: mainAxisSpacing,
-                          crossAxisSpacing: crossAxisSpacing,
-                          childAspectRatio: childAspectRatio,
-                        ),
-                        itemCount: crossAxisCount,
-                        itemBuilder: (context, i) => itemBuilder(itemPlaceholder),
-                      ),
-                    ),
-                  ),
-
-                // Mensaje de error si la paginación falló, con botón para reintentar
-                if (state.error.isNotEmpty && state.items.isNotEmpty)
-                  Padding(
-                    padding: PADDING_ALL,
-                    child: Column(
-                      children: [
-                        TextBody("Error al cargar más: ${state.error}", maxlines: 3),
-                        Space(SPACE_SMALL),
-                        ElevatedButton(
-                          onPressed: () => controller.fetchMore(),
-                          child: TextBody("Reintentar"),
-                        ),
-                      ],
-                    ),
-                  ),
-              ],
+            child: PaginationStatus(loading: true, loadingLabel: messages.loading),
+          )
+        else if (state.error.isNotEmpty)
+          SliverToBoxAdapter(
+            child: PaginationStatus(
+              message: messages.loadMoreError,
+              actionLabel: messages.retry,
+              onAction: controller.retry,
+            ),
+          )
+        else if (!autoLoadMore && state.hasMore)
+          SliverToBoxAdapter(
+            child: PaginationStatus(
+              actionLabel: messages.loadMore,
+              onAction: controller.fetchMore,
             ),
           ),
         SliverToBoxAdapter(child: Space(SPACE_MEDIUM)),
       ],
+    );
+  }
+
+  Widget buildSkeleton({
+    required SliverGridDelegate gridDelegate,
+    required int itemCount,
+  }) {
+    return Skeletonizer.sliver(
+      enabled: true,
+      child: SliverGrid(
+        gridDelegate: gridDelegate,
+        delegate: SliverChildBuilderDelegate(
+          (context, index) => itemBuilder(itemPlaceholder),
+          childCount: itemCount,
+        ),
+      ),
     );
   }
 }

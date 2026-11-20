@@ -113,12 +113,14 @@ export 'src/navigation/navigation_helpers.dart';
 export 'src/navigation/overlays_helpers.dart';
 export 'src/navigation/bottombar.dart';
 export 'src/navigation/bottombar_central.dart';
+export 'src/navigation/adaptive_navigation.dart'
+    show AdaptiveNavigationScaffold, AdaptiveNavigationDestination, AdaptiveNavigationAction;
 
 // overlays
 export 'src/overlays/bottom_sheet.dart';
 export 'src/overlays/bottom_sheet_info.dart';
 export 'src/overlays/drag_indicator.dart';
-export 'src/overlays/loading.dart';
+export 'src/overlays/loading.dart' hide LoadingOverlay, LoadingOverlayState;
 export 'src/overlays/loading_widget.dart';
 export 'src/overlays/bottom_popups.dart';
 
@@ -126,6 +128,7 @@ export 'src/overlays/bottom_popups.dart';
 export 'src/pagination/pagination_list.dart';
 export 'src/pagination/pagination_grid.dart';
 export 'src/pagination/pagination_controller.dart';
+export 'src/pagination/pagination_status.dart' show PaginationMessages;
 
 // pickers
 export 'src/pickers/icon_picker.dart';

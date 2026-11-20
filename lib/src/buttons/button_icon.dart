@@ -11,6 +11,7 @@ class ButtonCustomIcon extends StatefulWidget {
   final double padding;
   final Color? color;
   final Color? colorBackground;
+  final String? tooltip;
 
   // NUEVOS JUGUETES PARA EL SEÑOR SPUTO
   final double radius;
@@ -27,6 +28,7 @@ class ButtonCustomIcon extends StatefulWidget {
     this.padding = 15,
     this.color,
     this.colorBackground,
+    this.tooltip,
     this.radius = 100, // Por defecto casi circular
     this.borderColor,
     this.borderWidth = 0,
@@ -45,6 +47,7 @@ class ButtonCustomIconState extends State<ButtonCustomIcon> {
     final Color finalBorderColor = widget.borderColor ?? Colors.transparent;
 
     return IconButton(
+      tooltip: widget.tooltip,
       iconSize: widget.size,
       style: IconButton.styleFrom(
         backgroundColor: finalColorBackground,

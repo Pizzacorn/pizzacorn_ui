@@ -280,6 +280,7 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = MaterialLocalizations.of(context);
     final daysInMonth = DateTime(
       currentMonth.year,
       currentMonth.month + 1,
@@ -313,6 +314,7 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             IconButton(
+              tooltip: localizations.previousMonthTooltip,
               icon: Icon(Icons.arrow_back_ios, size: 16, color: COLOR_TEXT),
               onPressed: () => changeMonth(-1),
             ),
@@ -325,6 +327,7 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
               ],
             ),
             IconButton(
+              tooltip: localizations.nextMonthTooltip,
               icon: Icon(Icons.arrow_forward_ios, size: 16, color: COLOR_TEXT),
               onPressed: () => changeMonth(1),
             ),
@@ -466,7 +469,7 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
               }
             }
 
-            final dayCell = Container(
+            final dayCell = Ink(
               decoration: BoxDecoration(
                 color: bg,
                 border: Border.all(color: bc, width: bw),
@@ -475,10 +478,12 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
               child: Stack(
                 children: [
                   Center(
-                    child: TextBody(
-                      '${day.day}',
-                      fontWeight: FontWeight.w600,
-                      color: isBeforeCurrentDate ? COLOR_SUBTEXT : txt,
+                    child: ExcludeSemantics(
+                      child: TextBody(
+                        '${day.day}',
+                        fontWeight: FontWeight.w600,
+                        color: isBeforeCurrentDate ? COLOR_SUBTEXT : txt,
+                      ),
                     ),
                   ),
                   if (hasHighlightedEvents && widget.style.showHighlightedCircle)
@@ -496,7 +501,9 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
               ),
             );
 
-            return GestureDetector(
+            final dayControl = InkWell(
+              borderRadius: radius,
+              focusColor: txt.withValues(alpha: 0.24),
               onTap: blocked
                   ? null
                   : () {
@@ -527,6 +534,17 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
                         }
                       }
                     },
+              child: dayCell,
+            );
+            final dayMaterial = Material(
+              type: MaterialType.transparency,
+              child: dayControl,
+            );
+            return Semantics(
+              label: localizations.formatFullDate(day),
+              button: true,
+              enabled: !blocked,
+              selected: isSingleSel || isStart || isEnd || inRange,
               child: isCurrentDay
                   ? AnimatedGradientBorder(
                       radius: RADIUS,
@@ -537,9 +555,9 @@ class MonthlyCalendarState extends State<MonthlyCalendar> {
                         COLOR_INFO,
                         COLOR_DONE,
                       ],
-                      child: dayCell,
+                      child: dayMaterial,
                     )
-                  : dayCell,
+                  : dayMaterial,
             );
           },
         ),

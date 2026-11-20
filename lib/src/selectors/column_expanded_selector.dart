@@ -87,7 +87,7 @@ class ColumnExpandedSelectorState extends State<ColumnExpandedSelector> {
   }
 
   void selectInitialItem() {
-    if (widget.selectedItem.isNotEmpty || widget.items.isEmpty) {
+    if (!mounted || widget.selectedItem.isNotEmpty || widget.items.isEmpty) {
       return;
     }
 

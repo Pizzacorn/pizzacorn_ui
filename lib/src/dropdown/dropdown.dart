@@ -113,40 +113,48 @@ class DropdownCustomState<T> extends State<DropdownCustom<T>> {
             (widget.backgroundGradient ? COLOR_TEXT_BUTTONS : COLOR_TEXT)
         : COLOR_TEXT;
 
-    Widget field = Container(
-      height: widget.height,
-      padding: widget.contentPadding,
-      decoration: BoxDecoration(
-        color: widget.selected && widget.backgroundGradient
-            ? null
-            : backgroundColor,
-        gradient: widget.selected && widget.backgroundGradient
-            ? LinearGradient(colors: colors)
-            : null,
-        border: widget.selected && !widget.borderGradient
-            ? Border.all(
-                color: widget.selectedBorderColor ?? COLOR_ACCENT,
-                width: widget.borderWidth,
-              )
-            : null,
-        borderRadius: BorderRadius.all(Radius.circular(RADIUS)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          widget.selected && widget.selectedTextStyle != null
-              ? Text(
-                  currentText,
-                  style: styleBody(color: textColor).merge(widget.selectedTextStyle),
+    Widget field = LayoutBuilder(
+      builder: (context, constraints) => Container(
+        width: constraints.hasBoundedWidth ? double.infinity : null,
+        height: widget.height,
+        padding: widget.contentPadding,
+        decoration: BoxDecoration(
+          color: widget.selected && widget.backgroundGradient
+              ? null
+              : backgroundColor,
+          gradient: widget.selected && widget.backgroundGradient
+              ? LinearGradient(colors: colors)
+              : null,
+          border: widget.selected && !widget.borderGradient
+              ? Border.all(
+                  color: widget.selectedBorderColor ?? COLOR_ACCENT,
+                  width: widget.borderWidth,
                 )
-              : TextBody(currentText, color: textColor),
-          Spacer(),
-          Icon(
-            widget.dropdownIcon ?? UIconsPro.regularRounded.angle_small_down,
-            color: widget.dropdownIconColor ?? textColor,
-            size: 16,
-          ),
-        ],
+              : null,
+          borderRadius: BorderRadius.circular(RADIUS),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              child: widget.selected && widget.selectedTextStyle != null
+                  ? Text(
+                      currentText,
+                      style: styleBody(color: textColor).merge(widget.selectedTextStyle),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    )
+                  : TextBody(currentText, color: textColor, maxlines: 1),
+            ),
+            Space(SPACE_SMALL),
+            Icon(
+              widget.dropdownIcon ?? UIconsPro.regularRounded.angle_small_down,
+              color: widget.dropdownIconColor ?? textColor,
+              size: 16,
+            ),
+          ],
+        ),
       ),
     );
     if (widget.selected && widget.borderGradient) {
@@ -162,6 +170,7 @@ class DropdownCustomState<T> extends State<DropdownCustom<T>> {
 
     return PopupMenuButton<T>(
       tooltip: widget.tooltip,
+      enabled: widget.items.isNotEmpty,
       // Usamos los estilos y tokens de la librería
       style: styleTransparent(),
       color: widget.menuBackgroundColor ?? COLOR_BACKGROUND,

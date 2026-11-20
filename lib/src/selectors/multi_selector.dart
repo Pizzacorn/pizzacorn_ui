@@ -96,6 +96,7 @@ class MultiSelector extends StatelessWidget {
           color: Colors.transparent,
           child: InkWell(
             borderRadius: BorderRadius.circular(RADIUS),
+            focusColor: textColor.withValues(alpha: 0.24),
             onTap: () => onChanged(item),
             child: Padding(
               padding: EdgeInsets.symmetric(
@@ -153,7 +154,11 @@ class MultiSelector extends StatelessWidget {
         );
       }
 
-      children.add(chip);
+      children.add(Semantics(
+        button: true,
+        selected: selected,
+        child: chip,
+      ));
     }
 
     return Wrap(spacing: spacing, runSpacing: runSpacing, children: children);

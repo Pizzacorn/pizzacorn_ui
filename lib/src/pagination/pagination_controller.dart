@@ -86,6 +86,10 @@ class PaginationParams<T> {
   final int limit;
   final T Function(Map<String, dynamic> data) fromJson;
   final String? identifier;
+
+  /// Clave estable del filtro u orden que define el conjunto de resultados.
+  final Object? queryKey;
+
   final String? databaseName;
   final bool Function(dynamic item)? itemFilter;
   final int maxFetchBatches;
@@ -96,6 +100,7 @@ class PaginationParams<T> {
     this.query,
     this.limit = 15,
     this.identifier,
+    this.queryKey,
     bool Function(T item)? itemFilter,
     this.maxFetchBatches = 5,
     String? databaseName,
@@ -115,15 +120,19 @@ class PaginationParams<T> {
               limit == other.limit &&
               maxFetchBatches == other.maxFetchBatches &&
               databaseName == other.databaseName &&
-              identifier == other.identifier;
+              identifier == other.identifier &&
+              queryKey == other.queryKey;
 
   @override
-  int get hashCode =>
-      collection.hashCode ^
-      limit.hashCode ^
-      maxFetchBatches.hashCode ^
-      databaseName.hashCode ^
-      identifier.hashCode;
+  int get hashCode => Object.hash(
+    runtimeType,
+    collection,
+    limit,
+    maxFetchBatches,
+    databaseName,
+    identifier,
+    queryKey,
+  );
 }
 
 
@@ -131,12 +140,19 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
   DocumentSnapshot? lastDocument;
   bool isMounted = true;
 
+  // Un refresco invalida las respuestas de la carga anterior.
+  int requestVersion = 0;
+
   @override
   PaginationState<T> build(PaginationParams<T> arg) {
+    isMounted = true;
+    lastDocument = null;
+    final int version = ++requestVersion;
     ref.onDispose(() => isMounted = false);
 
-    // Carga inicial
-    Future.microtask(() => loadItems());
+    Future.microtask(() async {
+      if (isMounted && version == requestVersion) await loadItems();
+    });
 
     return PaginationState<T>();
   }
@@ -152,27 +168,50 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
   }
 
   Future<void> refresh() async {
-    lastDocument = null;
     await loadItems();
   }
 
+  Future<void> retry() async {
+    if (!isMounted || state.isLoading || state.isFetchingMore) return;
+    if (lastDocument == null) {
+      await refresh();
+    } else {
+      await fetchMore();
+    }
+  }
+
   Future<void> loadItems() async {
+    if (!isMounted) return;
+    final int version = ++requestVersion;
+    lastDocument = null;
     try {
-      state = state.copyWith(isLoading: true, items: [], error: '');
+      state = state.copyWith(
+        isLoading: true,
+        isFetchingMore: false,
+        items: [],
+        error: '',
+      );
       final (List<T>, DocumentSnapshot?, bool) page = await readVisiblePage();
-      if (!isMounted) return;
+      if (!isMounted || version != requestVersion) return;
       lastDocument = page.$2;
       state = state.copyWith(items: page.$1, isLoading: false, hasMore: page.$3);
     } catch (e) {
-      if (isMounted) {
+      if (isMounted && version == requestVersion) {
         state = state.copyWith(isLoading: false, error: e.toString());
       }
     }
   }
 
   Future<void> fetchMore() async {
-    if (state.isFetchingMore || !state.hasMore || lastDocument == null || state.isLoading) return;
+    if (!isMounted ||
+        state.isFetchingMore ||
+        !state.hasMore ||
+        lastDocument == null ||
+        state.isLoading) {
+      return;
+    }
 
+    final int version = requestVersion;
     try {
       // 🛡️ IMPORTANTE: Limpiamos el error aquí para que pueda reintentar de forma limpia
       state = state.copyWith(isFetchingMore: true, error: '');
@@ -180,7 +219,7 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
       final (List<T>, DocumentSnapshot?, bool) page = await readVisiblePage(
         afterDocument: lastDocument,
       );
-      if (!isMounted) return;
+      if (!isMounted || version != requestVersion) return;
       lastDocument = page.$2;
       state = state.copyWith(
         items: [...state.items, ...page.$1],
@@ -188,7 +227,7 @@ class PaginationController<T> extends AutoDisposeFamilyNotifier<PaginationState<
         hasMore: page.$3,
       );
     } catch (e) {
-      if (isMounted) {
+      if (isMounted && version == requestVersion) {
         // Si hay error, quitamos el loader y guardamos el error
         state = state.copyWith(isFetchingMore: false, error: e.toString());
       }

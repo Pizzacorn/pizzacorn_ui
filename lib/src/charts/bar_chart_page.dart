@@ -2,13 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 
 /// 📈 Página visual de barras.
-class BarChartPage extends StatelessWidget {
+class BarChartPage extends StatefulWidget {
   BarChartPage({
     super.key,
     required this.barChartConfig,
+    this.loadPoints,
+    this.errorText = 'No se pudo cargar la gráfica.',
+    this.retryText = 'Reintentar',
   });
 
-  BarChartConfig barChartConfig;
+  final BarChartConfig barChartConfig;
+  final Future<List<BarChartPointModel>> Function()? loadPoints;
+  final String errorText;
+  final String retryText;
+
+  @override
+  State<BarChartPage> createState() => BarChartPageState();
 
   String getValueText(double value) {
     final String normalizedValue = value == value.roundToDouble()
@@ -18,12 +27,98 @@ class BarChartPage extends StatelessWidget {
     return '${barChartConfig.valuePrefix}$normalizedValue${barChartConfig.valueSuffix}';
   }
 
+  Widget buildBarItem(
+    BarChartPointModel pointModel,
+    double maxValue,
+  ) {
+    final double normalizedHeight = (pointModel.value / maxValue) * 180;
+
+    return SizedBox(
+      width: 72,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          TextCaption(
+            getValueText(pointModel.value),
+            textAlign: TextAlign.center,
+            maxlines: 2,
+            color: COLOR_ACCENT,
+            fontWeight: FontWeight.w700,
+          ),
+          Space(SPACE_SMALL),
+          Container(
+            width: 52,
+            height: normalizedHeight < 8 ? 8 : normalizedHeight,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              gradient: LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                colors: [
+                  COLOR_ACCENT,
+                  COLOR_ACCENT_SECONDARY,
+                ],
+              ),
+            ),
+          ),
+          Space(SPACE_SMALL),
+          TextSmall(
+            pointModel.label,
+            textAlign: TextAlign.center,
+            maxlines: 3,
+            color: COLOR_SUBTEXT,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class BarChartPageState extends State<BarChartPage> {
+  late Future<List<BarChartPointModel>> pointsFuture;
+  late Object loadedDataKey;
+
+  Object get dataKey {
+    final config = widget.barChartConfig;
+    if (widget.loadPoints != null) return widget.loadPoints!;
+    return (
+      config.collection,
+      config.databaseName,
+      config.mode,
+      config.query,
+      config.xField,
+      config.yField,
+      config.groupField,
+      config.xFieldType,
+      config.sortType,
+      config.limit,
+      config.maxBars,
+      config.dateFormat,
+    );
+  }
+
+  void load() {
+    loadedDataKey = dataKey;
+    final loader = widget.loadPoints ??
+        BarChartService(barChartConfig: widget.barChartConfig).getPointList;
+    pointsFuture = Future<List<BarChartPointModel>>.sync(loader);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    load();
+  }
+
+  @override
+  void didUpdateWidget(covariant BarChartPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (loadedDataKey != dataKey) load();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final BarChartService barChartService = BarChartService(
-      barChartConfig: barChartConfig,
-    );
-
+    final barChartConfig = widget.barChartConfig;
     return Scaffold(
       backgroundColor: COLOR_BACKGROUND,
       appBar: AppBarBack(
@@ -31,7 +126,7 @@ class BarChartPage extends StatelessWidget {
         title: barChartConfig.title,
       ),
       body: FutureBuilder<List<BarChartPointModel>>(
-        future: barChartService.getPointList(),
+        future: pointsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: LoadingCustomWidget());
@@ -39,12 +134,21 @@ class BarChartPage extends StatelessWidget {
 
           if (snapshot.hasError) {
             return Center(
-              child: Padding(
+              child: SingleChildScrollView(
                 padding: PADDING_ALL,
-                child: TextBody(
-                  snapshot.error.toString(),
-                  maxlines: 10,
-                  textAlign: TextAlign.center,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Semantics(
+                      liveRegion: true,
+                      child: TextBody(widget.errorText, textAlign: TextAlign.center),
+                    ),
+                    Space(SPACE_SMALL),
+                    OutlinedButton(
+                      onPressed: () => setState(load),
+                      child: TextBody(widget.retryText),
+                    ),
+                  ],
                 ),
               ),
             );
@@ -112,7 +216,7 @@ class BarChartPage extends StatelessWidget {
                           padding: EdgeInsets.only(
                             right: i == pointList.length - 1 ? 0 : SPACE_SMALL,
                           ),
-                          child: buildBarItem(
+                          child: widget.buildBarItem(
                             pointList[i],
                             maxValue,
                           ),
@@ -145,7 +249,7 @@ class BarChartPage extends StatelessWidget {
                       ),
                       Space(SPACE_SMALL),
                       TextCaption(
-                        getValueText(pointList[i].value),
+                        widget.getValueText(pointList[i].value),
                         color: COLOR_ACCENT,
                         fontWeight: FontWeight.w700,
                       ),
@@ -159,49 +263,4 @@ class BarChartPage extends StatelessWidget {
     );
   }
 
-  Widget buildBarItem(
-    BarChartPointModel pointModel,
-    double maxValue,
-  ) {
-    final double normalizedHeight = (pointModel.value / maxValue) * 180;
-
-    return SizedBox(
-      width: 72,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          TextCaption(
-            getValueText(pointModel.value),
-            textAlign: TextAlign.center,
-            maxlines: 2,
-            color: COLOR_ACCENT,
-            fontWeight: FontWeight.w700,
-          ),
-          Space(SPACE_SMALL),
-          Container(
-            width: 52,
-            height: normalizedHeight < 8 ? 8 : normalizedHeight,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              gradient: LinearGradient(
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-                colors: [
-                  COLOR_ACCENT,
-                  COLOR_ACCENT_SECONDARY,
-                ],
-              ),
-            ),
-          ),
-          Space(SPACE_SMALL),
-          TextSmall(
-            pointModel.label,
-            textAlign: TextAlign.center,
-            maxlines: 3,
-            color: COLOR_SUBTEXT,
-          ),
-        ],
-      ),
-    );
-  }
 }

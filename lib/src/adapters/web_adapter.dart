@@ -3,20 +3,29 @@ import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 
 class WebAdapterCustom extends StatelessWidget {
   final List<Widget> children;
+  final double? breakpoint;
 
-  const WebAdapterCustom({super.key, required this.children});
+  const WebAdapterCustom({
+    super.key,
+    required this.children,
+    this.breakpoint,
+  }) : assert(breakpoint == null || breakpoint >= 0);
 
   @override
   Widget build(BuildContext context) {
-    // WEBSIZE debe estar definido en tu config.dart
-    if (MediaQuery.of(context).size.width > WEBSIZE) {
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: children,
-      );
-    } else {
-      // REGLA: Aunque sea una columna, mantenemos la consistencia de children
-      return Column(children: children);
-    }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double availableWidth = constraints.hasBoundedWidth
+            ? constraints.maxWidth
+            : MediaQuery.sizeOf(context).width;
+        final bool wide = availableWidth > (breakpoint ?? WEBSIZE);
+        return Flex(
+          direction: wide ? Axis.horizontal : Axis.vertical,
+          crossAxisAlignment:
+              wide ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+          children: children,
+        );
+      },
+    );
   }
 }

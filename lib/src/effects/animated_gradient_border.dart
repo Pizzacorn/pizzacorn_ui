@@ -37,6 +37,7 @@ class AnimatedGradientBorder extends StatefulWidget {
 class AnimatedGradientBorderState extends State<AnimatedGradientBorder>
     with SingleTickerProviderStateMixin {
   late final AnimationController animationController;
+  bool reduceMotion = false;
 
   @override
   void initState() {
@@ -45,9 +46,13 @@ class AnimatedGradientBorderState extends State<AnimatedGradientBorder>
       vsync: this,
       duration: widget.duration,
     );
-    if (widget.animated) {
-      animationController.repeat();
-    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+    updateAnimation();
   }
 
   @override
@@ -55,14 +60,18 @@ class AnimatedGradientBorderState extends State<AnimatedGradientBorder>
     super.didUpdateWidget(oldWidget);
     if (oldWidget.duration != widget.duration) {
       animationController.duration = widget.duration;
-    }
-    if (widget.animated &&
-        (!oldWidget.animated || oldWidget.duration != widget.duration)) {
-      animationController.repeat();
-    } else if (!widget.animated && oldWidget.animated) {
       animationController.stop();
-      animationController.value = 0;
     }
+    updateAnimation();
+  }
+
+  void updateAnimation() {
+    if (widget.animated && !reduceMotion) {
+      if (!animationController.isAnimating) animationController.repeat();
+      return;
+    }
+    animationController.stop();
+    if (animationController.value != 0) animationController.value = 0;
   }
 
   @override
@@ -73,6 +82,7 @@ class AnimatedGradientBorderState extends State<AnimatedGradientBorder>
 
   @override
   Widget build(BuildContext context) {
+    final bool animated = widget.animated && !reduceMotion;
     final List<Color> sourceColors = widget.colors.isEmpty
         ? [COLOR_ACCENT, COLOR_ACCENT_SECONDARY, COLOR_INFO, COLOR_DONE]
         : widget.colors;
@@ -97,10 +107,10 @@ class AnimatedGradientBorderState extends State<AnimatedGradientBorder>
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
               colors: gradientColors,
-              transform: widget.animated ? GradientRotation(angle) : null,
+              transform: animated ? GradientRotation(angle) : null,
             ),
           PizzacornGradientType.radial => RadialGradient(
-              center: widget.animated
+              center: animated
                   ? Alignment(cos(angle) * 0.6, sin(angle) * 0.6)
                   : Alignment.center,
               radius: 1.2,
@@ -110,7 +120,7 @@ class AnimatedGradientBorderState extends State<AnimatedGradientBorder>
               colors: gradientColors.length == 2 && sourceColors.length == 1
                   ? gradientColors
                   : [...gradientColors, gradientColors.first],
-              transform: widget.animated ? GradientRotation(angle) : null,
+              transform: animated ? GradientRotation(angle) : null,
             ),
         };
         return DecoratedBox(

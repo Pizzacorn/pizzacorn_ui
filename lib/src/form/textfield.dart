@@ -10,6 +10,9 @@ class TextFieldCustom extends StatefulWidget {
     this.onSuffixPressed,
     this.onPrefixPressed,
     this.onEditingComplete,
+    this.onFieldSubmitted,
+    this.textInputAction,
+    this.autofillHints,
     this.validator,
     this.errorText = "",
     this.autovalidateMode = AutovalidateMode.onUserInteraction,
@@ -119,6 +122,9 @@ class TextFieldCustom extends StatefulWidget {
   final void Function()? onSuffixPressed;
   final void Function()? onPrefixPressed;
   final void Function()? onEditingComplete;
+  final ValueChanged<String>? onFieldSubmitted;
+  final TextInputAction? textInputAction;
+  final Iterable<String>? autofillHints;
   final FormFieldValidator<String>? validator;
 
   @override
@@ -137,6 +143,17 @@ class TextFieldCustomState extends State<TextFieldCustom> {
   }
 
   void onFocusChange() => setState(() {});
+
+  @override
+  void didUpdateWidget(covariant TextFieldCustom oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusNode == widget.focusNode) return;
+
+    focusNode.removeListener(onFocusChange);
+    if (oldWidget.focusNode == null) focusNode.dispose();
+    focusNode = widget.focusNode ?? FocusNode();
+    focusNode.addListener(onFocusChange);
+  }
 
   @override
   void dispose() {
@@ -192,6 +209,9 @@ class TextFieldCustomState extends State<TextFieldCustom> {
         autofocus: widget.autofocus,
         onChanged: widget.onChanged,
         onEditingComplete: widget.onEditingComplete,
+        onFieldSubmitted: widget.onFieldSubmitted,
+        textInputAction: widget.textInputAction,
+        autofillHints: widget.autofillHints,
         autovalidateMode: widget.errorText.isNotEmpty ? AutovalidateMode.onUserInteraction : widget.autovalidateMode,
         validator: (value) {
           if (widget.validator != null) return widget.validator!(value);
@@ -210,7 +230,9 @@ class TextFieldCustomState extends State<TextFieldCustom> {
           labelStyle: styleBody(color: effectiveHintColor, size: effectiveHintSize),
           helperText: widget.helperText.isNotEmpty ? widget.helperText : null,
           helperStyle: styleBody(color: effectiveHintColor, size: effectiveHintSize),
+          helperMaxLines: 3,
           errorStyle: styleCaption(color: COLOR_ERROR),
+          errorMaxLines: 3,
           counterText: widget.maxLength == 0 ? null : "",
           border: widget.outlined
               ? buildOutlineBorder(effectiveRadius, effectiveBorderColor, effectiveBorderWidth)
@@ -223,7 +245,7 @@ class TextFieldCustomState extends State<TextFieldCustom> {
           enabledBorder: widget.outlined
               ? buildOutlineBorder(effectiveRadius, effectiveBorderColor, effectiveBorderWidth)
               : null,
-          focusedBorder: widget.outlined
+          focusedBorder: widget.outlined || widget.filled
               ? buildOutlineBorder(effectiveRadius, effectiveBorderColorFocus, effectiveBorderWidthFocus)
               : null,
           errorBorder: widget.outlined

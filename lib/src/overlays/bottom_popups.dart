@@ -16,12 +16,9 @@ class BottomSheetPopUps extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Definimos dimensiones fijas para los botones de acción
-    double width = 150;
-    double height = 50;
-
     return Container(
-      height: 70,
+      constraints: const BoxConstraints(minHeight: 70),
+      padding: PADDING,
       decoration: BoxDecoration(
         // Usamos el token de color de borde de tu config.dart
         border: Border(top: BorderSide(color: COLOR_BORDER, width: 1.0)),
@@ -29,41 +26,35 @@ class BottomSheetPopUps extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Espaciado inicial
-          Space(DOUBLE_PADDING),
-
-          // Botón de eliminar (solo si hay función)
-          onPressedDelete != null
-              ? ButtonCustom(
-                  height: height,
-                  width: width,
-                  text: "Eliminar",
-                  onlyText: true,
-                  textColor: COLOR_ERROR,
-                  onPressed: () {
-                    onPressedDelete!();
-                  },
-                )
-              : SizedBox.shrink(),
-
-          Spacer(),
-
-          // Botón de acción principal (Guardar/Continuar)
-          ButtonCustom(
-            height: height,
-            width: width,
-            text: title,
-            // Usamos COLOR_BACKGROUND para el texto sobre el color accent del botón
-            textColor: COLOR_BACKGROUND,
-            onPressed: () {
-              if (onPressedSave != null) {
-                onPressedSave!();
-              }
-            },
+          Expanded(
+            child: Align(
+              heightFactor: 1,
+              alignment: AlignmentDirectional.centerStart,
+              child: onPressedDelete == null
+                  ? const SizedBox.shrink()
+                  : ButtonCustom(
+                      width: 150,
+                      text: "Eliminar",
+                      onlyText: true,
+                      textColor: COLOR_ERROR,
+                      onPressed: () => onPressedDelete!(),
+                    ),
+            ),
           ),
-
-          // Espaciado final usando tu token reactivo
-          Space(DOUBLE_PADDING),
+          if (onPressedDelete != null) Space(SPACE_SMALL),
+          Flexible(
+            flex: onPressedDelete != null ? 1 : 2,
+            child: Align(
+              heightFactor: 1,
+              alignment: AlignmentDirectional.centerEnd,
+              child: ButtonCustom(
+                height: 50,
+                width: 150,
+                text: title,
+                onPressed: onPressedSave == null ? null : () => onPressedSave!(),
+              ),
+            ),
+          ),
         ],
       ),
     );

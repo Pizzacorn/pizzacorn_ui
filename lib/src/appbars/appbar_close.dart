@@ -37,6 +37,7 @@ PreferredSizeWidget AppBarClose({
               )
             : null,
         leading: IconButton(
+          tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
           splashColor: COLOR_ACCENT.withValues(alpha: 0.2),
           highlightColor: COLOR_ACCENT.withValues(alpha: 0.2),
           onPressed: onClose ?? () => Navigator.of(context).maybePop(),

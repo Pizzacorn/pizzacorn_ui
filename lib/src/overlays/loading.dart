@@ -13,6 +13,7 @@ class Loading extends StatelessWidget {
   final bool? glass;
   final Offset? offset;
   final bool dismissible;
+  final VoidCallback? onDismiss;
   final double containerSize;
   final double containerRadius;
   final EdgeInsetsGeometry containerPadding;
@@ -28,6 +29,7 @@ class Loading extends StatelessWidget {
     this.glass,
     this.offset,
     this.dismissible = false,
+    this.onDismiss,
     this.containerSize = 90,
     this.containerRadius = 20,
     this.containerPadding = const EdgeInsets.all(15),
@@ -36,33 +38,25 @@ class Loading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> stackChildren = [child];
-
-    if (loading) {
-      final Color effectiveColor = color ?? Colors.black;
-      final Widget effectiveIndicator =
-          centerWidget ??
-          progressIndicator ??
-          PizzacornGlassConfig.loadingWidget ??
-          CircularProgressIndicator(color: COLOR_ACCENT);
-
-      stackChildren.addAll([
-        Opacity(
-          opacity: opacity,
-          child: ModalBarrier(dismissible: dismissible, color: effectiveColor),
-        ),
-        LoadingCustomCenter(
-          centerWidget: effectiveIndicator,
-          offset: offset,
-          glass: glass,
-          containerSize: containerSize,
-          containerRadius: containerRadius,
-          containerPadding: containerPadding,
-        ),
-      ]);
-    }
-
-    return Stack(children: stackChildren);
+    return LoadingOverlay(
+      loading: loading,
+      opacity: opacity,
+      color: color ?? Colors.black,
+      dismissible: dismissible,
+      onDismiss: onDismiss,
+      indicatorBuilder: (context) => LoadingCustomCenter(
+        centerWidget: centerWidget ??
+            progressIndicator ??
+            PizzacornGlassConfig.loadingWidget ??
+            CircularProgressIndicator(color: COLOR_ACCENT, semanticsLabel: 'Cargando'),
+        offset: offset,
+        glass: glass,
+        containerSize: containerSize,
+        containerRadius: containerRadius,
+        containerPadding: containerPadding,
+      ),
+      child: child,
+    );
   }
 }
 
@@ -74,6 +68,7 @@ class LoadingCustom extends StatelessWidget {
   final Widget? progressIndicator;
   final Offset? offset;
   final bool dismissible;
+  final VoidCallback? onDismiss;
   final bool? glass;
   final double containerSize;
   final double containerRadius;
@@ -89,6 +84,7 @@ class LoadingCustom extends StatelessWidget {
     this.progressIndicator,
     this.offset,
     this.dismissible = false,
+    this.onDismiss,
     this.glass,
     this.containerSize = 90,
     this.containerRadius = 20,
@@ -106,6 +102,7 @@ class LoadingCustom extends StatelessWidget {
       progressIndicator: progressIndicator,
       offset: offset,
       dismissible: dismissible,
+      onDismiss: onDismiss,
       glass: glass,
       containerSize: containerSize,
       containerRadius: containerRadius,
@@ -173,6 +170,7 @@ class LoadingWithText extends StatelessWidget {
   final Widget? progressIndicator;
   final Offset? offset;
   final bool dismissible;
+  final VoidCallback? onDismiss;
   final Widget child;
   final String text;
 
@@ -184,44 +182,40 @@ class LoadingWithText extends StatelessWidget {
     this.progressIndicator,
     this.offset,
     this.dismissible = false,
+    this.onDismiss,
     required this.child,
     required this.text,
   });
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> stackChildren = [child];
+    return LoadingOverlay(
+      loading: loading,
+      opacity: opacity,
+      color: color ?? Colors.grey,
+      dismissible: dismissible,
+      onDismiss: onDismiss,
+      indicatorBuilder: (context) {
+        final Widget effectiveIndicator =
+            progressIndicator ?? CircularProgressIndicator(color: COLOR_ACCENT);
+        final Widget positionedIndicator = offset == null
+            ? Center(child: effectiveIndicator)
+            : SizedBox(
+                height: 40 + (offset!.dy > 0 ? offset!.dy : 0),
+                child: Stack(
+                  children: [
+                    Positioned(
+                      left: offset!.dx,
+                      top: offset!.dy,
+                      child: effectiveIndicator,
+                    ),
+                  ],
+                ),
+              );
 
-    if (loading) {
-      final Color effectiveColor = color ?? Colors.grey;
-      final Widget effectiveIndicator =
-          progressIndicator ?? CircularProgressIndicator(color: COLOR_ACCENT);
-
-      Widget layOutProgressIndicator;
-
-      if (offset == null) {
-        layOutProgressIndicator = Center(child: effectiveIndicator);
-      } else {
-        layOutProgressIndicator = Stack(
-          children: [
-            Positioned(
-              left: offset!.dx,
-              top: offset!.dy,
-              child: effectiveIndicator,
-            ),
-          ],
-        );
-      }
-
-      stackChildren.addAll([
-        Opacity(
-          opacity: opacity,
-          child: ModalBarrier(dismissible: dismissible, color: effectiveColor),
-        ),
-        Center(
+        return Center(
           child: Container(
-            height: 110,
-            width: 110,
+            constraints: const BoxConstraints(minWidth: 110, maxWidth: 260),
             padding: const EdgeInsets.all(SPACE_SMALL),
             decoration: BoxDecoration(
               color: COLOR_BACKGROUND_SECONDARY,
@@ -229,20 +223,87 @@ class LoadingWithText extends StatelessWidget {
               boxShadow: [BoxShadowCustom()],
             ),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                layOutProgressIndicator,
+                positionedIndicator,
                 Space(SPACE_SMALL),
-                TextCaption(text, textAlign: TextAlign.center),
+                Semantics(
+                  liveRegion: true,
+                  child: TextCaption(text, textAlign: TextAlign.center),
+                ),
               ],
             ),
           ),
-        ),
-      ]);
-    }
+        );
+      },
+      child: child,
+    );
+  }
+}
 
-    return Stack(children: stackChildren);
+class LoadingOverlay extends StatefulWidget {
+  final bool loading;
+  final bool dismissible;
+  final VoidCallback? onDismiss;
+  final double opacity;
+  final Color color;
+  final WidgetBuilder indicatorBuilder;
+  final Widget child;
+
+  LoadingOverlay({
+    super.key,
+    required this.loading,
+    required this.dismissible,
+    required this.onDismiss,
+    required this.opacity,
+    required this.color,
+    required this.indicatorBuilder,
+    required this.child,
+  });
+
+  @override
+  State<LoadingOverlay> createState() => LoadingOverlayState();
+}
+
+class LoadingOverlayState extends State<LoadingOverlay> {
+  bool dismissed = false;
+
+  @override
+  void didUpdateWidget(covariant LoadingOverlay oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!widget.loading) dismissed = false;
+  }
+
+  void dismiss() {
+    if (dismissed) return;
+    setState(() => dismissed = true);
+    widget.onDismiss?.call();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool visible = widget.loading && !dismissed;
+    return Stack(
+      children: [
+        ExcludeFocus(
+          excluding: visible,
+          child: ExcludeSemantics(excluding: visible, child: widget.child),
+        ),
+        if (visible) ...[
+          Opacity(
+            opacity: widget.opacity,
+            child: ModalBarrier(
+              dismissible: widget.dismissible,
+              onDismiss: dismiss,
+              color: widget.color,
+            ),
+          ),
+          widget.indicatorBuilder(context),
+        ],
+      ],
+    );
   }
 }
 

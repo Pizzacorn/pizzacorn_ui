@@ -70,10 +70,12 @@ class SegmentedTabCustom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (items.isEmpty) return const SizedBox.shrink();
+
     // 🔥 Colores marca de la casa, Don Sputknif.
     final Color effectiveBgColor = backgroundColor ?? Colors.transparent;
     final Color effectiveAccent = selectedColor ?? COLOR_ACCENT;
-    final Color effectiveText = unselectedColor ?? COLOR_SUBTEXT.withValues(alpha: 0.5);
+    final Color effectiveText = unselectedColor ?? COLOR_SUBTEXT;
     final Color effectiveNotificationColor = notificationColor ?? COLOR_ERROR;
 
     return Container(
@@ -87,47 +89,57 @@ class SegmentedTabCustom extends StatelessWidget {
               // 🍕 Bucle con índice marca Pizzacorn.
               for (int i = 0; i < items.length; i++)
                 Expanded(
-                  child: GestureDetector(
-                    onTap: () => onValueChanged(i),
-                    behavior: HitTestBehavior.opaque,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Row(
+                  child: Semantics(
+                    button: true,
+                    selected: currentIndex == i,
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: InkWell(
+                        onTap: () => onValueChanged(i),
+                        focusColor: effectiveText.withValues(alpha: 0.24),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          child: Column(
                             mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              TextBody(
-                                items[i],
-                                color: currentIndex == i ? effectiveAccent : effectiveText,
-                                fontWeight: currentIndex == i ? WEIGHT_BOLD : WEIGHT_NORMAL,
-                              ),
-                              if (notifications != null && notifications![i]) ...[
-                                Space(SPACE_SMALLEST),
-                                Container(
-                                  width: notificationSize,
-                                  height: notificationSize,
-                                  decoration: BoxDecoration(
-                                    color: effectiveNotificationColor,
-                                    shape: BoxShape.circle,
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Flexible(
+                                    child: TextBody(
+                                      items[i],
+                                      color: currentIndex == i ? effectiveAccent : effectiveText,
+                                      fontWeight: currentIndex == i ? WEIGHT_BOLD : WEIGHT_NORMAL,
+                                      textAlign: TextAlign.center,
+                                    ),
                                   ),
+                                  if (notifications != null && notifications![i]) ...[
+                                    Space(SPACE_SMALLEST),
+                                    Container(
+                                      width: notificationSize,
+                                      height: notificationSize,
+                                      decoration: BoxDecoration(
+                                        color: effectiveNotificationColor,
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                              if (itemsSecondary != null && itemsSecondary![i].isNotEmpty) ...[
+                                Space(SPACE_SMALLEST),
+                                TextCaption(
+                                  itemsSecondary![i],
+                                  color: currentIndex == i
+                                      ? selectedCounterTextColor ?? effectiveAccent
+                                      : unselectedCounterTextColor ?? effectiveText,
+                                  fontSize: 10,
                                 ),
                               ],
                             ],
                           ),
-                          if (itemsSecondary != null && itemsSecondary![i].isNotEmpty) ...[
-                            Space(SPACE_SMALLEST),
-                            TextCaption(
-                              itemsSecondary![i],
-                              color: currentIndex == i
-                                  ? selectedCounterTextColor ?? effectiveAccent
-                                  : unselectedCounterTextColor ?? effectiveText,
-                              fontSize: 10,
-                            ),
-                          ],
-                        ],
+                        ),
                       ),
                     ),
                   ),

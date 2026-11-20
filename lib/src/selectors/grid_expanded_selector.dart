@@ -87,7 +87,7 @@ class GridExpandedSelectorState extends State<GridExpandedSelector> {
   }
 
   void selectInitialItem() {
-    if (widget.selectedItem.isNotEmpty || widget.items.isEmpty) {
+    if (!mounted || widget.selectedItem.isNotEmpty || widget.items.isEmpty) {
       return;
     }
 
@@ -104,6 +104,35 @@ class GridExpandedSelectorState extends State<GridExpandedSelector> {
       builder: (context, constraints) {
         final int selectedIndex = getSelectedIndex();
         final double gap = SPACE_SMALL;
+        final bool reduceMotion = MediaQuery.disableAnimationsOf(context);
+        if (widget.items.length > 4 ||
+            !constraints.hasBoundedHeight ||
+            !constraints.hasBoundedWidth) {
+          final double textScale =
+              MediaQuery.textScalerOf(context).scale(TEXT_BODY_SIZE) / TEXT_BODY_SIZE;
+          final grid = GridView.builder(
+            primary: false,
+            shrinkWrap: !constraints.hasBoundedHeight,
+            physics: constraints.hasBoundedHeight
+                ? null
+                : const NeverScrollableScrollPhysics(),
+            padding: EdgeInsets.zero,
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 260,
+              mainAxisExtent: 144 * max(1.0, textScale),
+              crossAxisSpacing: gap,
+              mainAxisSpacing: gap,
+            ),
+            itemCount: widget.items.length,
+            itemBuilder: (context, index) => buildItem(
+              itemModel: widget.items[index],
+              selected: index == selectedIndex,
+            ),
+          );
+          if (constraints.hasBoundedWidth) return grid;
+          return SizedBox(width: MediaQuery.sizeOf(context).width, child: grid);
+        }
+
         final int selectedColumn = selectedIndex.isOdd ? 1 : 0;
         final int selectedRow = selectedIndex >= 2 ? 1 : 0;
         final double availableWidth = max(0, constraints.maxWidth - gap);
@@ -135,10 +164,6 @@ class GridExpandedSelectorState extends State<GridExpandedSelector> {
         final children = <Widget>[];
 
         for (int i = 0; i < widget.items.length; i++) {
-          if (!getCanRenderItem(i)) {
-            continue;
-          }
-
           final GridExpandedSelectorModel item = widget.items[i];
           final bool selected = i == selectedIndex;
           final Rect itemRect = getItemRect(
@@ -152,28 +177,15 @@ class GridExpandedSelectorState extends State<GridExpandedSelector> {
 
           children.add(
             AnimatedPositioned(
-              duration: Duration(milliseconds: 560),
+              duration: reduceMotion ? Duration.zero : const Duration(milliseconds: 560),
               curve: Curves.easeInOutCubic,
               left: itemRect.left,
               top: itemRect.top,
               width: itemRect.width,
               height: itemRect.height,
-              child: AnimatedGradientBorderContainer(
+              child: buildItem(
+                itemModel: item,
                 selected: selected,
-                onTap: () {
-                  widget.onChanged(item.currentValue);
-                },
-                radius: 8,
-                borderWidth: 3.5,
-                color: COLOR_BACKGROUND_TERCIARY,
-                padding: PADDING_ALL,
-                backgroundImage: buildBackgroundImage(item),
-                borderSimple: widget.borderSimple,
-                borderGradient: widget.borderGradient,
-                borderSimpleColor: widget.borderSimpleColor,
-                borderGradientColors: widget.borderGradientColors,
-                selectedOverlayOpacity: widget.selectedOverlayOpacity,
-                child: buildContent(item, selected),
               ),
             ),
           );
@@ -216,12 +228,26 @@ class GridExpandedSelectorState extends State<GridExpandedSelector> {
     return Rect.fromLTWH(left, top, width, height);
   }
 
-  bool getCanRenderItem(int index) {
-    if (index < 0) {
-      return false;
-    }
-
-    return index < 4;
+  Widget buildItem({
+    required GridExpandedSelectorModel itemModel,
+    required bool selected,
+  }) {
+    return AnimatedGradientBorderContainer(
+      key: ValueKey(itemModel.currentValue),
+      selected: selected,
+      onTap: () => widget.onChanged(itemModel.currentValue),
+      radius: 8,
+      borderWidth: 3.5,
+      color: COLOR_BACKGROUND_TERCIARY,
+      padding: PADDING_ALL,
+      backgroundImage: buildBackgroundImage(itemModel),
+      borderSimple: widget.borderSimple,
+      borderGradient: widget.borderGradient,
+      borderSimpleColor: widget.borderSimpleColor,
+      borderGradientColors: widget.borderGradientColors,
+      selectedOverlayOpacity: widget.selectedOverlayOpacity,
+      child: buildContent(itemModel, selected),
+    );
   }
 
   DecorationImage? buildBackgroundImage(GridExpandedSelectorModel item) {

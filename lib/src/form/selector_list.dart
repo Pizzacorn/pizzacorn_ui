@@ -301,6 +301,7 @@ class SelectorListItem extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
+          focusColor: contentColor.withValues(alpha: 0.24),
           borderRadius: BorderRadius.circular(RADIUS),
           highlightColor: Colors.white.withOpacity(0.1),
           splashColor: Colors.white.withOpacity(0.1),
@@ -447,6 +448,10 @@ class SelectorListItem extends StatelessWidget {
       );
     }
 
-    return item;
+    return Semantics(
+      button: true,
+      selected: isSelected,
+      child: item,
+    );
   }
 }

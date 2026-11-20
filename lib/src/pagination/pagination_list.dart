@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pizzacorn_ui/pizzacorn_ui.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'pagination_status.dart' show PaginationStatus;
 
 class SliverListCustom<T> extends ConsumerWidget {
   final PaginationParams<T> params;
@@ -9,6 +10,9 @@ class SliverListCustom<T> extends ConsumerWidget {
   final T itemPlaceholder;
   final Widget? emptyWidget;
   final double itemSpacing;
+  final bool autoLoadMore;
+  final bool showSkeleton;
+  final PaginationMessages messages;
   // Añadimos un extractor de ID opcional para que la Key sea 100% segura
   final String Function(T item)? idExtractor;
 
@@ -19,6 +23,9 @@ class SliverListCustom<T> extends ConsumerWidget {
     required this.itemPlaceholder,
     this.emptyWidget,
     this.itemSpacing = SPACE_SMALL,
+    this.autoLoadMore = true,
+    this.showSkeleton = true,
+    this.messages = const PaginationMessages(),
     this.idExtractor,
   });
 
@@ -29,6 +36,12 @@ class SliverListCustom<T> extends ConsumerWidget {
 
     // 1. ESTADO DE CARGA INICIAL
     if (state.isLoading && state.items.isEmpty) {
+      if (!showSkeleton) {
+        return SliverToBoxAdapter(
+          child: PaginationStatus(loading: true, loadingLabel: messages.loading),
+        );
+      }
+
       return Skeletonizer.sliver(
         enabled: true,
         child: SliverList(
@@ -50,11 +63,12 @@ class SliverListCustom<T> extends ConsumerWidget {
     // 2. ESTADO DE ERROR INICIAL
     if (state.error.isNotEmpty && state.items.isEmpty) {
       return SliverToBoxAdapter(
-        child: Center(
-          child: Padding(
-            padding: PADDING_ALL,
-            child: TextBody("Error: ${state.error}", maxlines: 50),
-          ),
+        child: PaginationStatus(
+          message: controller.lastDocument == null
+              ? messages.initialError
+              : messages.loadMoreError,
+          actionLabel: messages.retry,
+          onAction: controller.retry,
         ),
       );
     }
@@ -63,24 +77,17 @@ class SliverListCustom<T> extends ConsumerWidget {
     if (state.items.isEmpty) {
       if (state.hasMore && params.itemFilter != null) {
         return SliverToBoxAdapter(
-          child: Center(
-            child: TextButton(
-              onPressed: state.isFetchingMore ? null : () => controller.fetchMore(),
-              child: state.isFetchingMore
-                  ? CircularProgressIndicator()
-                  : TextBody('Cargar más resultados'),
-            ),
+          child: PaginationStatus(
+            actionLabel: messages.loadMore,
+            onAction: controller.fetchMore,
+            loading: state.isFetchingMore,
+            loadingLabel: messages.loading,
           ),
         );
       }
       if (emptyWidget == null) {
         return SliverToBoxAdapter(
-          child: Center(
-            child: Padding(
-              padding: PADDING_ALL,
-              child: TextBody("No hay resultados"),
-            ),
-          ),
+          child: PaginationStatus(message: messages.empty),
         );
       }
 
@@ -95,9 +102,8 @@ class SliverListCustom<T> extends ConsumerWidget {
         SliverList(
           delegate: SliverChildBuilderDelegate(
                 (context, i) {
-              // 🚀 SOLUCIÓN DEL BUCLE: Añadimos 'state.error.isEmpty'
-              // Si hay un error, dejamos de pedir más automáticamente.
-              if (i == state.items.length - 1 &&
+              if (autoLoadMore &&
+                  i == state.items.length - 1 &&
                   state.hasMore &&
                   !state.isFetchingMore &&
                   !state.isLoading &&
@@ -122,13 +128,10 @@ class SliverListCustom<T> extends ConsumerWidget {
         ),
 
         // 5. ZONA INFERIOR: SKELETON O ERROR DE PAGINACIÓN
-        if (state.hasMore || state.error.isNotEmpty)
+        if (state.isFetchingMore)
           SliverToBoxAdapter(
-            child: Column(
-              children: [
-                // Skeleton solo si está cargando de verdad
-                if (state.isFetchingMore)
-                  Skeletonizer(
+            child: showSkeleton
+                ? Skeletonizer(
                     enabled: true,
                     child: Column(
                       children: [
@@ -136,24 +139,25 @@ class SliverListCustom<T> extends ConsumerWidget {
                         Space(itemSpacing),
                       ],
                     ),
+                  )
+                : PaginationStatus(
+                    loading: true,
+                    loadingLabel: messages.loading,
                   ),
-
-                // Mensaje de error si la paginación falló, con botón para reintentar
-                if (state.error.isNotEmpty && state.items.isNotEmpty)
-                  Padding(
-                    padding: PADDING_ALL,
-                    child: Column(
-                      children: [
-                        TextBody("Error al cargar más: ${state.error}", maxlines: 3),
-                        Space(SPACE_SMALL),
-                        ElevatedButton(
-                          onPressed: () => controller.fetchMore(),
-                          child: TextBody("Reintentar"),
-                        ),
-                      ],
-                    ),
-                  ),
-              ],
+          )
+        else if (state.error.isNotEmpty)
+          SliverToBoxAdapter(
+            child: PaginationStatus(
+              message: messages.loadMoreError,
+              actionLabel: messages.retry,
+              onAction: controller.retry,
+            ),
+          )
+        else if (!autoLoadMore && state.hasMore)
+          SliverToBoxAdapter(
+            child: PaginationStatus(
+              actionLabel: messages.loadMore,
+              onAction: controller.fetchMore,
             ),
           ),
       ],
@@ -170,6 +174,9 @@ class PaginationListCustom<T> extends ConsumerWidget {
   final double itemSpacing;
   final EdgeInsetsGeometry padding;
   final ScrollPhysics? physics;
+  final bool autoLoadMore;
+  final bool showSkeleton;
+  final PaginationMessages messages;
   final String Function(T item)? idExtractor;
 
   PaginationListCustom({
@@ -182,6 +189,9 @@ class PaginationListCustom<T> extends ConsumerWidget {
     this.itemSpacing = SPACE_SMALL,
     this.padding = EdgeInsets.zero,
     this.physics,
+    this.autoLoadMore = true,
+    this.showSkeleton = true,
+    this.messages = const PaginationMessages(),
     this.idExtractor,
   });
 
@@ -195,19 +205,19 @@ class PaginationListCustom<T> extends ConsumerWidget {
       return SliverToBoxAdapter(
         child: SizedBox(
           height: height,
-          child: Skeletonizer(
-            enabled: true,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: padding,
-              physics: physics,
-              itemCount: 3,
-              separatorBuilder: (context, i) => SizedBox(width: itemSpacing),
-              itemBuilder: (context, i) {
-                return itemBuilder(itemPlaceholder);
-              },
-            ),
-          ),
+          child: showSkeleton
+              ? Skeletonizer(
+                  enabled: true,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: padding,
+                    physics: physics,
+                    itemCount: 3,
+                    separatorBuilder: (context, i) => SizedBox(width: itemSpacing),
+                    itemBuilder: (context, i) => itemBuilder(itemPlaceholder),
+                  ),
+                )
+              : PaginationStatus(loading: true, loadingLabel: messages.loading),
         ),
       );
     }
@@ -215,25 +225,31 @@ class PaginationListCustom<T> extends ConsumerWidget {
     // 2. ESTADO DE ERROR INICIAL
     if (state.error.isNotEmpty && state.items.isEmpty) {
       return SliverToBoxAdapter(
-        child: Center(
-          child: Padding(
-            padding: PADDING_ALL,
-            child: TextBody("Error: ${state.error}", maxlines: 50),
-          ),
+        child: PaginationStatus(
+          message: controller.lastDocument == null
+              ? messages.initialError
+              : messages.loadMoreError,
+          actionLabel: messages.retry,
+          onAction: controller.retry,
         ),
       );
     }
 
     // 3. ESTADO VACÍO
     if (state.items.isEmpty) {
+      if (state.hasMore && params.itemFilter != null) {
+        return SliverToBoxAdapter(
+          child: PaginationStatus(
+            actionLabel: messages.loadMore,
+            onAction: controller.fetchMore,
+            loading: state.isFetchingMore,
+            loadingLabel: messages.loading,
+          ),
+        );
+      }
       if (emptyWidget == null) {
         return SliverToBoxAdapter(
-          child: Center(
-            child: Padding(
-              padding: PADDING_ALL,
-              child: TextBody("No hay resultados"),
-            ),
-          ),
+          child: PaginationStatus(message: messages.empty),
         );
       }
 
@@ -258,7 +274,8 @@ class PaginationListCustom<T> extends ConsumerWidget {
           itemBuilder: (context, i) {
             if (i < state.items.length) {
               // 🚀 Pedimos más datos cuando el usuario alcanza el último item.
-              if (i == state.items.length - 1 &&
+              if (autoLoadMore &&
+                  i == state.items.length - 1 &&
                   state.hasMore &&
                   !state.isFetchingMore &&
                   !state.isLoading &&
@@ -276,29 +293,22 @@ class PaginationListCustom<T> extends ConsumerWidget {
             }
 
             // 5. ZONA FINAL: SKELETON O ERROR DE PAGINACIÓN
-            if (state.isFetchingMore) {
+            if (state.isFetchingMore && showSkeleton) {
               return Skeletonizer(
                 enabled: true,
                 child: itemBuilder(itemPlaceholder),
               );
             }
 
-            if (state.error.isNotEmpty && state.items.isNotEmpty) {
+            if (state.isFetchingMore || state.error.isNotEmpty || !autoLoadMore) {
               return SizedBox(
                 width: 220,
-                child: Padding(
-                  padding: PADDING_ALL,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      TextBody("Error al cargar más: ${state.error}", maxlines: 3),
-                      Space(SPACE_SMALL),
-                      ElevatedButton(
-                        onPressed: () => controller.fetchMore(),
-                        child: TextBody("Reintentar"),
-                      ),
-                    ],
-                  ),
+                child: PaginationStatus(
+                  loading: state.isFetchingMore,
+                  loadingLabel: messages.loading,
+                  message: state.error.isNotEmpty ? messages.loadMoreError : null,
+                  actionLabel: state.error.isNotEmpty ? messages.retry : messages.loadMore,
+                  onAction: state.error.isNotEmpty ? controller.retry : controller.fetchMore,
                 ),
               );
             }
@@ -322,6 +332,9 @@ class SliverListHorizontalCustom<T> extends PaginationListCustom<T> {
     super.itemSpacing,
     super.padding,
     super.physics,
+    super.autoLoadMore,
+    super.showSkeleton,
+    super.messages,
     super.idExtractor,
   });
 }

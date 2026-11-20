@@ -1,3 +1,12 @@
+## 0.0.149
+
+- Added `AdaptiveNavigationScaffold` with compact bottom navigation, wide sidebar navigation, notifications, and an optional primary action.
+- Made layouts, popups, dropdowns, and information sheets adapt to available space and larger text. Added keyboard interaction, clearer focus, and higher default text contrast.
+- Added optional field submission and autofill settings to `TextFieldCustom`. Searchable dropdowns support accent-insensitive filtering and keyboard selection.
+- Added adaptive grid columns, manual page loading, configurable loading indicators and messages, retry actions, and `queryKey` for filtered pagination. Stale page responses are discarded after refresh.
+- Fixed loading overlay dismissal so it preserves the current route, expanded grids so they display every option, and chart rebuilding so it keeps the active request and offers retry.
+- Added a browser gallery and widget tests covering the adaptive components.
+
 ## 0.0.148
 
 #### Fixed CropPage freezing on web: it used dart:io and path_provider to save the cropped image, which throw on web and left the loading overlay on forever. On web it now returns only the bytes (empty path), and a disk error no longer blocks the flow.

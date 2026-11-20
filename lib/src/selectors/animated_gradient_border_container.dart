@@ -48,6 +48,8 @@ class AnimatedGradientBorderContainerState
     extends State<AnimatedGradientBorderContainer>
     with SingleTickerProviderStateMixin {
   late AnimationController animationController;
+  bool reduceMotion = false;
+  bool showFocus = false;
 
   @override
   void initState() {
@@ -55,7 +57,29 @@ class AnimatedGradientBorderContainerState
     animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 2600),
-    )..repeat();
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+    updateAnimation();
+  }
+
+  @override
+  void didUpdateWidget(covariant AnimatedGradientBorderContainer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    updateAnimation();
+  }
+
+  void updateAnimation() {
+    if (widget.selected && widget.borderGradient && !reduceMotion) {
+      if (!animationController.isAnimating) animationController.repeat();
+    } else if (animationController.isAnimating) {
+      animationController.stop();
+      animationController.reset();
+    }
   }
 
   @override
@@ -66,7 +90,7 @@ class AnimatedGradientBorderContainerState
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
+    final surface = AnimatedBuilder(
       animation: animationController,
       builder: (context, child) {
         final bool useGradient = widget.selected && widget.borderGradient;
@@ -79,73 +103,109 @@ class AnimatedGradientBorderContainerState
             ? widget.selectedOverlayOpacity.clamp(0, 1).toDouble()
             : 0;
 
-        return GestureDetector(
-          onTap: widget.onTap,
-          child: Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              gradient: useGradient
-                  ? SweepGradient(
-                      colors: getGradientColors(),
-                      stops: getGradientStops(),
-                      transform: GradientRotation(
-                        animationController.value * 2 * pi,
-                      ),
-                    )
-                  : null,
-              color: useSimple
-                  ? widget.borderSimpleColor ?? COLOR_ACCENT
-                  : useGradient
-                  ? null
-                  : widget.color,
-              borderRadius: BorderRadius.circular(widget.radius),
-            ),
-            child: AnimatedPadding(
-              duration: Duration(milliseconds: 420),
-              curve: Curves.easeInOutCubic,
-              padding: EdgeInsets.all(currentBorderWidth),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(innerRadius),
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: widget.color,
-                    image: widget.backgroundImage,
-                  ),
-                  child: Stack(
-                    children: [
-                      Positioned.fill(
-                        child: IgnorePointer(
-                          child: AnimatedOpacity(
-                            duration: Duration(milliseconds: 260),
-                            curve: Curves.easeOutCubic,
-                            opacity: overlayOpacity,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: useSimple
-                                    ? widget.borderSimpleColor ?? COLOR_ACCENT
-                                    : null,
-                                gradient: useGradient
-                                    ? LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: getSourceGradientColors(),
-                                      )
-                                    : null,
-                              ),
+        return Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            gradient: useGradient
+                ? SweepGradient(
+                    colors: getGradientColors(),
+                    stops: getGradientStops(),
+                    transform: GradientRotation(
+                      animationController.value * 2 * pi,
+                    ),
+                  )
+                : null,
+            color: useSimple
+                ? widget.borderSimpleColor ?? COLOR_ACCENT
+                : useGradient
+                ? null
+                : widget.color,
+            borderRadius: BorderRadius.circular(widget.radius),
+          ),
+          child: AnimatedPadding(
+            duration: reduceMotion ? Duration.zero : const Duration(milliseconds: 420),
+            curve: Curves.easeInOutCubic,
+            padding: EdgeInsets.all(currentBorderWidth),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(innerRadius),
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: widget.color,
+                  image: widget.backgroundImage,
+                ),
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: AnimatedOpacity(
+                          duration: reduceMotion ? Duration.zero : const Duration(milliseconds: 260),
+                          curve: Curves.easeOutCubic,
+                          opacity: overlayOpacity,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: useSimple
+                                  ? widget.borderSimpleColor ?? COLOR_ACCENT
+                                  : null,
+                              gradient: useGradient
+                                  ? LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: getSourceGradientColors(),
+                                    )
+                                  : null,
                             ),
                           ),
                         ),
                       ),
-                      Padding(padding: widget.padding, child: widget.child),
-                    ],
-                  ),
+                    ),
+                    Padding(padding: widget.padding, child: widget.child),
+                  ],
                 ),
               ),
             ),
           ),
         );
       },
+    );
+    if (widget.onTap == null) return surface;
+
+    return Semantics(
+      button: true,
+      selected: widget.selected,
+      child: FocusableActionDetector(
+        mouseCursor: SystemMouseCursors.click,
+        onShowFocusHighlight: (visible) {
+          if (showFocus != visible) setState(() => showFocus = visible);
+        },
+        actions: {
+          ActivateIntent: CallbackAction<ActivateIntent>(
+            onInvoke: (intent) {
+              widget.onTap?.call();
+              return null;
+            },
+          ),
+        },
+        child: GestureDetector(
+          onTap: widget.onTap,
+          child: Stack(
+            children: [
+              surface,
+              if (showFocus)
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(widget.radius),
+                        border: Border.all(color: COLOR_BORDER_FOCUS, width: BORDER_SIZE_FOCUS),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

@@ -131,9 +131,11 @@ class ButtonCustom extends StatelessWidget {
     return Semantics(
       label: label.trim(),
       button: true,
-      enabled: onPressed != null,
-      child: SizedBox(
-        height: richTexts.isNotEmpty || onlyText ? 35 : finalHeight,
+      enabled: onPressed != null || onLongPressed != null,
+      child: Container(
+        constraints: BoxConstraints(
+          minHeight: richTexts.isNotEmpty || onlyText ? 35 : finalHeight,
+        ),
         width: width,
         child: Material(
           type: MaterialType.transparency,
@@ -146,6 +148,7 @@ class ButtonCustom extends StatelessWidget {
           ),
           child: InkWell(
             splashColor: effectiveColorSplash,
+            focusColor: effectiveTextColor.withValues(alpha: 0.24),
             onTap: onPressed,
             onLongPress: onLongPressed,
             child: Ink(
@@ -165,55 +168,63 @@ class ButtonCustom extends StatelessWidget {
                     ? null
                     : effectiveColor,
               ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: padding),
-                child: Row(
-                  mainAxisAlignment: mainAxisAlignment,
-                  children: [
-                    if (socialIcon.isNotEmpty ||
-                        prefixIcon != null ||
-                        iconBeginData != null ||
-                        iconBegin.isNotEmpty)
-                      Padding(
-                        padding: EdgeInsets.only(
-                          right: text.isNotEmpty ? 10 : 0,
+              child: ExcludeSemantics(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: padding),
+                  child: Row(
+                    mainAxisAlignment: mainAxisAlignment,
+                    children: [
+                      if (socialIcon.isNotEmpty ||
+                          prefixIcon != null ||
+                          iconBeginData != null ||
+                          iconBegin.isNotEmpty)
+                        Padding(
+                          padding: EdgeInsets.only(
+                            right: text.isNotEmpty ? 10 : 0,
+                          ),
+                          child: socialIcon.isNotEmpty
+                              ? SvgCustomNoColor(
+                                  fullIcon:
+                                      "packages/pizzacorn_ui/assets/icons/$socialIcon.svg",
+                                  size: iconSize,
+                                )
+                              : buildIcon(prefixIcon ?? iconBeginData, iconBegin),
                         ),
-                        child: socialIcon.isNotEmpty
-                            ? SvgCustomNoColor(
-                                fullIcon:
-                                    "packages/pizzacorn_ui/assets/icons/$socialIcon.svg",
-                                size: iconSize,
-                              )
-                            : buildIcon(prefixIcon ?? iconBeginData, iconBegin),
-                      ),
-                    if (text.isNotEmpty)
-                      Flexible(
-                        child: TextButtonCustom(
-                          text,
-                          color: effectiveTextColor,
-                          textStyle: textStyle,
-                          fontSize: customSizeText != 0
-                              ? customSizeText
-                              : TEXT_BUTTON_SIZE,
+                      if (text.isNotEmpty)
+                        Flexible(
+                          child: TextButtonCustom(
+                            text,
+                            color: effectiveTextColor,
+                            textAlign: mainAxisAlignment == MainAxisAlignment.center
+                                ? TextAlign.center
+                                : TextAlign.start,
+                            textStyle: textStyle,
+                            fontSize: customSizeText != 0
+                                ? customSizeText
+                                : TEXT_BUTTON_SIZE,
+                          ),
+                        )
+                      else if (richTexts.isNotEmpty)
+                        Flexible(
+                          child: RichText(
+                            text: TextSpan(children: buildRichTextChildren()),
+                            textScaler: MediaQuery.textScalerOf(context),
+                          ),
                         ),
-                      )
-                    else if (richTexts.isNotEmpty)
-                      RichText(
-                        text: TextSpan(children: buildRichTextChildren()),
-                      ),
-                    if (suffixIcon != null ||
-                        iconFinalData != null ||
-                        iconFinal.isNotEmpty)
-                      Padding(
-                        padding: EdgeInsets.only(
-                          left: text.isNotEmpty ? 10 : 0,
+                      if (suffixIcon != null ||
+                          iconFinalData != null ||
+                          iconFinal.isNotEmpty)
+                        Padding(
+                          padding: EdgeInsets.only(
+                            left: text.isNotEmpty ? 10 : 0,
+                          ),
+                          child: buildIcon(
+                            suffixIcon ?? iconFinalData,
+                            iconFinal,
+                          ),
                         ),
-                        child: buildIcon(
-                          suffixIcon ?? iconFinalData,
-                          iconFinal,
-                        ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

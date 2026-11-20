@@ -3,6 +3,40 @@ import 'package:flutter/cupertino.dart';
 import 'package:stupid_simple_sheet/stupid_simple_sheet.dart';
 import '../../pizzacorn_ui.dart';
 
+/// Presenta el mismo contenido como hoja inferior o diálogo según el ancho.
+Future<T?> openAdaptiveModal<T>({
+  required BuildContext context,
+  required WidgetBuilder builder,
+  double breakpoint = 600,
+}) {
+  if (MediaQuery.sizeOf(context).width >= breakpoint) {
+    return showDialog<T>(
+      context: context,
+      builder: (context) => Dialog(
+        clipBehavior: Clip.antiAlias,
+        constraints: const BoxConstraints(maxWidth: 560),
+        child: Builder(builder: builder),
+      ),
+    );
+  }
+
+  return showModalBottomSheet<T>(
+    context: context,
+    useRootNavigator: true,
+    useSafeArea: true,
+    isScrollControlled: true,
+    clipBehavior: Clip.antiAlias,
+    builder: (context) => Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+      child: MediaQuery.removeViewInsets(
+        context: context,
+        removeBottom: true,
+        child: Builder(builder: builder),
+      ),
+    ),
+  );
+}
+
 Future<void> openBottomSheet(
   BuildContext context,
   Widget widget, {

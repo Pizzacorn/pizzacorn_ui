@@ -94,87 +94,114 @@ class BottomSheetInfo extends StatelessWidget {
       top: false,
       child: Container(
         width: double.infinity,
-        padding: PADDING_ALL,
         decoration: BoxDecoration(
           color: backgroundColor ?? COLOR_BACKGROUND,
           borderRadius: BorderRadius.vertical(top: Radius.circular(RADIUS)),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (visual != null) visual,
-            if (visual != null) Space(SPACE_MEDIUM),
-            if (title.isNotEmpty)
-              TextTitle(
-                title,
-                textAlign: TextAlign.center,
-                maxlines: 100,
-              ),
-            if (title.isNotEmpty && body.isNotEmpty) Space(SPACE_SMALL),
-            if (body.isNotEmpty)
-              TextBody(
-                body,
-                color: COLOR_SUBTEXT,
-                textAlign: TextAlign.center,
-                maxlines: 100,
-              ),
-            if (infoText.isNotEmpty) Space(SPACE_MEDIUM),
-            if (infoText.isNotEmpty)
-              Container(
-                width: double.infinity,
-                padding: PADDING_ALL_SMALL,
-                decoration: BoxDecoration(
-                  color:
-                      infoBackgroundColor ?? COLOR_ACCENT.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(RADIUS),
-                ),
-                child: TextBody(
-                  infoText,
+        child: SingleChildScrollView(
+          primary: false,
+          padding: PADDING_ALL,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (visual != null) visual,
+              if (visual != null) Space(SPACE_MEDIUM),
+              if (title.isNotEmpty)
+                TextTitle(
+                  title,
                   textAlign: TextAlign.center,
+                  maxlines: 100,
                 ),
-              ),
-            if (disclaimer.isNotEmpty) Space(SPACE_MEDIUM),
-            if (disclaimer.isNotEmpty)
-              DisclaimerWidget(
-                text: disclaimer,
-                icon: disclaimerIcon,
-                showIcon: showDisclaimerIcon,
-                color: disclaimerColor,
-                textColor: disclaimerTextColor,
-                maxlines: disclaimerMaxlines,
-              ),
-            if (showLeftButton || showRightButton) Space(SPACE_MEDIUM),
-            if (showLeftButton || showRightButton)
-              Row(
-                children: [
-                  if (showLeftButton)
-                    Expanded(
-                      child: ButtonCustom(
-                        text: leftButtonTitle,
-                        prefixIcon: leftButtonIcon,
-                        border: true,
-                        color: Colors.transparent,
-                        textColor: leftButtonColor ?? COLOR_TEXT,
-                        borderColor: leftButtonColor ?? COLOR_BORDER,
-                        iconColor: leftButtonColor ?? COLOR_TEXT,
-                        onPressed: onLeftButtonPressed,
-                      ),
-                    ),
-                  if (showLeftButton && showRightButton) Space(SPACE_SMALL),
-                  if (showRightButton)
-                    Expanded(
-                      child: ButtonCustom(
-                        text: rightButtonTitle,
-                        prefixIcon: rightButtonIcon,
-                        color: rightButtonColor ?? COLOR_ACCENT,
-                        onPressed: onRightButtonPressed,
-                      ),
-                    ),
-                ],
-              ),
-          ],
+              if (title.isNotEmpty && body.isNotEmpty) Space(SPACE_SMALL),
+              if (body.isNotEmpty)
+                TextBody(
+                  body,
+                  color: COLOR_SUBTEXT,
+                  textAlign: TextAlign.center,
+                  maxlines: 100,
+                ),
+              if (infoText.isNotEmpty) Space(SPACE_MEDIUM),
+              if (infoText.isNotEmpty)
+                Container(
+                  width: double.infinity,
+                  padding: PADDING_ALL_SMALL,
+                  decoration: BoxDecoration(
+                    color:
+                        infoBackgroundColor ?? COLOR_ACCENT.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(RADIUS),
+                  ),
+                  child: TextBody(
+                    infoText,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              if (disclaimer.isNotEmpty) Space(SPACE_MEDIUM),
+              if (disclaimer.isNotEmpty)
+                DisclaimerWidget(
+                  text: disclaimer,
+                  icon: disclaimerIcon,
+                  showIcon: showDisclaimerIcon,
+                  color: disclaimerColor,
+                  textColor: disclaimerTextColor,
+                  maxlines: disclaimerMaxlines,
+                ),
+              if (showLeftButton || showRightButton) Space(SPACE_MEDIUM),
+              if (showLeftButton || showRightButton)
+                buildActions(
+                  showLeftButton: showLeftButton,
+                  showRightButton: showRightButton,
+                ),
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget buildActions({
+    required bool showLeftButton,
+    required bool showRightButton,
+  }) {
+    final actions = [
+      if (showLeftButton)
+        ButtonCustom(
+          text: leftButtonTitle,
+          prefixIcon: leftButtonIcon,
+          border: true,
+          color: Colors.transparent,
+          textColor: leftButtonColor ?? COLOR_TEXT,
+          borderColor: leftButtonColor ?? COLOR_BORDER,
+          iconColor: leftButtonColor ?? COLOR_TEXT,
+          onPressed: onLeftButtonPressed,
+        ),
+      if (showRightButton)
+        ButtonCustom(
+          text: rightButtonTitle,
+          prefixIcon: rightButtonIcon,
+          color: rightButtonColor ?? COLOR_ACCENT,
+          onPressed: onRightButtonPressed,
+        ),
+    ];
+    if (actions.length == 1) return actions.single;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double textScale =
+            MediaQuery.textScalerOf(context).scale(TEXT_BUTTON_SIZE) /
+                TEXT_BUTTON_SIZE;
+        if (constraints.maxWidth < 320 * textScale) {
+          return Column(
+            children: [actions[0], Space(SPACE_SMALL), actions[1]],
+          );
+        }
+        return Row(
+          children: [
+            Expanded(child: actions[0]),
+            Space(SPACE_SMALL),
+            Expanded(child: actions[1]),
+          ],
+        );
+      },
     );
   }
 

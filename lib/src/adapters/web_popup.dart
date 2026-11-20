@@ -30,23 +30,16 @@ class WebPopupCustom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Calculamos dimensiones dinámicas
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double screenHeight = MediaQuery.of(context).size.height;
-
-    final double finalWidth = screenWidth < width ? screenWidth : width;
-    final double finalHeight = screenWidth < height ? screenHeight : height;
-
     return Container(
-      margin: PADDING, // Usando tus tokens
+      margin: PADDING,
       child: Align(
         alignment: Alignment.topCenter,
         child: Container(
-          width: finalWidth,
-          height: finalHeight,
+          width: width,
+          height: height,
           clipBehavior: Clip.antiAlias,
           padding: EdgeInsets.zero,
-          decoration: BoxDecorationCustom(), // Asumiendo que es de tu lib
+          decoration: BoxDecorationCustom(),
           child: Loading(
             loading: loading,
             child: Scaffold(

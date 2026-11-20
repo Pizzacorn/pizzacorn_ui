@@ -1,0 +1,14 @@
+name: pizzacorn_ui_example
+publish_to: none
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  pizzacorn_ui:
+    path: ..
+
+flutter:
+  uses-material-design: true

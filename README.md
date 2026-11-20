@@ -270,6 +270,11 @@ Para volver a `(default)`, no llames a la función o pásale `null`, `''` o `'(d
 
 ### 1. Define los parámetros
 
+Para consultas que cambian con la búsqueda o los filtros, usa un
+`identifier` estable para la lista y pasa los valores de búsqueda y orden
+en `queryKey`. Por ejemplo, `queryKey: (search: search, sort: sort)`.
+Usa valores inmutables con igualdad por contenido.
+
 ```dart
 final params = PaginationParams<UserModel>(
   collection: "users",
@@ -338,7 +343,7 @@ class UsersPage extends ConsumerWidget {
 SliverGridCustom<ProductModel>(
   params: productParams,
   itemPlaceholder: ProductModel(),
-  crossAxisCount: 2,
+  minItemWidth: 180,
   childAspectRatio: 0.78,
   mainAxisSpacing: SPACE_SMALL,
   crossAxisSpacing: SPACE_SMALL,
@@ -349,14 +354,28 @@ SliverGridCustom<ProductModel>(
 )
 ```
 
+`minItemWidth` calcula cuántas columnas caben en el contenedor, incluidos
+los márgenes entre celdas. Si el contenedor es más estrecho, muestra una
+sola columna. Si prefieres un número fijo, omite `minItemWidth` y usa
+`crossAxisCount`.
+
+`SliverListCustom`, `SliverGridCustom` y `SliverListHorizontalCustom`
+aceptan `autoLoadMore: false` para ofrecer el botón «Cargar más resultados».
+El desplazamiento infinito sigue siendo el comportamiento predeterminado.
+Pasa `messages: PaginationMessages(...)` para personalizar los mensajes
+y las acciones según el idioma de la app.
+
+Usa `showSkeleton: false` para mostrar un indicador circular durante la
+carga inicial y al pedir más resultados. Por defecto se muestra el skeleton.
+
 ### Estados incluidos
 
 | Estado | Qué hace |
 | --- | --- |
-| `isLoading` | Muestra skeleton inicial |
-| `isFetchingMore` | Muestra skeleton inferior |
+| `isLoading` | Muestra el skeleton inicial o un indicador circular |
+| `isFetchingMore` | Muestra el skeleton de la siguiente página o el indicador circular. Si el filtro aún no ha encontrado resultados, muestra el indicador. |
 | `hasMore` | Controla si se solicita la siguiente página |
-| `error` | Muestra error inicial o error al cargar más |
+| `error` | Muestra un mensaje y permite reintentar la primera carga o la página que falló |
 
 ---
 
@@ -551,7 +570,11 @@ DropdownCustom<CategoryModel>(
 
 ### `DropdownSearch<T>`
 
-Versión con búsqueda para listas más largas.
+Versión con búsqueda para listas más largas. Abre una hoja inferior en
+ventanas estrechas y un diálogo con foco en el buscador en ventanas amplias.
+La búsqueda ignora mayúsculas y tildes en las vocales. Pulsa Intro para
+seleccionar una coincidencia única. Puedes personalizar el texto del
+buscador y el estado vacío con `searchHintText` y `emptyText`.
 
 ```dart
 DropdownSearch<UserModel>(
@@ -577,6 +600,7 @@ DropdownSearch<UserModel>(
 | `AppBarClose` | AppBar con cierre |
 | `AppBarDrag` | Barra para bottom sheets o zonas drag |
 | `AppBarHome` | AppBar principal con menú, logo y perfil |
+| `AdaptiveNavigationScaffold<T>` | Usa una barra inferior o lateral según el ancho disponible |
 | `goTo` | Navega con back |
 | `goToNoBack` | Navega sin animación/back estándar |
 | `goToClear` | Limpia stack y navega |
@@ -593,11 +617,50 @@ appBar: AppBarBack(
 goTo(context, UserDetailPage(userModel: userModel));
 ```
 
+### Navegación adaptable
+
+```dart
+AdaptiveNavigationScaffold<String>(
+  destinations: const [
+    AdaptiveNavigationDestination(
+      value: 'home',
+      label: 'Inicio',
+      icon: Icons.home_outlined,
+    ),
+    AdaptiveNavigationDestination(
+      value: 'inbox',
+      label: 'Bandeja',
+      icon: Icons.inbox_outlined,
+      notificationCount: 3,
+      notificationLabel: '3 mensajes pendientes',
+    ),
+  ],
+  selectedValue: selectedDestination,
+  onDestinationSelected: changeDestination,
+  primaryAction: AdaptiveNavigationAction(
+    label: 'Crear',
+    icon: Icons.add,
+    onPressed: openCreateForm,
+  ),
+  body: currentPage,
+)
+```
+
+La barra pasa al lateral a partir de 720 píxeles lógicos. Puedes configurar
+`breakpoint` y `sidebarWidth`. La acción principal se sitúa en el centro de
+la barra inferior y al comienzo de la lateral. Los destinos admiten
+`icon` o `iconAsset`, avisos y desactivación. La aplicación sigue
+controlando el destino seleccionado, las rutas y las URLs.
+
 ---
 
 ## 🧊 Overlays, loading y sheets
 
 ### `Loading`
+
+Con `dismissible: true`, tocar la barrera oculta la capa de carga y mantiene
+la pantalla abierta. Puedes usar `onDismiss` para reaccionar al cierre.
+El cierre es visual. La app decide si cancela la operación que estaba en curso.
 
 Envuelve una pantalla y muestra bloqueo cuando `loading` es true.
 
@@ -852,16 +915,26 @@ goTo(
 
 ---
 
-## 💻 Responsive web
+## 💻 Layout adaptable en móvil y web
 
 | Widget | Uso |
 | --- | --- |
-| `WebAdapterCustom` | Adapta layouts según `WEBSIZE` |
-| `WebPopupCustom` | Contenedor/popup optimizado para desktop |
+| `WebAdapterCustom` | Cambia entre fila y columna según el ancho del contenedor. Acepta `breakpoint`; por defecto usa `WEBSIZE`. |
+| `WebPopupCustom` | Respeta el ancho y la altura solicitados dentro del espacio disponible. |
+| `openAdaptiveModal<T>` | Abre una hoja inferior en ventanas estrechas y un diálogo en ventanas amplias. El punto de cambio predeterminado es 600. |
 | `HoverCustom` | Feedback visual en hover |
 | `BlurCustom` | Efecto blur |
 | `ShowUpCustom` | Animación de entrada |
 | `ShimmerCustom` | Placeholder shimmer |
+
+La galería de `example/` muestra un formulario, un selector y un modal sin
+configurar Firebase. Incluye controles para simular un panel estrecho y ampliar
+el texto.
+
+```bash
+cd example
+flutter run -d chrome
+```
 
 ---
 

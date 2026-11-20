@@ -20,7 +20,7 @@ class PizzacornThemeConfig {
 
   /// Text
   static Color text = const Color(0xFF151727);
-  static Color subtext = const Color(0xFF8E929E);
+  static Color subtext = const Color(0xFF606574);
   static Color textButtons = const Color(0xFFFFFFFF);
 
   /// Blocked
@@ -31,13 +31,13 @@ class PizzacornThemeConfig {
   /// Border
   static Color border = const Color(0xFFD2D4DB);
   static Color borderFocus = accent;
-  static Color borderNoFocus = accent;
+  static Color borderNoFocus = border;
 
   /// Shadow
   static Color shadow = accent;
 
   /// Alerts
-  static Color error = const Color(0xFFDD6A56);
+  static Color error = const Color(0xFFB04638);
   static Color alert = const Color.fromRGBO(253, 221, 59, 1.0);
   static Color done = const Color(0xFF53B471);
   static Color info = Colors.blue;
@@ -63,7 +63,7 @@ class PizzacornThemeConfig {
 
   /// Textfields
   static double borderSize = 1;
-  static double borderSizeFocus = 1;
+  static double borderSizeFocus = 2;
 }
 
 /// Getters públicos //////////////////////////////////////////////////////////
